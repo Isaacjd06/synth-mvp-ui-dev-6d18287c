@@ -14,9 +14,9 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { title: "Dashboard", href: "/app/dashboard", icon: LayoutDashboard },
+  { title: "Chat", href: "/app/chat", icon: MessageSquare },
   { title: "Workflows", href: "/app/workflows", icon: Workflow },
   { title: "Executions", href: "/app/executions", icon: PlaySquare },
-  { title: "Chat", href: "/app/chat", icon: MessageSquare },
   { title: "Billing", href: "/app/billing", icon: CreditCard },
 ];
 
