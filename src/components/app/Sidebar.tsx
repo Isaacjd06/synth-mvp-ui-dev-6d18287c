@@ -5,28 +5,19 @@ import {
   LayoutDashboard,
   MessageSquare,
   Workflow,
-  PlusCircle,
   PlaySquare,
-  BookOpen,
+  CreditCard,
   Menu,
   X,
-  Link2,
-  Brain,
-  Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 
 const navItems = [
   { title: "Dashboard", href: "/app/dashboard", icon: LayoutDashboard },
-  { title: "Chat", href: "/app/chat", icon: MessageSquare },
   { title: "Workflows", href: "/app/workflows", icon: Workflow },
-  { title: "Create Workflow", href: "/app/workflows/create", icon: PlusCircle },
   { title: "Executions", href: "/app/executions", icon: PlaySquare },
-  { title: "Connections", href: "/app/connections", icon: Link2 },
-  { title: "Memory", href: "/app/memory", icon: Brain },
-  { title: "Knowledge", href: "/app/knowledge", icon: BookOpen },
-  { title: "Settings", href: "/app/settings", icon: Settings },
+  { title: "Chat", href: "/app/chat", icon: MessageSquare },
+  { title: "Billing", href: "/app/billing", icon: CreditCard },
 ];
 
 const Sidebar = () => {
@@ -34,44 +25,30 @@ const Sidebar = () => {
   const location = useLocation();
 
   const isActive = (href: string) => {
-    if (href === "/app/workflows/create") {
-      return location.pathname === href;
-    }
     if (href === "/app/workflows") {
-      return location.pathname === href || (location.pathname.startsWith("/app/workflows/") && !location.pathname.includes("/create"));
+      return location.pathname === href || location.pathname.startsWith("/app/workflows/");
     }
     return location.pathname === href;
   };
 
   const NavContent = () => (
     <nav className="flex flex-col gap-1 p-4">
-      {navItems.map((item) => {
-        const isDisabled = 'disabled' in item && item.disabled;
-        const badge = 'badge' in item ? (item.badge as string) : undefined;
-        
-        return (
-          <Link
-            key={item.href}
-            to={isDisabled ? "#" : item.href}
-            onClick={() => !isDisabled && setIsOpen(false)}
-            className={cn(
-              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
-              isActive(item.href) && !isDisabled
-                ? "bg-primary text-primary-foreground shadow-lg"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground",
-              isDisabled && "opacity-50 cursor-not-allowed"
-            )}
-          >
-            <item.icon className="w-4 h-4" />
-            <span>{item.title}</span>
-            {badge && (
-              <Badge variant="secondary" className="ml-auto text-xs">
-                {badge}
-              </Badge>
-            )}
-          </Link>
-        );
-      })}
+      {navItems.map((item) => (
+        <Link
+          key={item.href}
+          to={item.href}
+          onClick={() => setIsOpen(false)}
+          className={cn(
+            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
+            isActive(item.href)
+              ? "bg-primary text-primary-foreground"
+              : "text-muted-foreground hover:bg-muted hover:text-foreground"
+          )}
+        >
+          <item.icon className="w-4 h-4" />
+          <span>{item.title}</span>
+        </Link>
+      ))}
     </nav>
   );
 
