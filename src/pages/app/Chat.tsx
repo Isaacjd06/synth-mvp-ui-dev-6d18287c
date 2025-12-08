@@ -1,175 +1,136 @@
 import { useState, useRef, useEffect } from "react";
-import { Menu, X } from "lucide-react";
 import AppShell from "@/components/app/AppShell";
-import ChatMessage, { ChatMessageProps } from "@/components/chat/ChatMessage";
-import ChatInput from "@/components/chat/ChatInput";
-import ChatSidebar from "@/components/chat/ChatSidebar";
-import TypingIndicator from "@/components/chat/TypingIndicator";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
-// Placeholder messages demonstrating different message types
-const placeholderMessages: ChatMessageProps[] = [
-  {
-    id: "1",
-    role: "system",
-    content: "Welcome to Synth. I'm here to help you build and manage your automation workflows.",
-    timestamp: "10:00 AM",
-  },
-  {
-    id: "2",
-    role: "user",
-    content: "Create an automation that sends me a Slack message when a Stripe payment succeeds.",
-    timestamp: "10:01 AM",
-  },
-  {
-    id: "3",
-    role: "assistant",
-    content: "I can build that workflow for you! Here's what I'm proposing:",
-    timestamp: "10:01 AM",
-    workflowSteps: [
-      { step: 1, title: "Stripe Webhook Trigger", description: "Listen for payment_intent.succeeded events" },
-      { step: 2, title: "Extract Payment Data", description: "Parse customer email, amount, and invoice ID" },
-      { step: 3, title: "Send Slack Notification", description: "Post formatted message to #payments channel" },
-    ],
-    actions: [
-      { label: "Create Workflow" },
-      { label: "Customize Steps" },
-      { label: "Preview Message" },
-    ],
-    metadata: { plan: "workflow_generation", confidence: 0.95 },
-  },
-  {
-    id: "4",
-    role: "user",
-    content: "Show me how the Slack message will look",
-    timestamp: "10:02 AM",
-  },
-  {
-    id: "5",
-    role: "assistant",
-    content: "Here's a preview of the Slack notification format:",
-    timestamp: "10:02 AM",
-    codeBlock: {
-      language: "json",
-      code: `{
-  "channel": "#payments",
-  "blocks": [
-    {
-      "type": "header",
-      "text": "💰 New Payment Received"
-    },
-    {
-      "type": "section",
-      "fields": [
-        { "type": "mrkdwn", "text": "*Amount:* $99.00" },
-        { "type": "mrkdwn", "text": "*Customer:* john@example.com" }
-      ]
-    }
-  ]
-}`,
-    },
-    actions: [
-      { label: "Use This Format" },
-      { label: "Edit Template" },
-    ],
-  },
-  {
-    id: "6",
-    role: "system",
-    content: "Tip: You can say \"generate workflow\" at any time to start building a new automation.",
-    timestamp: "10:03 AM",
-  },
-];
+interface Message {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+}
 
 const Chat = () => {
-  const [messages, setMessages] = useState<ChatMessageProps[]>(placeholderMessages);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSendMessage = async (content: string) => {
-    const userMessage: ChatMessageProps = {
+  const handleSend = async () => {
+    if (!input.trim() || isLoading) return;
+
+    const userMessage: Message = {
       id: crypto.randomUUID(),
       role: "user",
-      content,
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      content: input.trim(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
+    setInput("");
     setIsLoading(true);
 
     // Simulate AI response
     await new Promise((r) => setTimeout(r, 1500));
 
-    const assistantMessage: ChatMessageProps = {
+    const assistantMessage: Message = {
       id: crypto.randomUUID(),
       role: "assistant",
-      content: "I understand your request. Let me help you with that. This is a simulated response for the UI demonstration. In production, this would be connected to the AI backend.",
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      actions: [
-        { label: "Learn More" },
-        { label: "Try Another" },
-      ],
+      content: "I understand your request. Let me help you with that workflow. This is a simulated response — in production, Synth will provide intelligent guidance for building automations.",
     };
 
     setMessages((prev) => [...prev, assistantMessage]);
     setIsLoading(false);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
   return (
     <AppShell>
-      <div className="h-[calc(100vh-4rem)] flex flex-col overflow-hidden">
-        {/* Header */}
-        <div className="border-b border-border/50 bg-background px-4 lg:px-6 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Chat</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">
-              Talk to Synth to build automations and get intelligent guidance.
-            </p>
-          </div>
-
-          {/* Mobile sidebar toggle */}
-          <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="lg:hidden">
-                <Menu className="w-5 h-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-80 p-0 bg-background border-border">
-              <ChatSidebar />
-            </SheetContent>
-          </Sheet>
+      <div className="h-[calc(100vh-4rem)] flex flex-col">
+        {/* Page Header */}
+        <div className="px-4 py-4 border-b border-border">
+          <h1 className="text-2xl font-bold text-foreground">Synth Chat</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Your AI assistant for building workflows
+          </p>
         </div>
 
-        {/* Main content area */}
-        <div className="flex-1 flex overflow-hidden">
-          {/* Chat window - Left column */}
-          <div className="flex-1 flex flex-col min-w-0">
-            {/* Messages */}
-            <ScrollArea className="flex-1 px-4 lg:px-6">
-              <div className="max-w-3xl mx-auto py-6 space-y-4">
-                {messages.map((message) => (
-                  <ChatMessage key={message.id} {...message} />
-                ))}
-                {isLoading && <TypingIndicator />}
-                <div ref={messagesEndRef} />
+        {/* Chat Messages Area */}
+        <ScrollArea className="flex-1 px-4">
+          <div className="max-w-2xl mx-auto py-4 space-y-4">
+            {messages.length === 0 ? (
+              <div className="flex items-center justify-center h-64">
+                <p className="text-muted-foreground text-center">
+                  Start chatting with Synth to build and refine workflows.
+                </p>
               </div>
-            </ScrollArea>
+            ) : (
+              messages.map((message) => (
+                <div key={message.id} className="space-y-2">
+                  <div
+                    className={cn(
+                      "p-3 rounded-lg max-w-[85%]",
+                      message.role === "user"
+                        ? "ml-auto bg-primary text-primary-foreground"
+                        : "bg-muted text-foreground"
+                    )}
+                  >
+                    <p className="text-sm">{message.content}</p>
+                  </div>
 
-            {/* Input */}
-            <ChatInput onSend={handleSendMessage} isLoading={isLoading} />
+                  {/* Workflow action buttons - only for assistant messages */}
+                  {message.role === "assistant" && (
+                    <div className="flex gap-2 flex-wrap">
+                      <Button variant="outline" size="sm">
+                        Create Workflow From This
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        Modify Existing Workflow
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        Explain Workflow
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
+
+            {/* Thinking indicator */}
+            {isLoading && (
+              <div className="bg-muted p-3 rounded-lg max-w-[85%]">
+                <p className="text-sm text-muted-foreground">Synth is thinking…</p>
+              </div>
+            )}
+
+            <div ref={messagesEndRef} />
           </div>
+        </ScrollArea>
 
-          {/* Context Sidebar - Right column (desktop only) */}
-          <div className="hidden lg:block w-80 border-l border-border/50 bg-card/30">
-            <ChatSidebar />
+        {/* Message Input Area */}
+        <div className="px-4 py-4 border-t border-border">
+          <div className="max-w-2xl mx-auto flex gap-2">
+            <Input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Type a message..."
+              disabled={isLoading}
+              className="flex-1"
+            />
+            <Button onClick={handleSend} disabled={isLoading || !input.trim()}>
+              Send
+            </Button>
           </div>
         </div>
       </div>
