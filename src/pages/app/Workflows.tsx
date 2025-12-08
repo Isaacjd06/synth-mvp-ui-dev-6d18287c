@@ -1,12 +1,12 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Plus } from "lucide-react";
 import AppShell from "@/components/app/AppShell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 // Mock data
-const mockWorkflows = [
+const initialWorkflows = [
   {
     id: "1",
     name: "Lead Intake → CRM",
@@ -35,14 +35,21 @@ const mockWorkflows = [
     id: "5",
     name: "Slack Support Router",
     status: "inactive",
-    lastRunTime: "3 hours ago",
+    lastRunTime: "Never run",
   },
 ];
 
 const Workflows = () => {
+  const [workflows, setWorkflows] = useState(initialWorkflows);
+
   const handleToggleStatus = (id: string) => {
-    // Mock toggle - real implementation later
-    console.log("Toggle workflow:", id);
+    setWorkflows((prev) =>
+      prev.map((w) =>
+        w.id === id
+          ? { ...w, status: w.status === "active" ? "inactive" : "active" }
+          : w
+      )
+    );
   };
 
   return (
@@ -57,57 +64,68 @@ const Workflows = () => {
             </p>
           </div>
           <Button asChild>
-            <Link to="/app/chat" className="flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Create Workflow
-            </Link>
+            <Link to="/app/chat">Create Workflow</Link>
           </Button>
         </div>
 
-        {/* Workflows List */}
-        <Card>
-          <CardContent className="p-0">
-            <div className="divide-y divide-border">
-              {mockWorkflows.map((workflow) => (
-                <div
-                  key={workflow.id}
-                  className="flex items-center justify-between p-4"
-                >
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-foreground truncate">
-                      {workflow.name}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Last run: {workflow.lastRunTime || "Never"}
-                    </p>
+        {/* Empty State */}
+        {workflows.length === 0 ? (
+          <Card>
+            <CardContent className="py-12 text-center">
+              <p className="text-muted-foreground mb-4">
+                You have no workflows yet.
+              </p>
+              <Button asChild>
+                <Link to="/app/chat">Create Workflow</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          /* Workflows List */
+          <Card>
+            <CardContent className="p-0">
+              <div className="divide-y divide-border">
+                {workflows.map((workflow) => (
+                  <div
+                    key={workflow.id}
+                    className="flex items-center justify-between p-4"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-foreground truncate">
+                        {workflow.name}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Last run: {workflow.lastRunTime}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-3 ml-4">
+                      <Badge
+                        variant={
+                          workflow.status === "active" ? "default" : "secondary"
+                        }
+                      >
+                        {workflow.status === "active" ? "Active" : "Inactive"}
+                      </Badge>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleToggleStatus(workflow.id)}
+                      >
+                        {workflow.status === "active" ? "Deactivate" : "Activate"}
+                      </Button>
+
+                      <Button variant="ghost" size="sm" asChild>
+                        <Link to={`/app/workflows/${workflow.id}`}>View</Link>
+                      </Button>
+                    </div>
                   </div>
-                  
-                  <div className="flex items-center gap-3 ml-4">
-                    <Badge
-                      variant={workflow.status === "active" ? "default" : "secondary"}
-                    >
-                      {workflow.status === "active" ? "Active" : "Inactive"}
-                    </Badge>
-                    
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleToggleStatus(workflow.id)}
-                    >
-                      {workflow.status === "active" ? "Deactivate" : "Activate"}
-                    </Button>
-                    
-                    <Button variant="ghost" size="sm" asChild>
-                      <Link to={`/app/workflows/${workflow.id}`}>
-                        View
-                      </Link>
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </AppShell>
   );
