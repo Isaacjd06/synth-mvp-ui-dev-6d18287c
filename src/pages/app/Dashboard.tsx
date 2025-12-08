@@ -1,104 +1,145 @@
-import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import AppShell from "@/components/app/AppShell";
-import DashboardKPIBar from "@/components/dashboard/DashboardKPIBar";
-import DashboardPerformanceGraphs from "@/components/dashboard/DashboardPerformanceGraphs";
-import DashboardAIObservations from "@/components/dashboard/DashboardAIObservations";
-import DashboardAIRecommendations from "@/components/dashboard/DashboardAIRecommendations";
-import DashboardPredictions from "@/components/dashboard/DashboardPredictions";
-import DashboardIntegrationHealth from "@/components/dashboard/DashboardIntegrationHealth";
-import DashboardWorkflowRankings from "@/components/dashboard/DashboardWorkflowRankings";
-import DashboardBusinessImpact from "@/components/dashboard/DashboardBusinessImpact";
-import DashboardActivityFeed from "@/components/dashboard/DashboardActivityFeed";
-import DashboardIncidentInsights from "@/components/dashboard/DashboardIncidentInsights";
-import DashboardSystemHealth from "@/components/dashboard/DashboardSystemHealth";
-import DashboardUserBehavior from "@/components/dashboard/DashboardUserBehavior";
-import DashboardAIMemory from "@/components/dashboard/DashboardAIMemory";
-import DashboardSuggestedWorkflows from "@/components/dashboard/DashboardSuggestedWorkflows";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+
+// Placeholder data
+const stats = {
+  activeWorkflows: 12,
+  totalExecutions: 2847,
+  executionsLast24h: 156,
+  successRate: 98.4,
+};
+
+const recentExecutions = [
+  { id: 1, workflow: "Daily Report Generator", status: "success", timestamp: "2 min ago" },
+  { id: 2, workflow: "Lead Sync", status: "running", timestamp: "5 min ago" },
+  { id: 3, workflow: "Invoice Processor", status: "success", timestamp: "12 min ago" },
+  { id: 4, workflow: "Email Campaign", status: "error", timestamp: "1 hour ago" },
+  { id: 5, workflow: "Data Backup", status: "success", timestamp: "2 hours ago" },
+];
+
+const statusStyles: Record<string, string> = {
+  success: "bg-green-500/20 text-green-400 border-green-500/30",
+  running: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+  error: "bg-red-500/20 text-red-400 border-red-500/30",
+  failure: "bg-red-500/20 text-red-400 border-red-500/30",
+};
 
 const Dashboard = () => {
   return (
     <AppShell>
-      <div className="max-w-screen-2xl mx-auto px-4 py-6 space-y-6">
+      <div className="max-w-screen-xl mx-auto px-4 py-6 space-y-6">
         {/* Page Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
+        <div>
           <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
           <p className="text-muted-foreground mt-1">
-            Your automation command center
+            Monitor your workflows and recent activity
           </p>
-        </motion.div>
-
-        {/* Section 1: KPI Bar */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.05 }}>
-          <DashboardKPIBar />
-        </motion.div>
-
-        {/* Section 2: Performance Graphs */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}>
-          <DashboardPerformanceGraphs />
-        </motion.div>
-
-        {/* Section 3: AI Observations */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }} className="h-full">
-          <DashboardAIObservations />
-        </motion.div>
-
-        {/* Section 4 & 5: AI Recommendations and Predictions */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-stretch">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="h-full">
-            <DashboardAIRecommendations />
-          </motion.div>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="h-full">
-            <DashboardPredictions />
-          </motion.div>
         </div>
 
-        {/* Section 6: Integration Health */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25 }} className="h-full">
-          <DashboardIntegrationHealth />
-        </motion.div>
+        {/* Statistics Grid - 2x2 */}
+        <div className="grid grid-cols-2 gap-4">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Active Workflows
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-bold text-foreground">{stats.activeWorkflows}</p>
+            </CardContent>
+          </Card>
 
-        {/* Section 7: Workflow Rankings */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
-          <DashboardWorkflowRankings />
-        </motion.div>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Total Executions
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-bold text-foreground">{stats.totalExecutions.toLocaleString()}</p>
+            </CardContent>
+          </Card>
 
-        {/* Section 8: Business Impact */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }} className="h-full">
-          <DashboardBusinessImpact />
-        </motion.div>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Executions (Last 24h)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-bold text-foreground">{stats.executionsLast24h}</p>
+            </CardContent>
+          </Card>
 
-        {/* Section 9 & 10: Activity Feed and Incident Insights */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-stretch">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="h-full">
-            <DashboardActivityFeed />
-          </motion.div>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="h-full">
-            <DashboardIncidentInsights />
-          </motion.div>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Success Rate
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-bold text-foreground">{stats.successRate}%</p>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Section 11: System Health */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.45 }} className="h-full">
-          <DashboardSystemHealth />
-        </motion.div>
+        {/* Recent Executions */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Executions</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {recentExecutions.map((execution) => (
+              <div
+                key={execution.id}
+                className="flex items-center justify-between py-2 border-b border-border last:border-0"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-medium text-foreground">
+                    {execution.workflow}
+                  </span>
+                  <Badge variant="outline" className={statusStyles[execution.status]}>
+                    {execution.status}
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="text-sm text-muted-foreground">{execution.timestamp}</span>
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link to={`/app/executions`}>View Execution</Link>
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
 
-        {/* Section 12 & 13: User Behavior and AI Memory */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-stretch">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="h-full">
-            <DashboardUserBehavior />
-          </motion.div>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="h-full">
-            <DashboardAIMemory />
-          </motion.div>
+        {/* Synth Advisory Panel */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Synth Advisory</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Synth is ready to provide recommendations and insights for your workflows.
+            </p>
+            <Button asChild>
+              <Link to="/app/chat">Open Chat</Link>
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Quick Actions */}
+        <div className="flex gap-3">
+          <Button asChild>
+            <Link to="/app/workflows/new">Create Workflow</Link>
+          </Button>
+          <Button variant="outline" asChild>
+            <Link to="/app/chat">Open Chat With Synth</Link>
+          </Button>
         </div>
-
-        {/* Section 14: Suggested Workflows */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.55 }} className="h-full">
-          <DashboardSuggestedWorkflows />
-        </motion.div>
       </div>
     </AppShell>
   );
