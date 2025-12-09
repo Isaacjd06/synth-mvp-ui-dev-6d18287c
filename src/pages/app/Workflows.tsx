@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import SubscriptionBanner from "@/components/subscription/SubscriptionBanner";
 import { useSubscription } from "@/contexts/SubscriptionContext";
+import { synthToast } from "@/lib/synth-toast";
 
 // Mock data
 const initialWorkflows = [
@@ -51,6 +52,9 @@ const Workflows = () => {
   const handleToggleStatus = (id: string) => {
     if (!requireSubscription("activate workflows")) return;
     
+    const workflow = workflows.find(w => w.id === id);
+    const willBeActive = workflow ? workflow.status !== "active" : false;
+    
     setWorkflows((prev) =>
       prev.map((w) =>
         w.id === id
@@ -58,6 +62,14 @@ const Workflows = () => {
           : w
       )
     );
+    
+    if (workflow) {
+      if (willBeActive) {
+        synthToast.success("Workflow Activated", `"${workflow.name}" is now running.`);
+      } else {
+        synthToast.warning("Workflow Paused", `"${workflow.name}" has been deactivated.`);
+      }
+    }
   };
 
   return (

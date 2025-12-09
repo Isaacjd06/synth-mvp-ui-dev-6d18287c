@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import { synthToast } from "@/lib/synth-toast";
 
 interface AutomationCreatedModalProps {
   open: boolean;
@@ -33,6 +34,7 @@ const AutomationCreatedModal = ({
   const navigate = useNavigate();
 
   const handleViewWorkflow = () => {
+    synthToast.workflowCreated(workflow.name);
     onOpenChange(false);
     navigate(`/app/workflows/${workflow.id}`);
   };
