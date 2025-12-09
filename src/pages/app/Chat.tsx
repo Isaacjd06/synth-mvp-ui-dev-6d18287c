@@ -1,10 +1,13 @@
 import { useState, useRef, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { Send, Sparkles, AlertTriangle, X, Clock } from "lucide-react";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition, PageItem } from "@/components/app/PageTransition";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import QuickActionsBar from "@/components/chat/QuickActionsBar";
 import AutomationCreatedModal from "@/components/workflows/AutomationCreatedModal";
@@ -14,17 +17,41 @@ interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
+  timestamp: Date;
+  isWorkflowCreation?: boolean;
 }
 
+interface FixInChatContext {
+  prefill?: string;
+  workflowId?: string;
+  executionId?: string;
+  errorMessage?: string;
+}
+
+// Processing states for better UX feedback
+type ProcessingState = "thinking" | "analyzing" | "generating" | "finalizing" | null;
+
+const processingMessages: Record<string, string> = {
+  thinking: "Synth is thinking...",
+  analyzing: "Analyzing your request...",
+  generating: "Generating workflow logic...",
+  finalizing: "Finalizing automation...",
+};
+
 const Chat = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [processingState, setProcessingState] = useState<ProcessingState>(null);
   const [showAutomationModal, setShowAutomationModal] = useState(false);
+  const [fixContext, setFixContext] = useState<FixInChatContext | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Mock workflow for modal
-  const [createdWorkflow] = useState({
+  const [createdWorkflow, setCreatedWorkflow] = useState({
     id: "new-1",
     name: "Lead Capture Automation",
     description: "Captures leads from forms and syncs them to your CRM with enrichment.",
@@ -32,9 +59,37 @@ const Chat = () => {
     actions: ["Enrich lead data", "Add to CRM", "Send notification"],
   });
 
+  // Handle "Fix in Chat" entry from other pages
+  useEffect(() => {
+    const state = location.state as FixInChatContext | null;
+    if (state?.prefill || state?.errorMessage) {
+      setFixContext(state);
+      if (state.prefill) {
+        setInput(state.prefill);
+      }
+      // Clear the state from location
+      navigate(location.pathname, { replace: true, state: null });
+      // Focus input
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
+  }, [location.state, navigate, location.pathname]);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
+
+  const simulateProcessingStates = async () => {
+    const states: ProcessingState[] = ["thinking", "analyzing", "generating", "finalizing"];
+    for (const state of states) {
+      setProcessingState(state);
+      await new Promise((r) => setTimeout(r, 400 + Math.random() * 300));
+    }
+    setProcessingState(null);
+  };
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
@@ -43,19 +98,31 @@ const Chat = () => {
       id: crypto.randomUUID(),
       role: "user",
       content: input.trim(),
+      timestamp: new Date(),
     };
+
+    // Check if this is a workflow creation request
+    const isWorkflowRequest = input.toLowerCase().includes("create") || 
+                              input.toLowerCase().includes("workflow") ||
+                              input.toLowerCase().includes("automation") ||
+                              input.toLowerCase().includes("build");
 
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
+    setFixContext(null); // Clear fix context after sending
 
-    // Simulate AI response
-    await new Promise((r) => setTimeout(r, 1500));
+    // Simulate AI processing with states
+    await simulateProcessingStates();
 
     const assistantMessage: Message = {
       id: crypto.randomUUID(),
       role: "assistant",
-      content: "I understand your request. Let me help you design that automation. Based on your description, I can configure a workflow that handles this efficiently. Would you like me to proceed with the implementation?",
+      content: isWorkflowRequest
+        ? "I've analyzed your request and designed an automation that will handle this efficiently. The workflow includes data validation, enrichment, and notification steps. Would you like me to create this automation for you?"
+        : "I understand your request. Let me help you with that. Based on what you've described, I can provide recommendations or set up an automation to handle this. What would you prefer?",
+      timestamp: new Date(),
+      isWorkflowCreation: isWorkflowRequest,
     };
 
     setMessages((prev) => [...prev, assistantMessage]);
@@ -73,23 +140,44 @@ const Chat = () => {
     switch (action) {
       case "create":
         setInput("Create a new workflow that ");
+        inputRef.current?.focus();
         break;
-      case "summarize":
-        setInput("Summarize my recent workflow activity");
+      case "workflows":
+        navigate("/app/workflows");
         break;
-      case "optimize":
-        setInput("Suggest optimizations for my workflows");
+      case "followup":
+        setInput("Set up automated follow-up reminders for ");
+        inputRef.current?.focus();
+        break;
+      case "summary":
+        setInput("Build a daily summary report that ");
+        inputRef.current?.focus();
         break;
       case "reset":
         setMessages([]);
+        setFixContext(null);
         toast.info("Conversation cleared");
         break;
     }
   };
 
   const handleCreateWorkflow = () => {
+    // Generate a dynamic workflow based on conversation
+    const latestUserMessage = [...messages].reverse().find(m => m.role === "user");
+    setCreatedWorkflow({
+      id: `wf-${Date.now()}`,
+      name: latestUserMessage?.content.slice(0, 30) + "..." || "New Automation",
+      description: "AI-generated workflow based on your conversation with Synth.",
+      trigger: "Custom trigger configured",
+      actions: ["Process input", "Execute logic", "Send notification"],
+    });
     setShowAutomationModal(true);
     toast.success("Workflow created successfully!");
+  };
+
+  const dismissFixContext = () => {
+    setFixContext(null);
+    setInput("");
   };
 
   return (
@@ -98,12 +186,55 @@ const Chat = () => {
         {/* Page Header */}
         <PageTransition className="px-4 py-5 border-b border-border/50">
           <PageItem>
-            <h1 className="text-2xl font-display font-bold text-gradient">Synth Chat</h1>
-            <p className="text-sm text-muted-foreground mt-1 font-light">
-              Your intelligent automation assistant
-            </p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center shadow-[0_0_20px_-5px_hsl(217_100%_60%/0.3)]">
+                <Sparkles className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-display font-bold text-gradient">Synth Chat</h1>
+                <p className="text-sm text-muted-foreground font-light">
+                  Your intelligent automation assistant
+                </p>
+              </div>
+            </div>
           </PageItem>
         </PageTransition>
+
+        {/* Fix in Chat Context Banner */}
+        <AnimatePresence>
+          {fixContext && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="px-4 border-b border-amber-500/30 bg-amber-500/10"
+            >
+              <div className="py-3 flex items-center justify-between max-w-2xl mx-auto">
+                <div className="flex items-center gap-3">
+                  <AlertTriangle className="w-5 h-5 text-amber-400" />
+                  <div>
+                    <p className="text-sm font-medium text-amber-200">Fix Requested</p>
+                    <p className="text-xs text-amber-300/70">
+                      {fixContext.executionId
+                        ? `Execution #${fixContext.executionId}`
+                        : fixContext.workflowId
+                        ? `Workflow #${fixContext.workflowId}`
+                        : "Error analysis loaded"}
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={dismissFixContext}
+                  className="h-8 w-8 text-amber-300 hover:text-amber-100 hover:bg-amber-500/20"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Quick Actions Bar */}
         <div className="px-4 border-b border-border/30">
@@ -112,55 +243,79 @@ const Chat = () => {
 
         {/* Chat Messages Area */}
         <ScrollArea className="flex-1 px-4">
-          <div className="max-w-2xl mx-auto py-6 space-y-4">
+          <div className="max-w-2xl mx-auto py-6 space-y-6">
             <AnimatePresence mode="popLayout">
               {messages.length === 0 ? (
                 <motion.div 
-                  className="flex items-center justify-center h-64"
+                  className="flex flex-col items-center justify-center h-64 text-center"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.4 }}
                 >
-                  <p className="text-muted-foreground text-center font-light">
+                  <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 shadow-[0_0_30px_-5px_hsl(217_100%_60%/0.2)]">
+                    <Sparkles className="w-8 h-8 text-primary/60" />
+                  </div>
+                  <p className="text-muted-foreground font-light mb-2">
                     Describe your workflow, and Synth will build it for you.
+                  </p>
+                  <p className="text-xs text-muted-foreground/60">
+                    Try: "Create a workflow to capture leads and sync to CRM"
                   </p>
                 </motion.div>
               ) : (
-                messages.map((message, index) => (
+                messages.map((message) => (
                   <motion.div 
                     key={message.id} 
                     className="space-y-3"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05, duration: 0.3 }}
+                    transition={{ duration: 0.3 }}
                   >
+                    {/* Message Bubble */}
                     <div
                       className={cn(
-                        "p-4 rounded-xl max-w-[85%] transition-all duration-300",
+                        "p-4 rounded-2xl max-w-[85%] transition-all duration-300",
                         message.role === "user"
-                          ? "ml-auto bg-primary text-primary-foreground shadow-[0_0_20px_-5px_hsl(217_100%_60%/0.3)]"
-                          : "bg-muted/50 text-foreground border border-border/30 backdrop-blur-sm"
+                          ? "ml-auto bg-primary text-primary-foreground shadow-[0_4px_20px_-5px_hsl(217_100%_60%/0.4)]"
+                          : "bg-card/80 text-foreground border border-border/50 shadow-sm"
                       )}
                     >
                       <p className="text-sm leading-relaxed">{message.content}</p>
+                      {/* Timestamp */}
+                      <div className={cn(
+                        "flex items-center gap-1 mt-2 text-[10px]",
+                        message.role === "user" 
+                          ? "text-primary-foreground/60 justify-end" 
+                          : "text-muted-foreground/60"
+                      )}>
+                        <Clock className="w-3 h-3" />
+                        {formatTime(message.timestamp)}
+                      </div>
                     </div>
 
-                    {/* Workflow action buttons - only for assistant messages */}
+                    {/* Workflow action buttons - only for assistant workflow messages */}
                     {message.role === "assistant" && (
                       <motion.div 
-                        className="flex gap-2 flex-wrap"
+                        className="flex gap-2 flex-wrap pl-1"
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2, duration: 0.3 }}
+                        transition={{ delay: 0.15, duration: 0.3 }}
                       >
-                        <Button variant="outline" size="sm" onClick={handleCreateWorkflow}>
-                          Create Workflow From This
+                        {message.isWorkflowCreation && (
+                          <Button 
+                            size="sm" 
+                            onClick={handleCreateWorkflow}
+                            className="gap-1.5 btn-synth"
+                          >
+                            <Sparkles className="w-3.5 h-3.5" />
+                            Create This Workflow
+                          </Button>
+                        )}
+                        <Button variant="outline" size="sm" className="text-xs">
+                          Modify Request
                         </Button>
-                        <Button variant="outline" size="sm">
-                          Modify Existing Workflow
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          Explain Workflow
+                        <Button variant="ghost" size="sm" className="text-xs">
+                          Explain More
                         </Button>
                       </motion.div>
                     )}
@@ -169,23 +324,50 @@ const Chat = () => {
               )}
             </AnimatePresence>
 
-            {/* Thinking indicator */}
+            {/* Processing/Thinking Indicator */}
             <AnimatePresence>
               {isLoading && (
                 <motion.div 
-                  className="bg-muted/50 p-4 rounded-xl max-w-[85%] border border-border/30 backdrop-blur-sm"
+                  className="bg-card/80 p-4 rounded-2xl max-w-[85%] border border-border/50 shadow-sm"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground font-light">Synth is thinking</span>
-                    <span className="flex gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-thinking-dot" style={{ animationDelay: "0s" }} />
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-thinking-dot" style={{ animationDelay: "0.2s" }} />
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-thinking-dot" style={{ animationDelay: "0.4s" }} />
-                    </span>
+                  <div className="flex items-center gap-3">
+                    {/* Animated Icon */}
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                      className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-primary" />
+                    </motion.div>
+                    
+                    <div className="flex-1">
+                      <p className="text-sm text-foreground font-medium">
+                        {processingState ? processingMessages[processingState] : "Processing..."}
+                      </p>
+                      {/* Progress Steps */}
+                      <div className="flex items-center gap-1.5 mt-2">
+                        {["thinking", "analyzing", "generating", "finalizing"].map((step, index) => (
+                          <motion.div
+                            key={step}
+                            className={cn(
+                              "h-1 rounded-full transition-all duration-300",
+                              step === processingState
+                                ? "w-6 bg-primary"
+                                : processingState && 
+                                  ["thinking", "analyzing", "generating", "finalizing"].indexOf(processingState) > index
+                                ? "w-4 bg-primary/50"
+                                : "w-4 bg-muted"
+                            )}
+                            animate={step === processingState ? { scale: [1, 1.1, 1] } : {}}
+                            transition={{ duration: 0.5, repeat: Infinity }}
+                          />
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </motion.div>
               )}
@@ -196,21 +378,23 @@ const Chat = () => {
         </ScrollArea>
 
         {/* Message Input Area */}
-        <div className="px-4 py-4 border-t border-border/50 bg-background/50 backdrop-blur-sm">
+        <div className="px-4 py-4 border-t border-border/50 bg-background/80 backdrop-blur-sm">
           <div className="max-w-2xl mx-auto flex gap-3">
             <Input
+              ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Describe your automation..."
+              placeholder={fixContext ? "Describe how to fix this issue..." : "Describe your automation..."}
               disabled={isLoading}
-              className="flex-1 bg-muted/30 border-border/50 focus:border-primary/50 focus:ring-primary/20 transition-all duration-300"
+              className="flex-1 bg-muted/30 border-border/50 focus:border-primary/50 focus:ring-primary/20 transition-all duration-300 h-11"
             />
             <Button 
               onClick={handleSend} 
               disabled={isLoading || !input.trim()}
-              className="btn-synth"
+              className="btn-synth h-11 px-5 gap-2"
             >
+              <Send className="w-4 h-4" />
               Send
             </Button>
           </div>
