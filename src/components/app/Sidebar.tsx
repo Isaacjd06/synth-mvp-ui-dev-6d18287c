@@ -9,7 +9,6 @@ import {
   CreditCard,
   Menu,
   X,
-  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -17,7 +16,6 @@ const navItems = [
   { title: "Dashboard", href: "/app/dashboard", icon: LayoutDashboard },
   { title: "Chat", href: "/app/chat", icon: MessageSquare },
   { title: "Workflows", href: "/app/workflows", icon: Workflow },
-  { title: "Skills", href: "/app/skills", icon: Sparkles },
   { title: "Executions", href: "/app/executions", icon: PlaySquare },
   { title: "Billing", href: "/app/billing", icon: CreditCard },
 ];

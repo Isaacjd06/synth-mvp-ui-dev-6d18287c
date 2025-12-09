@@ -1,15 +1,11 @@
-import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Play, Pencil, Trash2, Zap, Clock, CheckCircle2, AlertCircle, Save, X, RefreshCw, Copy, Settings } from "lucide-react";
+import { ArrowLeft, Play, Pencil, Trash2, Zap, Clock, CheckCircle2, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition, PageItem } from "@/components/app/PageTransition";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
 // Mock data
@@ -21,8 +17,6 @@ const mockWorkflow = {
   triggerType: "Webhook",
   triggerLabel: "New form submission",
   lastModified: "2 days ago",
-  createdAt: "Dec 1, 2024",
-  lastRun: "2 hours ago",
   reliability: "98.2%",
   steps: [
     { type: "trigger", label: "New Form Submission Received" },
@@ -38,12 +32,7 @@ const mockExecutions = [
   { id: "e3", status: "error", timestamp: "6 hours ago", duration: "2.1s" },
   { id: "e4", status: "success", timestamp: "Yesterday", duration: "1.0s" },
   { id: "e5", status: "success", timestamp: "Yesterday", duration: "0.8s" },
-  { id: "e6", status: "success", timestamp: "2 days ago", duration: "0.7s" },
-  { id: "e7", status: "success", timestamp: "2 days ago", duration: "1.1s" },
-  { id: "e8", status: "error", timestamp: "3 days ago", duration: "0.5s" },
 ];
-
-const ITEMS_PER_PAGE = 5;
 
 const getStatusVariant = (status: string) => {
   switch (status) {
@@ -62,20 +51,6 @@ const getStatusVariant = (status: string) => {
 const WorkflowDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  
-  // Inline editing state
-  const [isEditing, setIsEditing] = useState(false);
-  const [editName, setEditName] = useState(mockWorkflow.name);
-  const [editDescription, setEditDescription] = useState(mockWorkflow.description);
-  const [isActive, setIsActive] = useState(mockWorkflow.status === "active");
-  
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(mockExecutions.length / ITEMS_PER_PAGE);
-  const paginatedExecutions = mockExecutions.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
 
   const handleRun = () => {
     toast.success("Workflow execution initiated");
@@ -235,7 +210,7 @@ const WorkflowDetail = () => {
           </Card>
         </PageItem>
 
-        {/* Recent Executions with Pagination */}
+        {/* Recent Executions */}
         <PageItem>
           <Card>
             <CardHeader className="pb-4">
@@ -252,97 +227,34 @@ const WorkflowDetail = () => {
                   </p>
                 </div>
               ) : (
-                <>
-                  <div className="space-y-2">
-                    {paginatedExecutions.map((exec) => (
-                      <motion.div
-                        key={exec.id}
-                        className="flex items-center justify-between p-3 rounded-lg bg-card/30 border border-border/30 hover:border-primary/20 hover:bg-card/50 transition-all duration-300 group"
-                        whileHover={{ y: -2 }}
+                <div className="space-y-2">
+                  {mockExecutions.map((exec) => (
+                    <motion.div
+                      key={exec.id}
+                      className="flex items-center justify-between p-3 rounded-lg bg-card/30 border border-border/30 hover:border-primary/20 hover:bg-card/50 transition-all duration-300 group"
+                      whileHover={{ y: -2, boxShadow: "0 4px 20px rgba(0, 0, 0, 0.2)" }}
+                    >
+                      <div className="flex items-center gap-4">
+                        <Badge variant={getStatusVariant(exec.status) as any}>
+                          {exec.status === "success" && <CheckCircle2 className="w-3 h-3 mr-1" />}
+                          {exec.status === "error" && <AlertCircle className="w-3 h-3 mr-1" />}
+                          {exec.status}
+                        </Badge>
+                        <span className="text-sm text-muted-foreground">{exec.timestamp}</span>
+                        <span className="text-sm text-muted-foreground">{exec.duration}</span>
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        asChild
+                        className="opacity-70 group-hover:opacity-100 transition-opacity"
                       >
-                        <div className="flex items-center gap-4">
-                          <Badge variant={getStatusVariant(exec.status) as any}>
-                            {exec.status === "success" && <CheckCircle2 className="w-3 h-3 mr-1" />}
-                            {exec.status === "error" && <AlertCircle className="w-3 h-3 mr-1" />}
-                            {exec.status}
-                          </Badge>
-                          <span className="text-sm text-muted-foreground">{exec.timestamp}</span>
-                          <span className="text-sm text-muted-foreground">{exec.duration}</span>
-                        </div>
-                        <Button variant="ghost" size="sm" asChild>
-                          <Link to="/app/executions">View Details</Link>
-                        </Button>
-                      </motion.div>
-                    ))}
-                  </div>
-                  
-                  {/* Pagination */}
-                  {totalPages > 1 && (
-                    <div className="flex items-center justify-center gap-2 mt-4 pt-4 border-t border-border/30">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                        disabled={currentPage === 1}
-                      >
-                        Previous
+                        <Link to="/app/executions">View Details</Link>
                       </Button>
-                      <span className="text-sm text-muted-foreground">
-                        Page {currentPage} of {totalPages}
-                      </span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                        disabled={currentPage === totalPages}
-                      >
-                        Next
-                      </Button>
-                    </div>
-                  )}
-                </>
-              )}
-            </CardContent>
-          </Card>
-        </PageItem>
-
-        {/* Settings Panel */}
-        <PageItem>
-          <Card>
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Settings className="w-5 h-5 text-muted-foreground" />
-                Workflow Settings
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/20 border border-border/30">
-                <div>
-                  <p className="font-medium text-foreground">Workflow Status</p>
-                  <p className="text-xs text-muted-foreground">Enable or disable this automation</p>
+                    </motion.div>
+                  ))}
                 </div>
-                <Switch checked={isActive} onCheckedChange={setIsActive} />
-              </div>
-              
-              <div className="flex flex-wrap gap-2">
-                <Button variant="outline" size="sm" className="gap-2" onClick={() => toast.info("Regenerate logic coming soon")}>
-                  <RefreshCw className="w-3 h-3" />
-                  Regenerate Logic
-                </Button>
-                <Button variant="outline" size="sm" className="gap-2" disabled>
-                  <Copy className="w-3 h-3" />
-                  Duplicate (Coming Soon)
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2 text-destructive border-destructive/30 hover:bg-destructive/10"
-                  onClick={handleDelete}
-                >
-                  <Trash2 className="w-3 h-3" />
-                  Delete Workflow
-                </Button>
-              </div>
+              )}
             </CardContent>
           </Card>
         </PageItem>
