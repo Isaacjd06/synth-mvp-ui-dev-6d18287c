@@ -39,10 +39,6 @@ const faqs = [
     question: "Can I try Synth before committing to a plan?",
     answer: "Yes! We offer a 3-day free trial with full access to all features. No credit card required to start. Experience the power of AI-driven automation risk-free."
   },
-  {
-    question: "Do you offer support for enterprise customers?",
-    answer: "Yes, our Agency plan includes dedicated support, custom integrations, white-label options, and SLA guarantees. Contact our sales team for custom enterprise solutions."
-  },
 ];
 
 const FAQSection = () => {
