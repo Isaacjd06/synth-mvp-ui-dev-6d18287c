@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Minus } from "lucide-react";
+import GoogleSignInButton from "./GoogleSignInButton";
 
 const faqs = [
   {
@@ -116,6 +117,17 @@ const FAQSection = () => {
             </motion.div>
           ))}
         </div>
+
+        {/* Google Sign In Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.2 }}
+          className="mt-16 text-center"
+        >
+          <GoogleSignInButton variant="cta" />
+        </motion.div>
       </div>
     </section>
   );
