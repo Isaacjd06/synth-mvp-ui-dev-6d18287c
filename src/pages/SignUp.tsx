@@ -296,7 +296,7 @@ const SignUp = () => {
                   ) : (
                     <>
                       <GoogleIcon />
-                      <span className="ml-2">Continue with Google</span>
+                      <span className="ml-2">Sign up with Google</span>
                     </>
                   )}
                 </Button>
