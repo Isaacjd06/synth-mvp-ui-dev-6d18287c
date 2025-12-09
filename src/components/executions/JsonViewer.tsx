@@ -23,8 +23,14 @@ const JsonViewer = ({ data, title, defaultExpanded = true }: JsonViewerProps) =>
 
   if (!data) {
     return (
-      <div className="rounded-lg border border-border/30 bg-muted/20 p-4">
-        <p className="text-sm text-muted-foreground">No {title.toLowerCase()} available</p>
+      <div className="rounded-lg border border-border/30 bg-muted/10 p-6">
+        <div className="flex flex-col items-center text-center">
+          <div className="w-10 h-10 rounded-lg bg-muted/30 border border-border/50 flex items-center justify-center mb-3">
+            <Copy className="w-4 h-4 text-muted-foreground/50" />
+          </div>
+          <p className="text-sm text-muted-foreground">No {title.toLowerCase()} available</p>
+          <p className="text-xs text-muted-foreground/60 mt-1">Data will appear here when generated</p>
+        </div>
       </div>
     );
   }
