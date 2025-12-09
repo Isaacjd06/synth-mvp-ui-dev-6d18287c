@@ -7,6 +7,7 @@ import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import Index from "./pages/Index";
 import Pricing from "./pages/Pricing";
 import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/app/Dashboard";
 import Chat from "./pages/app/Chat";
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
             <Route path="/app/dashboard" element={<Dashboard />} />
             <Route path="/app/chat" element={<Chat />} />
             <Route path="/app/workflows" element={<Workflows />} />
