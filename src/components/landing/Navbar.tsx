@@ -65,15 +65,6 @@ const Navbar = () => {
           {/* Right Side */}
           <div className="hidden md:flex items-center gap-3">
             <GoogleSignInButton variant="navbar" />
-            <Link to="/app/dashboard">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="px-5 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-              >
-                Dashboard
-              </motion.button>
-            </Link>
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -108,11 +99,6 @@ const Navbar = () => {
               ))}
               <div className="pt-4 border-t border-white/5 space-y-3">
                 <GoogleSignInButton variant="navbar" className="w-full justify-center" />
-                <Link to="/app/dashboard" className="block">
-                  <button className="w-full py-2.5 text-sm font-medium bg-primary text-primary-foreground rounded-lg">
-                    Dashboard
-                  </button>
-                </Link>
               </div>
             </div>
           </motion.div>
