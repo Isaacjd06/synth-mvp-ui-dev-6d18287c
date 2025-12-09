@@ -26,7 +26,7 @@ import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { toast } from "sonner";
+import { synthToast } from "@/lib/synth-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -127,7 +127,7 @@ const WorkflowDetail = () => {
   const handleSaveName = () => {
     if (editedName.trim()) {
       setWorkflow((prev) => ({ ...prev, name: editedName.trim() }));
-      toast.success("Workflow name updated");
+      synthToast.workflowUpdated(editedName.trim());
     } else {
       setEditedName(workflow.name);
     }
@@ -136,7 +136,7 @@ const WorkflowDetail = () => {
 
   const handleSaveDescription = () => {
     setWorkflow((prev) => ({ ...prev, description: editedDescription.trim() }));
-    toast.success("Description updated");
+    synthToast.success("Description Updated", "Your changes have been saved.");
     setIsEditingDescription(false);
   };
 
@@ -153,24 +153,28 @@ const WorkflowDetail = () => {
   const handleToggleActive = (checked: boolean) => {
     setIsActive(checked);
     setWorkflow((prev) => ({ ...prev, status: checked ? "active" : "inactive" }));
-    toast.success(checked ? "Workflow activated" : "Workflow deactivated");
+    if (checked) {
+      synthToast.success("Workflow Activated", `"${workflow.name}" is now running.`);
+    } else {
+      synthToast.warning("Workflow Paused", `"${workflow.name}" has been deactivated.`);
+    }
   };
 
   const handleRun = () => {
-    toast.success("Workflow execution initiated");
+    synthToast.success("Execution Started", "Workflow is now running.");
   };
 
   const handleDelete = () => {
-    toast.success("Workflow deleted successfully");
+    synthToast.success("Workflow Deleted", "The workflow has been removed.");
     navigate("/app/workflows");
   };
 
   const handleRegenerate = () => {
-    toast.success("Regenerating workflow logic...");
+    synthToast.success("Regenerating Logic", "Synth is optimizing your workflow.");
   };
 
   const handleDuplicate = () => {
-    toast.success("Workflow duplicated");
+    synthToast.workflowCreated(workflow.name + " (Copy)");
   };
 
   return (
@@ -402,9 +406,13 @@ const WorkflowDetail = () => {
             </CardHeader>
             <CardContent>
               {mockExecutions.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-muted-foreground">
-                    This workflow has not run yet. Execute it to generate history.
+                <div className="text-center py-12">
+                  <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-muted/50 border border-border/50 flex items-center justify-center">
+                    <Clock className="w-6 h-6 text-muted-foreground/60" />
+                  </div>
+                  <h4 className="text-foreground font-medium mb-1">No Runs Yet</h4>
+                  <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+                    Activate this workflow or click "Run Now" to see execution history.
                   </p>
                 </div>
               ) : (

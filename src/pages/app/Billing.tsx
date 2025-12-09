@@ -39,7 +39,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { toast } from "sonner";
+import { synthToast } from "@/lib/synth-toast";
 import { useStripePrices, StripePlan, StripeAddon } from "@/hooks/use-stripe-prices";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -168,7 +168,7 @@ const Billing = () => {
       setShowCancelModal(false);
       setCancelConfirmation("");
       setCancelReason("");
-      toast.success("Subscription canceled successfully");
+      synthToast.success("Subscription Canceled", "Your plan has been canceled.");
     } catch (error) {
       setErrorMessage("Failed to cancel subscription. Please try again.");
     } finally {
@@ -177,14 +177,14 @@ const Billing = () => {
   };
 
   const handleOpenStripePortal = () => {
-    toast.info("Opening Stripe Customer Portal...");
+    synthToast.success("Opening Portal", "Redirecting to Stripe...");
     // In production, this would redirect to Stripe Portal
   };
 
   const handlePurchaseAddon = (addonId: string) => {
     const addon = addons.find((a) => a.id === addonId);
     if (addon) {
-      toast.success(`Purchasing ${addon.name}...`);
+      synthToast.success("Add-on Purchased", `${addon.name} has been added to your plan.`);
     }
   };
 
@@ -918,7 +918,7 @@ const Billing = () => {
               <Button
                 onClick={() => {
                   if (selectedPlan) {
-                    toast.success("Plan change scheduled for next billing cycle");
+                    synthToast.success("Plan Changed", "Your new plan will start next billing cycle.");
                     setShowChangePlanModal(false);
                     setSelectedPlan(null);
                   }
