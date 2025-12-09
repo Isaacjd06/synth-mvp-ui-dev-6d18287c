@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
-import GoogleSignInButton from "./GoogleSignInButton";
+
 
 const plans = [
   {
@@ -185,15 +185,6 @@ const PricingSection = () => {
         </div>
 
         {/* Google Sign In */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="flex flex-col items-center mt-10"
-        >
-          <GoogleSignInButton variant="pricing" />
-          <p className="text-sm text-foreground/50 mt-3">Create account to get started</p>
-        </motion.div>
       </div>
     </section>
   );
