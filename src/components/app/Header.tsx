@@ -10,7 +10,7 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-16 bg-background/80 backdrop-blur-xl border-b border-border/50 z-10">
+    <header className="fixed top-0 left-0 right-0 h-16 bg-background/90 backdrop-blur-xl border-b border-border/60 z-10">
       {/* Subtle glow effect */}
       <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 pointer-events-none" />
       

@@ -22,7 +22,7 @@ const QuickActionsBar = ({ onAction }: QuickActionsBarProps) => {
           variant="outline"
           size="sm"
           onClick={() => onAction(action.id)}
-          className="gap-1.5 text-xs hover:border-primary/50 hover:bg-primary/5 transition-all duration-200"
+          className="gap-1.5 text-xs border-border/60 hover:border-primary/50 hover:bg-primary/5 transition-all duration-200"
         >
           <action.icon className="w-3.5 h-3.5" />
           {action.label}

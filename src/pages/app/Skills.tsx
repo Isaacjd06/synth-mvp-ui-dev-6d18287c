@@ -277,7 +277,7 @@ const Skills = () => {
                       </div>
 
                       {/* Preview */}
-                      <div className="px-3 py-2.5 rounded-lg bg-muted/30 border border-border/50">
+                      <div className="px-3 py-2.5 rounded-lg bg-muted/40 border border-border/60">
                         <p className="text-xs text-muted-foreground font-mono">
                           {skill.preview}
                         </p>

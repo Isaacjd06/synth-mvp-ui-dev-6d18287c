@@ -145,11 +145,11 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent className="p-0">
               {hasExecutions ? (
-                <div className="divide-y divide-border/30">
+                <div className="divide-y divide-border/40">
                   {recentExecutions.map((execution) => (
                     <div
                       key={execution.id}
-                      className="flex items-center justify-between py-3.5 px-5 hover:bg-muted/30 transition-colors"
+                      className="flex items-center justify-between py-3.5 px-5 hover:bg-muted/40 transition-colors"
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <span className="text-sm font-medium text-foreground truncate">

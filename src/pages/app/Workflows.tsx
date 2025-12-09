@@ -126,11 +126,11 @@ const Workflows = () => {
             <TooltipProvider>
               <Card className="overflow-hidden">
                 <CardContent className="p-0">
-                  <div className="divide-y divide-border/30">
+                  <div className="divide-y divide-border/40">
                     {workflows.map((workflow) => (
                       <div
                         key={workflow.id}
-                        className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors"
+                        className="flex items-center justify-between p-4 hover:bg-muted/40 transition-colors"
                       >
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-foreground truncate">
