@@ -719,35 +719,38 @@ const Billing = () => {
                   )}
 
                   {/* Available Add-ons */}
-                  <div className="space-y-3">
-                    <h4 className="text-sm font-medium text-muted-foreground">Available</h4>
-                    {pricesLoading ? (
-                      <>
-                        <AddonSkeleton />
-                        <AddonSkeleton />
-                      </>
-                    ) : (
-                      addons
-                        .filter((addon) => !subscription.ownedAddons.includes(addon.id))
-                        .map((addon) => (
-                          <div
-                            key={addon.id}
-                            className="flex items-center justify-between p-4 rounded-lg bg-card border border-border hover:border-primary/30 transition-colors"
-                          >
-                            <div className="flex-1">
-                              <p className="font-medium text-foreground">{addon.name}</p>
-                              <p className="text-sm text-muted-foreground">{addon.description}</p>
+                  {pricesLoading ? (
+                    <div className="space-y-3">
+                      <h4 className="text-sm font-medium text-muted-foreground">Available</h4>
+                      <AddonSkeleton />
+                      <AddonSkeleton />
+                    </div>
+                  ) : (
+                    addons.filter((addon) => !subscription.ownedAddons.includes(addon.id)).length > 0 && (
+                      <div className="space-y-3">
+                        <h4 className="text-sm font-medium text-muted-foreground">Available</h4>
+                        {addons
+                          .filter((addon) => !subscription.ownedAddons.includes(addon.id))
+                          .map((addon) => (
+                            <div
+                              key={addon.id}
+                              className="flex items-center justify-between p-4 rounded-lg bg-card border border-border hover:border-primary/30 transition-colors"
+                            >
+                              <div className="flex-1">
+                                <p className="font-medium text-foreground">{addon.name}</p>
+                                <p className="text-sm text-muted-foreground">{addon.description}</p>
+                              </div>
+                              <div className="flex items-center gap-4">
+                                <span className="text-xl font-bold text-foreground">${addon.price}</span>
+                                <Button size="sm" onClick={() => handlePurchaseAddon(addon.id)}>
+                                  Purchase
+                                </Button>
+                              </div>
                             </div>
-                            <div className="flex items-center gap-4">
-                              <span className="text-xl font-bold text-foreground">${addon.price}</span>
-                              <Button size="sm" onClick={() => handlePurchaseAddon(addon.id)}>
-                                Purchase
-                              </Button>
-                            </div>
-                          </div>
-                        ))
-                    )}
-                  </div>
+                          ))}
+                      </div>
+                    )
+                  )}
                 </CardContent>
               </Card>
             </PageItem>
