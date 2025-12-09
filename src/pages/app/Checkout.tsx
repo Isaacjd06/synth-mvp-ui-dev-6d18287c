@@ -101,15 +101,19 @@ const Checkout = () => {
   if (!plan) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center"
+        >
           <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-foreground mb-2">No Plan Selected</h2>
           <p className="text-muted-foreground mb-4">Please select a plan first.</p>
-          <Button onClick={() => navigate("/app/billing")}>
+          <Button onClick={() => navigate("/app/billing")} className="btn-synth">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Billing
           </Button>
-        </div>
+        </motion.div>
       </div>
     );
   }
@@ -117,9 +121,9 @@ const Checkout = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
+      <div className="border-b border-border bg-card/50 backdrop-blur-xl sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="font-display text-xl text-foreground">Checkout</h1>
+          <h1 className="font-display text-xl text-foreground synth-header">Checkout</h1>
           <Button variant="ghost" onClick={() => navigate("/app/billing")}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Billing
@@ -153,7 +157,7 @@ const Checkout = () => {
             animate={{ opacity: 1, x: 0 }}
             className="order-2 lg:order-1"
           >
-            <div className="bg-card border border-border rounded-2xl p-6 sticky top-24">
+            <div className="glass border border-border rounded-2xl p-6 sticky top-24">
               <h2 className="font-accent text-xl text-foreground mb-6">Order Summary</h2>
 
               {/* Selected Plan */}
@@ -231,7 +235,7 @@ const Checkout = () => {
             animate={{ opacity: 1, x: 0 }}
             className="order-1 lg:order-2"
           >
-            <div className="bg-card border border-border rounded-2xl p-6">
+            <div className="glass border border-border rounded-2xl p-6">
               <div className="flex items-center gap-3 mb-6">
                 <CreditCard className="w-5 h-5 text-primary" />
                 <h2 className="font-accent text-xl text-foreground">Payment Information</h2>
@@ -375,7 +379,7 @@ const Checkout = () => {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full btn-system bg-primary text-primary-foreground h-12 text-lg"
+                  className="w-full btn-synth h-12 text-lg"
                 >
                   {loading ? (
                     <>
