@@ -106,6 +106,13 @@ const fetchStripePrices = async (): Promise<StripePricesData> => {
         priceId: "price_rapid_booster",
       },
       {
+        id: "knowledge_injection",
+        name: "Unlimited Knowledge Injection",
+        description: "Unlimited document uploads + unlimited knowledge-base entries.",
+        price: 99,
+        priceId: "price_knowledge_injection",
+      },
+      {
         id: "performance_turbo",
         name: "Workflow Performance Turbo",
         description: "Priority workflow execution queue for significantly faster processing.",
@@ -125,13 +132,6 @@ const fetchStripePrices = async (): Promise<StripePricesData> => {
         description: "Custom AI fine-tuning for the user's business context to improve instruction-following.",
         price: 249,
         priceId: "price_ai_training",
-      },
-      {
-        id: "knowledge_injection",
-        name: "Unlimited Knowledge Injection",
-        description: "Unlimited document uploads + unlimited knowledge-base entries.",
-        price: 99,
-        priceId: "price_knowledge_injection",
       },
     ],
   };

@@ -17,6 +17,7 @@ import Executions from "./pages/app/Executions";
 import ExecutionDetail from "./pages/app/ExecutionDetail";
 import Billing from "./pages/app/Billing";
 import BillingSettings from "./pages/app/BillingSettings";
+import PaymentMethod from "./pages/app/PaymentMethod";
 import Checkout from "./pages/app/Checkout";
 import Skills from "./pages/app/Skills";
 
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/app/executions/:id" element={<ExecutionDetail />} />
             <Route path="/app/billing" element={<Billing />} />
             <Route path="/app/billing/settings" element={<BillingSettings />} />
+            <Route path="/app/billing/payment-method" element={<PaymentMethod />} />
             <Route path="/app/checkout" element={<Checkout />} />
             <Route path="/app/skills" element={<Skills />} />
             <Route path="*" element={<NotFound />} />
