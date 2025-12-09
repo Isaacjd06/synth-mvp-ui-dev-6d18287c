@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -25,6 +25,22 @@ const navItems = [
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const hasAnimatedRef = useRef(false);
+  const [shouldAnimate, setShouldAnimate] = useState(true);
+
+  // Only animate sidebar items on first mount
+  useEffect(() => {
+    if (!hasAnimatedRef.current) {
+      hasAnimatedRef.current = true;
+      // After initial animation completes, disable future animations
+      const timer = setTimeout(() => {
+        setShouldAnimate(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    } else {
+      setShouldAnimate(false);
+    }
+  }, []);
 
   const isActive = (href: string) => {
     if (href === "/app/workflows") {
@@ -38,9 +54,9 @@ const Sidebar = () => {
       {navItems.map((item, index) => (
         <motion.div
           key={item.href}
-          initial={{ opacity: 0, x: -20 }}
+          initial={shouldAnimate ? { opacity: 0, x: -20 } : false}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: index * 0.05, duration: 0.3 }}
+          transition={shouldAnimate ? { delay: index * 0.05, duration: 0.3 } : { duration: 0 }}
         >
           <Link
             to={item.href}
@@ -67,10 +83,7 @@ const Sidebar = () => {
             
             {/* Active indicator line */}
             {isActive(item.href) && (
-              <motion.span 
-                layoutId="activeIndicator"
-                className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 bg-primary rounded-full shadow-[0_0_10px_hsl(217_100%_60%/0.5)]"
-              />
+              <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 bg-primary rounded-full shadow-[0_0_10px_hsl(217_100%_60%/0.5)]" />
             )}
           </Link>
         </motion.div>
