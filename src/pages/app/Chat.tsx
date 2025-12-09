@@ -256,11 +256,13 @@ const Chat = () => {
         {/* Chat Messages Area */}
         <ScrollArea className="flex-1 px-4">
           <div className="max-w-2xl mx-auto py-6 space-y-6">
-            <AnimatePresence mode="popLayout" initial={false}>
+            <AnimatePresence mode="popLayout">
               {messages.length === 0 ? (
-                <div 
-                  key="empty-state"
+                <motion.div 
                   className="flex flex-col items-center justify-center h-64 text-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.4 }}
                 >
                   <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 shadow-[0_0_30px_-5px_hsl(217_100%_60%/0.2)]">
                     <Sparkles className="w-8 h-8 text-primary/60" />
@@ -271,7 +273,7 @@ const Chat = () => {
                   <p className="text-xs text-muted-foreground/60">
                     Try: "Create a workflow to capture leads and sync to CRM"
                   </p>
-                </div>
+                </motion.div>
               ) : (
                 messages.map((message) => (
                   <motion.div 
@@ -305,7 +307,12 @@ const Chat = () => {
 
                     {/* Workflow action buttons - only for assistant workflow messages */}
                     {message.role === "assistant" && (
-                      <div className="flex gap-2 flex-wrap pl-1">
+                      <motion.div 
+                        className="flex gap-2 flex-wrap pl-1"
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.15, duration: 0.3 }}
+                      >
                         {message.isWorkflowCreation && (
                           <Button 
                             size="sm" 
@@ -322,7 +329,7 @@ const Chat = () => {
                         <Button variant="ghost" size="sm" className="text-xs">
                           Explain More
                         </Button>
-                      </div>
+                      </motion.div>
                     )}
                   </motion.div>
                 ))

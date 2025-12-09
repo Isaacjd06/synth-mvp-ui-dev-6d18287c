@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Lightbulb, ArrowRight, MessageSquare } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,7 +19,12 @@ const currentSuggestion: Suggestion = {
 
 const NextSuggestionCard = () => {
   return (
-    <Card className="border-primary/30 bg-gradient-to-br from-card via-card to-primary/5 overflow-hidden relative">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.2 }}
+    >
+      <Card className="border-primary/30 bg-gradient-to-br from-card via-card to-primary/5 overflow-hidden">
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
@@ -49,9 +55,10 @@ const NextSuggestionCard = () => {
                 Ask Synth
               </Link>
             </Button>
-        </div>
-      </CardContent>
-    </Card>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
 

@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import { AlertTriangle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSubscription } from "@/contexts/SubscriptionContext";
@@ -10,7 +11,9 @@ const SubscriptionBanner = ({ feature }: SubscriptionBannerProps) => {
   const { openSubscriptionModal } = useSubscription();
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
       className="p-4 rounded-xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/30 backdrop-blur-sm"
     >
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -37,7 +40,7 @@ const SubscriptionBanner = ({ feature }: SubscriptionBannerProps) => {
           <ArrowRight className="w-4 h-4" />
         </Button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard,
   MessageSquare,
@@ -48,10 +48,11 @@ const Sidebar = () => {
   const NavContent = () => (
     <nav className="flex flex-col gap-1.5 p-4">
       {navItems.map((item, index) => (
-        <div
+        <motion.div
           key={item.href}
-          className={shouldAnimate ? "animate-fade-in" : ""}
-          style={shouldAnimate ? { animationDelay: `${index * 50}ms` } : undefined}
+          initial={shouldAnimate ? { opacity: 0, x: -20 } : false}
+          animate={{ opacity: 1, x: 0 }}
+          transition={shouldAnimate ? { delay: index * 0.05, duration: 0.3 } : { duration: 0 }}
         >
           <Link
             to={item.href}
@@ -81,7 +82,7 @@ const Sidebar = () => {
               <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 bg-primary rounded-full shadow-[0_0_10px_hsl(217_100%_60%/0.5)]" />
             )}
           </Link>
-        </div>
+        </motion.div>
       ))}
     </nav>
   );
