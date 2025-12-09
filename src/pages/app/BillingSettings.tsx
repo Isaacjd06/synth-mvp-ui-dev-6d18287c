@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import { 
   CreditCard, 
   Calendar, 
@@ -95,12 +94,9 @@ const BillingSettings = () => {
                 <CardTitle className="text-lg">Active Add-ons</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {subscription.addOns.map((addon, index) => (
-                  <motion.div
+                {subscription.addOns.map((addon) => (
+                  <div
                     key={addon.name}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
                     className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/50"
                   >
                     <div>
@@ -110,7 +106,7 @@ const BillingSettings = () => {
                       </p>
                     </div>
                     <Badge variant="outline">Active</Badge>
-                  </motion.div>
+                  </div>
                 ))}
               </CardContent>
             </Card>

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import { Sparkles, MessageSquare, PlaySquare, Zap, Mail, FileText, Bell, Users } from "lucide-react";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition, PageItem } from "@/components/app/PageTransition";
@@ -129,13 +128,8 @@ const Skills = () => {
           /* Skills Grid */
           <PageItem>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {skills.map((skill, index) => (
-                <motion.div
-                  key={skill.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                >
+              {skills.map((skill) => (
+                <div key={skill.id}>
                   <Card className="h-full group hover:border-primary/30 transition-all duration-300">
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between">
@@ -190,7 +184,7 @@ const Skills = () => {
                       </div>
                     </CardContent>
                   </Card>
-                </motion.div>
+                </div>
               ))}
             </div>
           </PageItem>
