@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -22,24 +22,20 @@ const navItems = [
   { title: "Billing", href: "/app/billing", icon: CreditCard },
 ];
 
+// Track if sidebar has ever animated - global singleton
+let sidebarHasAnimated = false;
+
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
-  const hasAnimatedRef = useRef(false);
-  const [shouldAnimate, setShouldAnimate] = useState(true);
 
-  // Only animate sidebar items on first mount
-  useEffect(() => {
-    if (!hasAnimatedRef.current) {
-      hasAnimatedRef.current = true;
-      // After initial animation completes, disable future animations
-      const timer = setTimeout(() => {
-        setShouldAnimate(false);
-      }, 500);
-      return () => clearTimeout(timer);
-    } else {
-      setShouldAnimate(false);
+  // Determine if we should animate - only once ever on first app load
+  const shouldAnimate = useMemo(() => {
+    if (sidebarHasAnimated) {
+      return false;
     }
+    sidebarHasAnimated = true;
+    return true;
   }, []);
 
   const isActive = (href: string) => {
