@@ -1,12 +1,24 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { CreditCard, Shield, ArrowLeft, Lock } from "lucide-react";
+import { CreditCard, Shield, ArrowLeft, Lock, Trash2 } from "lucide-react";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition, PageItem } from "@/components/app/PageTransition";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
-// Mock existing card data - in production this would come from an API
+// Mock existing card data - in production this would come from Stripe API
 const existingCard = {
   brand: "Visa",
   last4: "4242",
@@ -15,9 +27,26 @@ const existingCard = {
 };
 
 const PaymentMethod = () => {
-  const handleSavePaymentMethod = () => {
-    // Placeholder handler - Stripe integration will be added by Cursor
+  const [hasPaymentMethod, setHasPaymentMethod] = useState(!!existingCard);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSavePaymentMethod = async () => {
+    // Placeholder handler - Stripe integration will be added
+    // This will call stripe.confirmSetup() with the PaymentElement
+    setIsLoading(true);
     console.log("Save payment method clicked - Stripe integration pending");
+    setTimeout(() => setIsLoading(false), 1000);
+  };
+
+  const handleRemovePaymentMethod = async () => {
+    // Placeholder handler - Stripe integration will be added
+    // This will call the backend to detach the payment method
+    setIsLoading(true);
+    console.log("Remove payment method clicked - Stripe integration pending");
+    setTimeout(() => {
+      setHasPaymentMethod(false);
+      setIsLoading(false);
+    }, 1000);
   };
 
   return (
@@ -45,7 +74,7 @@ const PaymentMethod = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {existingCard ? (
+              {hasPaymentMethod ? (
                 <div className="flex items-center gap-4 p-4 rounded-lg bg-muted/30 border border-border/50">
                   <div className="w-12 h-8 rounded bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center">
                     <CreditCard className="w-5 h-5 text-primary" />
@@ -61,6 +90,36 @@ const PaymentMethod = () => {
                   <Badge variant="outline" className="text-xs">
                     Active
                   </Badge>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="icon"
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        disabled={isLoading}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Remove Payment Method</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to remove this payment method? 
+                          You'll need to add a new one to continue your subscription.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={handleRemovePaymentMethod}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          Remove
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               ) : (
                 <div className="p-4 rounded-lg bg-muted/20 border border-border/30 text-center">
@@ -73,17 +132,26 @@ const PaymentMethod = () => {
           </Card>
         </PageItem>
 
-        {/* Stripe Elements Placeholder */}
+        {/* Stripe Elements Form */}
         <PageItem>
           <Card className="border-primary/20">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Lock className="w-5 h-5 text-primary" />
-                Enter New Payment Details
+                {hasPaymentMethod ? "Update Payment Details" : "Add Payment Details"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Stripe Elements Mount Point */}
+              {/* Stripe Elements Mount Point
+                  The PaymentElement or CardElement will be mounted here.
+                  Stripe.js will replace this container's contents.
+                  
+                  Integration notes for Cursor:
+                  1. Wrap app with Elements provider using stripe promise
+                  2. Use useStripe() and useElements() hooks
+                  3. Mount <PaymentElement /> or <CardElement /> inside this div
+                  4. Call stripe.confirmSetup() on form submit
+              */}
               <div 
                 id="stripe-payment-element"
                 className="min-h-[180px] p-6 rounded-lg bg-muted/20 border border-dashed border-border/60 flex items-center justify-center"
@@ -110,9 +178,10 @@ const PaymentMethod = () => {
                 <Button 
                   onClick={handleSavePaymentMethod}
                   className="flex-1 gap-2"
+                  disabled={isLoading}
                 >
                   <CreditCard className="w-4 h-4" />
-                  Save Payment Method
+                  {isLoading ? "Saving..." : "Save Payment Method"}
                 </Button>
                 <Button 
                   variant="outline" 
