@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { Activity, MessageSquare, Zap } from "lucide-react";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition, PageItem } from "@/components/app/PageTransition";
@@ -103,42 +103,36 @@ const Executions = () => {
         {/* Empty State */}
         {executions.length === 0 ? (
           <PageItem>
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Card className="border-dashed border-2 border-border/50 bg-card/50">
-                <CardContent className="py-16 text-center">
-                  <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                    <Activity className="w-8 h-8 text-primary/60" />
-                  </div>
-                  <h3 className="text-lg font-medium text-foreground mb-2">
-                    No Executions Found
-                  </h3>
-                  <p className="text-muted-foreground mb-2 font-light max-w-md mx-auto">
-                    Your automations will appear here when they run.
-                  </p>
-                  <p className="text-sm text-muted-foreground/70 mb-6">
-                    Create a workflow and Synth will begin tracking executions.
-                  </p>
-                  <div className="flex justify-center gap-3">
-                    <Button asChild className="bg-primary hover:bg-primary/90">
-                      <Link to="/app/chat">
-                        <MessageSquare className="w-4 h-4 mr-2" />
-                        Create Workflow
-                      </Link>
-                    </Button>
-                    <Button variant="outline" asChild>
-                      <Link to="/app/workflows">
-                        <Zap className="w-4 h-4 mr-2" />
-                        View Workflows
-                      </Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+            <Card className="border-dashed border-2 border-border/50 bg-card/50">
+              <CardContent className="py-16 text-center">
+                <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                  <Activity className="w-8 h-8 text-primary/60" />
+                </div>
+                <h3 className="text-lg font-medium text-foreground mb-2">
+                  No Executions Found
+                </h3>
+                <p className="text-muted-foreground mb-2 font-light max-w-md mx-auto">
+                  Your automations will appear here when they run.
+                </p>
+                <p className="text-sm text-muted-foreground/70 mb-6">
+                  Create a workflow and Synth will begin tracking executions.
+                </p>
+                <div className="flex justify-center gap-3">
+                  <Button asChild className="bg-primary hover:bg-primary/90">
+                    <Link to="/app/chat">
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      Create Workflow
+                    </Link>
+                  </Button>
+                  <Button variant="outline" asChild>
+                    <Link to="/app/workflows">
+                      <Zap className="w-4 h-4 mr-2" />
+                      View Workflows
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </PageItem>
         ) : (
           /* Executions List */
