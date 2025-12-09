@@ -7,13 +7,13 @@
 @layer base {
   :root {
     /* Synth Design System - Futuristic AI Console Theme */
-    --background: 222 47% 3%;
+    --background: 222 47% 2%;
     --foreground: 210 20% 98%;
 
-    --card: 222 42% 6%;
+    --card: 222 42% 7%;
     --card-foreground: 210 20% 98%;
 
-    --popover: 222 42% 6%;
+    --popover: 222 42% 7%;
     --popover-foreground: 210 20% 98%;
 
     /* Primary: Intelligence Blue */
@@ -21,19 +21,19 @@
     --primary-foreground: 222 47% 3%;
 
     /* Secondary - system surface */
-    --secondary: 222 38% 10%;
+    --secondary: 222 38% 12%;
     --secondary-foreground: 210 20% 93%;
 
-    --muted: 222 32% 12%;
+    --muted: 222 32% 14%;
     --muted-foreground: 215 20% 55%;
 
-    --accent: 217 55% 16%;
+    --accent: 217 55% 18%;
     --accent-foreground: 217 91% 75%;
 
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 217 30% 15%;
+    --border: 217 30% 18%;
     --input: 222 28% 12%;
     --ring: 217 91% 60%;
 
