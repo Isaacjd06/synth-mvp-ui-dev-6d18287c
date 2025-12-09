@@ -137,9 +137,11 @@ const Executions = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => setSelectedExecution(execution)}
+                          asChild
                         >
-                          View Details
+                          <Link to={`/app/executions/${execution.id}`}>
+                            View Details
+                          </Link>
                         </Button>
                       </div>
                     </div>
