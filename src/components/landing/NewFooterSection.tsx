@@ -15,12 +15,12 @@ const NewFooterSection = () => {
 
       <div className="bg-[#0f0f0f] pt-12 pb-8">
         <div className="container px-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex flex-row items-center justify-between gap-6">
             {/* Left - Google Sign In */}
             <GoogleSignInButton variant="footer" />
 
             {/* Right - Synth Description */}
-            <p className="text-sm text-foreground/40 text-center md:text-right max-w-md">
+            <p className="text-sm text-foreground/40 text-right max-w-xs">
               The AI automation brain that understands your business and builds workflows automatically.
             </p>
           </div>
