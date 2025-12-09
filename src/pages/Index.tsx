@@ -6,6 +6,9 @@ import NewHowItWorksSection from "@/components/landing/NewHowItWorksSection";
 import PricingSection from "@/components/landing/PricingSection";
 import AddOnsSection from "@/components/landing/AddOnsSection";
 import FAQSection from "@/components/landing/FAQSection";
+import GoogleSignInButton from "@/components/landing/GoogleSignInButton";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
@@ -27,6 +30,16 @@ const Index = () => {
       <PricingSection />
       <AddOnsSection />
       <FAQSection />
+      
+      {/* Bottom CTA */}
+      <div className="py-12 pb-16">
+        <div className="container px-6 flex justify-center gap-4">
+          <Button asChild variant="outline" className="px-6 py-3 border-white/20 hover:bg-white/10">
+            <Link to="/login">Get Started</Link>
+          </Button>
+          <GoogleSignInButton variant="footer" />
+        </div>
+      </div>
     </main>
   );
 };
