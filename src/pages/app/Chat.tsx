@@ -78,7 +78,10 @@ const Chat = () => {
   }, [location.state, navigate, location.pathname]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    // Only scroll when there are messages to avoid initial scroll issues
+    if (messages.length > 0) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   }, [messages]);
 
   const formatTime = (date: Date) => {
