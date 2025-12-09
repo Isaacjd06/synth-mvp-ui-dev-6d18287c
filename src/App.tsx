@@ -15,6 +15,8 @@ import WorkflowDetail from "./pages/app/WorkflowDetail";
 import Executions from "./pages/app/Executions";
 import Billing from "./pages/app/Billing";
 import Checkout from "./pages/app/Checkout";
+import Skills from "./pages/app/Skills";
+import Onboarding from "./pages/app/Onboarding";
 
 const queryClient = new QueryClient();
 
@@ -29,11 +31,13 @@ const App = () => (
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/waitlist" element={<Waitlist />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/app/onboarding" element={<Onboarding />} />
           <Route path="/app/dashboard" element={<Dashboard />} />
           <Route path="/app/chat" element={<Chat />} />
           <Route path="/app/workflows" element={<Workflows />} />
           <Route path="/app/workflows/:id" element={<WorkflowDetail />} />
           <Route path="/app/executions" element={<Executions />} />
+          <Route path="/app/skills" element={<Skills />} />
           <Route path="/app/billing" element={<Billing />} />
           <Route path="/app/checkout" element={<Checkout />} />
           <Route path="*" element={<NotFound />} />
