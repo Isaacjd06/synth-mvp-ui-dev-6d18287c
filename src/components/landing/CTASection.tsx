@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import GoogleSignInButton from "./GoogleSignInButton";
+
 
 const CTASection = () => {
   return (
@@ -92,8 +92,6 @@ const CTASection = () => {
                   </span>
                 </motion.button>
               </Link>
-
-              <GoogleSignInButton variant="cta" />
             </motion.div>
           </div>
         </motion.div>

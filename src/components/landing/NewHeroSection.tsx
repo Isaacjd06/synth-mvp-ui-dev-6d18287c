@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowRight, Brain, Workflow, Zap, GitBranch } from "lucide-react";
-import GoogleSignInButton from "./GoogleSignInButton";
+
 
 const NewHeroSection = () => {
   return (
@@ -100,8 +100,6 @@ const NewHeroSection = () => {
                   />
                 </motion.button>
               </Link>
-
-              <GoogleSignInButton variant="hero" />
             </motion.div>
 
             <motion.p
