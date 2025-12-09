@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sparkles, MessageSquare, PlaySquare, Zap, Mail, FileText, Bell, Users, ToggleLeft, ChevronRight } from "lucide-react";
+import { Sparkles, MessageSquare, PlaySquare, Zap, Mail, FileText, Bell, Users, ToggleLeft, ChevronRight, Lock } from "lucide-react";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition, PageItem } from "@/components/app/PageTransition";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import SubscriptionBanner from "@/components/subscription/SubscriptionBanner";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 
 interface PrebuiltSkill {
   id: string;
@@ -85,8 +88,11 @@ const initialSkills: PrebuiltSkill[] = [
 const Skills = () => {
   const [skills, setSkills] = useState(initialSkills);
   const navigate = useNavigate();
+  const { isSubscribed, requireSubscription } = useSubscription();
 
   const handleToggle = (id: string) => {
+    if (!requireSubscription("activate automations")) return;
+    
     setSkills((prev) =>
       prev.map((skill) =>
         skill.id === id ? { ...skill, isEnabled: !skill.isEnabled } : skill
@@ -95,6 +101,8 @@ const Skills = () => {
   };
 
   const handleCustomizeInChat = (skill: PrebuiltSkill) => {
+    if (!requireSubscription("customize skills")) return;
+    
     navigate("/app/chat", {
       state: {
         preloadedMessage: `I want to customize the "${skill.name}" skill. ${skill.description}`,
@@ -117,6 +125,13 @@ const Skills = () => {
   return (
     <AppShell>
       <PageTransition className="px-4 lg:px-6 py-8 space-y-8">
+        {/* Subscription Banner */}
+        {!isSubscribed && (
+          <PageItem>
+            <SubscriptionBanner feature="enable skills and automations" />
+          </PageItem>
+        )}
+
         {/* Header */}
         <PageItem className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
@@ -166,109 +181,134 @@ const Skills = () => {
         ) : (
           /* Skills Grid */
           <PageItem>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              {skills.map((skill, index) => (
-                <Card 
-                  key={skill.id}
-                  className={`group relative overflow-hidden transition-all duration-300 hover:border-primary/30 ${
-                    skill.isEnabled 
-                      ? "bg-card border-primary/20" 
-                      : "bg-card/50 border-border/50"
-                  }`}
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
-                  {/* Status indicator */}
-                  {skill.isEnabled && (
-                    <div className="absolute top-0 right-0 w-20 h-20 -mr-10 -mt-10 bg-primary/10 rounded-full blur-2xl" />
-                  )}
-                  
-                  <CardContent className="p-5 space-y-4">
-                    {/* Header row */}
-                    <div className="flex items-start justify-between gap-3">
-                      <div className={`w-11 h-11 rounded-xl flex items-center justify-center transition-colors ${
-                        skill.isEnabled 
-                          ? "bg-primary/15 border border-primary/30" 
-                          : "bg-muted/50 border border-border/50"
-                      }`}>
-                        <skill.icon className={`w-5 h-5 ${
-                          skill.isEnabled ? "text-primary" : "text-muted-foreground"
-                        }`} />
-                      </div>
-                      <Switch
-                        checked={skill.isEnabled}
-                        onCheckedChange={() => handleToggle(skill.id)}
-                        className="data-[state=checked]:bg-primary"
-                      />
-                    </div>
-
-                    {/* Category & Status badges */}
-                    <div className="flex items-center gap-2">
-                      <Badge 
-                        variant="secondary" 
-                        className="text-xs bg-secondary/50 text-secondary-foreground/80"
-                      >
-                        {skill.category}
-                      </Badge>
-                      {skill.isEnabled && (
-                        <Badge 
-                          className="text-xs bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                        >
-                          Active
-                        </Badge>
-                      )}
-                    </div>
-
-                    {/* Title & Description */}
-                    <div>
-                      <h3 className="font-semibold text-foreground mb-1.5">
-                        {skill.name}
-                      </h3>
-                      <p className="text-sm text-muted-foreground font-light line-clamp-2">
-                        {skill.description}
-                      </p>
-                    </div>
-
-                    {/* Preview */}
-                    <div className="px-3 py-2.5 rounded-lg bg-muted/30 border border-border/50">
-                      <p className="text-xs text-muted-foreground font-mono">
-                        {skill.preview}
-                      </p>
-                    </div>
-
-                    {/* Stats */}
-                    {skill.runsCount > 0 && (
-                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <Zap className="w-3.5 h-3.5 text-primary" />
-                        <span>{skill.runsCount} executions</span>
-                      </div>
+            <TooltipProvider>
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                {skills.map((skill, index) => (
+                  <Card 
+                    key={skill.id}
+                    className={`group relative overflow-hidden transition-all duration-300 hover:border-primary/30 ${
+                      skill.isEnabled 
+                        ? "bg-card border-primary/20" 
+                        : "bg-card/50 border-border/50"
+                    }`}
+                    style={{ animationDelay: `${index * 50}ms` }}
+                  >
+                    {/* Status indicator */}
+                    {skill.isEnabled && (
+                      <div className="absolute top-0 right-0 w-20 h-20 -mr-10 -mt-10 bg-primary/10 rounded-full blur-2xl" />
                     )}
+                    
+                    <CardContent className="p-5 space-y-4">
+                      {/* Header row */}
+                      <div className="flex items-start justify-between gap-3">
+                        <div className={`w-11 h-11 rounded-xl flex items-center justify-center transition-colors ${
+                          skill.isEnabled 
+                            ? "bg-primary/15 border border-primary/30" 
+                            : "bg-muted/50 border border-border/50"
+                        }`}>
+                          <skill.icon className={`w-5 h-5 ${
+                            skill.isEnabled ? "text-primary" : "text-muted-foreground"
+                          }`} />
+                        </div>
+                        
+                        {/* Switch with subscription check */}
+                        {isSubscribed ? (
+                          <Switch
+                            checked={skill.isEnabled}
+                            onCheckedChange={() => handleToggle(skill.id)}
+                            className="data-[state=checked]:bg-primary"
+                          />
+                        ) : (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="relative">
+                                <Switch
+                                  checked={skill.isEnabled}
+                                  disabled
+                                  className="opacity-50 cursor-not-allowed"
+                                />
+                                <Lock className="absolute -top-1 -right-1 w-3 h-3 text-muted-foreground" />
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="text-xs">Subscribe to activate automations</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
+                      </div>
 
-                    {/* Actions */}
-                    <div className="flex gap-2 pt-1">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => handleCustomizeInChat(skill)}
-                        className="flex-1 border-border/50 hover:border-primary/30 hover:bg-primary/5"
-                      >
-                        <MessageSquare className="w-3.5 h-3.5 mr-1.5" />
-                        Customize
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        onClick={() => handleViewRuns(skill)}
-                        className="flex-1 hover:bg-muted/50"
-                      >
-                        <PlaySquare className="w-3.5 h-3.5 mr-1.5" />
-                        View Runs
-                        <ChevronRight className="w-3 h-3 ml-1 opacity-50" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                      {/* Category & Status badges */}
+                      <div className="flex items-center gap-2">
+                        <Badge 
+                          variant="secondary" 
+                          className="text-xs bg-secondary/50 text-secondary-foreground/80"
+                        >
+                          {skill.category}
+                        </Badge>
+                        {skill.isEnabled && (
+                          <Badge 
+                            className="text-xs bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                          >
+                            Active
+                          </Badge>
+                        )}
+                      </div>
+
+                      {/* Title & Description */}
+                      <div>
+                        <h3 className="font-semibold text-foreground mb-1.5">
+                          {skill.name}
+                        </h3>
+                        <p className="text-sm text-muted-foreground font-light line-clamp-2">
+                          {skill.description}
+                        </p>
+                      </div>
+
+                      {/* Preview */}
+                      <div className="px-3 py-2.5 rounded-lg bg-muted/30 border border-border/50">
+                        <p className="text-xs text-muted-foreground font-mono">
+                          {skill.preview}
+                        </p>
+                      </div>
+
+                      {/* Stats */}
+                      {skill.runsCount > 0 && (
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <Zap className="w-3.5 h-3.5 text-primary" />
+                          <span>{skill.runsCount} executions</span>
+                        </div>
+                      )}
+
+                      {/* Actions */}
+                      <div className="flex gap-2 pt-1">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => handleCustomizeInChat(skill)}
+                          className={`flex-1 border-border/50 hover:border-primary/30 hover:bg-primary/5 ${
+                            !isSubscribed ? "opacity-70" : ""
+                          }`}
+                        >
+                          {!isSubscribed && <Lock className="w-3 h-3 mr-1" />}
+                          <MessageSquare className="w-3.5 h-3.5 mr-1.5" />
+                          Customize
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => handleViewRuns(skill)}
+                          className="flex-1 hover:bg-muted/50"
+                        >
+                          <PlaySquare className="w-3.5 h-3.5 mr-1.5" />
+                          View Runs
+                          <ChevronRight className="w-3 h-3 ml-1 opacity-50" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TooltipProvider>
           </PageItem>
         )}
       </PageTransition>
