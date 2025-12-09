@@ -13,7 +13,7 @@ import QuickActionsBar from "@/components/chat/QuickActionsBar";
 import AutomationCreatedModal from "@/components/workflows/AutomationCreatedModal";
 import SubscriptionBanner from "@/components/subscription/SubscriptionBanner";
 import { useSubscription } from "@/contexts/SubscriptionContext";
-import { toast } from "sonner";
+import { synthToast } from "@/lib/synth-toast";
 
 interface Message {
   id: string;
@@ -159,7 +159,7 @@ const Chat = () => {
       case "reset":
         setMessages([]);
         setFixContext(null);
-        toast.info("Conversation cleared");
+        synthToast.success("Conversation Cleared", "Start fresh with a new chat.");
         break;
     }
   };
@@ -178,7 +178,6 @@ const Chat = () => {
       actions: ["Process input", "Execute logic", "Send notification"],
     });
     setShowAutomationModal(true);
-    toast.success("Workflow created successfully!");
   };
 
   const dismissFixContext = () => {

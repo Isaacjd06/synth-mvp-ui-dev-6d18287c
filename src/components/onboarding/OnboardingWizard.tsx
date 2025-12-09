@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { synthToast } from "@/lib/synth-toast";
 
 interface OnboardingWizardProps {
   open: boolean;
@@ -44,6 +45,7 @@ const OnboardingWizard = ({ open, onComplete }: OnboardingWizardProps) => {
     } else if (step === 2) {
       // In production, save to backend
       console.log("Onboarding complete:", { role: selectedRole, goal: selectedGoal });
+      synthToast.success("Welcome to Synth!", "Your account is ready to go.");
       onComplete();
       navigate("/app/dashboard");
     }

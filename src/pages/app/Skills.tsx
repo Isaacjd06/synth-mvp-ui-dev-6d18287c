@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import SubscriptionBanner from "@/components/subscription/SubscriptionBanner";
 import { useSubscription } from "@/contexts/SubscriptionContext";
+import { synthToast } from "@/lib/synth-toast";
 
 interface PrebuiltSkill {
   id: string;
@@ -93,11 +94,22 @@ const Skills = () => {
   const handleToggle = (id: string) => {
     if (!requireSubscription("activate automations")) return;
     
+    const skill = skills.find(s => s.id === id);
+    const willBeEnabled = skill ? !skill.isEnabled : false;
+    
     setSkills((prev) =>
-      prev.map((skill) =>
-        skill.id === id ? { ...skill, isEnabled: !skill.isEnabled } : skill
+      prev.map((s) =>
+        s.id === id ? { ...s, isEnabled: !s.isEnabled } : s
       )
     );
+    
+    if (skill) {
+      if (willBeEnabled) {
+        synthToast.skillEnabled(skill.name);
+      } else {
+        synthToast.skillDisabled(skill.name);
+      }
+    }
   };
 
   const handleCustomizeInChat = (skill: PrebuiltSkill) => {
