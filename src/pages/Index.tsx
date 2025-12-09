@@ -6,8 +6,6 @@ import NewHowItWorksSection from "@/components/landing/NewHowItWorksSection";
 import PricingSection from "@/components/landing/PricingSection";
 import AddOnsSection from "@/components/landing/AddOnsSection";
 import FAQSection from "@/components/landing/FAQSection";
-import CTASection from "@/components/landing/CTASection";
-import NewFooterSection from "@/components/landing/NewFooterSection";
 
 const Index = () => {
   return (
@@ -29,8 +27,6 @@ const Index = () => {
       <PricingSection />
       <AddOnsSection />
       <FAQSection />
-      <CTASection />
-      <NewFooterSection />
     </main>
   );
 };
