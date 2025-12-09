@@ -130,7 +130,7 @@ const HeroSection = () => {
             transition={{ duration: 0.8, delay: 0.8 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-5"
           >
-            <Link to="/waitlist">
+            <Link to="/login">
               <motion.button
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
@@ -140,7 +140,7 @@ const HeroSection = () => {
                 }}
               >
                 <span className="relative z-10 flex items-center gap-2">
-                  Join the Waitlist
+                  Get Started
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </span>
                 <motion.div 
