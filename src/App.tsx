@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import Index from "./pages/Index";
 import Pricing from "./pages/Pricing";
-import Waitlist from "./pages/Waitlist";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/app/Dashboard";
@@ -33,7 +32,6 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/pricing" element={<Pricing />} />
-            <Route path="/waitlist" element={<Waitlist />} />
             <Route path="/login" element={<Login />} />
             <Route path="/app/dashboard" element={<Dashboard />} />
             <Route path="/app/chat" element={<Chat />} />

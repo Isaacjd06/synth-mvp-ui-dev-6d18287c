@@ -77,7 +77,7 @@ const CTASection = () => {
               transition={{ delay: 0.3 }}
               className="flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10"
             >
-              <Link to="/waitlist">
+              <Link to="/login">
                 <motion.button
                   whileHover={{ scale: 1.02, y: -2 }}
                   whileTap={{ scale: 0.98 }}
