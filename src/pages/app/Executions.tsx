@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
 import AppShell from "@/components/app/AppShell";
+import { PageTransition, PageItem } from "@/components/app/PageTransition";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -66,154 +68,149 @@ const mockExecutions = [
 ];
 
 type Execution = (typeof mockExecutions)[0];
+type StatusKey = "success" | "running" | "error" | "failure";
 
-const getStatusVariant = (status: string) => {
-  switch (status) {
-    case "success":
-      return "default";
-    case "error":
-      return "destructive";
-    case "running":
-      return "secondary";
-    default:
-      return "secondary";
-  }
+const statusVariants: Record<StatusKey, "success" | "running" | "error"> = {
+  success: "success",
+  running: "running",
+  error: "error",
+  failure: "error",
 };
 
 const Executions = () => {
-  const [selectedExecution, setSelectedExecution] = useState<Execution | null>(
-    null
-  );
+  const [selectedExecution, setSelectedExecution] = useState<Execution | null>(null);
   const executions = mockExecutions;
 
   return (
     <AppShell>
-      <div className="px-4 lg:px-6 py-6 space-y-6">
+      <PageTransition className="px-4 lg:px-6 py-8 space-y-8">
         {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Executions</h1>
-          <p className="text-muted-foreground mt-1">Recent workflow runs</p>
-        </div>
+        <PageItem>
+          <h1 className="text-3xl font-display font-bold text-gradient synth-header">
+            Executions
+          </h1>
+          <p className="text-muted-foreground mt-2 font-light">
+            Monitor your workflow activity. Synth tracks every operation.
+          </p>
+        </PageItem>
 
         {/* Empty State */}
         {executions.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <p className="text-muted-foreground mb-4">No executions yet.</p>
-              <Button asChild>
-                <Link to="/app/chat">Create a Workflow</Link>
-              </Button>
-            </CardContent>
-          </Card>
+          <PageItem>
+            <Card className="border-dashed border-2">
+              <CardContent className="py-16 text-center">
+                <p className="text-muted-foreground mb-6 font-light">
+                  No activity yet. Create a workflow and Synth will begin tracking executions.
+                </p>
+                <Button asChild className="btn-synth">
+                  <Link to="/app/chat">Create a Workflow</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </PageItem>
         ) : (
           /* Executions List */
-          <Card>
-            <CardContent className="p-0">
-              <div className="divide-y divide-border">
-                {executions.map((execution) => (
-                  <div
-                    key={execution.id}
-                    className="flex items-center justify-between p-4"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-foreground truncate">
-                        {execution.workflowName}
-                      </p>
-                      <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
-                        <span>{execution.timestamp}</span>
-                        <span>•</span>
-                        <span>{execution.duration}</span>
+          <PageItem>
+            <Card>
+              <CardContent className="p-0">
+                <div className="divide-y divide-border/30">
+                  {executions.map((execution) => (
+                    <div
+                      key={execution.id}
+                      className="flex items-center justify-between p-4 synth-row"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-foreground truncate">
+                          {execution.workflowName}
+                        </p>
+                        <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1 font-light">
+                          <span>{execution.timestamp}</span>
+                          <span>•</span>
+                          <span className="font-mono">{execution.duration}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3 ml-4">
+                        <Badge variant={statusVariants[execution.status as StatusKey]}>
+                          {execution.status}
+                        </Badge>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setSelectedExecution(execution)}
+                        >
+                          View Details
+                        </Button>
                       </div>
                     </div>
-
-                    <div className="flex items-center gap-3 ml-4">
-                      <Badge variant={getStatusVariant(execution.status)}>
-                        {execution.status}
-                      </Badge>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setSelectedExecution(execution)}
-                      >
-                        View Details
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </PageItem>
         )}
-      </div>
+      </PageTransition>
 
       {/* Execution Details Modal */}
-      <Dialog
-        open={!!selectedExecution}
-        onOpenChange={(open) => !open && setSelectedExecution(null)}
-      >
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Execution Details</DialogTitle>
-          </DialogHeader>
+      <AnimatePresence>
+        {selectedExecution && (
+          <Dialog
+            open={!!selectedExecution}
+            onOpenChange={(open) => !open && setSelectedExecution(null)}
+          >
+            <DialogContent className="max-w-lg glass-strong border-border/50">
+              <DialogHeader>
+                <DialogTitle className="text-gradient">{selectedExecution.workflowName}</DialogTitle>
+              </DialogHeader>
 
-          {selectedExecution && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="text-muted-foreground">Status</p>
-                  <Badge
-                    variant={getStatusVariant(selectedExecution.status)}
-                    className="mt-1"
-                  >
+              <div className="space-y-5 mt-4">
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-muted-foreground font-light">Status:</span>
+                  <Badge variant={statusVariants[selectedExecution.status as StatusKey]}>
                     {selectedExecution.status}
                   </Badge>
                 </div>
-                <div>
-                  <p className="text-muted-foreground">Duration</p>
-                  <p className="text-foreground mt-1">
-                    {selectedExecution.duration}
-                  </p>
-                </div>
-                <div className="col-span-2">
-                  <p className="text-muted-foreground">Timestamp</p>
-                  <p className="text-foreground mt-1">
-                    {selectedExecution.timestamp}
-                  </p>
-                </div>
-              </div>
 
-              <div>
-                <p className="text-muted-foreground text-sm mb-1">Input Data</p>
-                <pre className="bg-muted p-3 rounded text-xs overflow-auto max-h-32">
-                  {JSON.stringify(selectedExecution.input, null, 2)}
-                </pre>
-              </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-sm text-muted-foreground font-light">Timestamp</span>
+                    <p className="text-foreground text-sm mt-1">{selectedExecution.timestamp}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-muted-foreground font-light">Duration</span>
+                    <p className="text-foreground font-mono text-sm mt-1">{selectedExecution.duration}</p>
+                  </div>
+                </div>
 
-              {selectedExecution.output && (
                 <div>
-                  <p className="text-muted-foreground text-sm mb-1">
-                    Output Data
-                  </p>
-                  <pre className="bg-muted p-3 rounded text-xs overflow-auto max-h-32">
-                    {JSON.stringify(selectedExecution.output, null, 2)}
+                  <span className="text-sm text-muted-foreground font-light">Input Data</span>
+                  <pre className="mt-2 p-3 rounded-lg bg-muted/50 text-xs font-mono text-foreground overflow-x-auto border border-border/30">
+                    {JSON.stringify(selectedExecution.input, null, 2)}
                   </pre>
                 </div>
-              )}
 
-              {selectedExecution.error && (
-                <div>
-                  <p className="text-muted-foreground text-sm mb-1">
-                    Error Message
-                  </p>
-                  <p className="text-destructive text-sm bg-destructive/10 p-3 rounded">
-                    {selectedExecution.error}
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+                {selectedExecution.output && (
+                  <div>
+                    <span className="text-sm text-muted-foreground font-light">Output Data</span>
+                    <pre className="mt-2 p-3 rounded-lg bg-muted/50 text-xs font-mono text-foreground overflow-x-auto border border-border/30">
+                      {JSON.stringify(selectedExecution.output, null, 2)}
+                    </pre>
+                  </div>
+                )}
+
+                {selectedExecution.error && (
+                  <div>
+                    <span className="text-sm text-muted-foreground font-light">Error</span>
+                    <p className="mt-2 p-3 rounded-lg bg-destructive/10 text-destructive text-sm font-mono border border-destructive/20">
+                      {selectedExecution.error}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
+      </AnimatePresence>
     </AppShell>
   );
 };
