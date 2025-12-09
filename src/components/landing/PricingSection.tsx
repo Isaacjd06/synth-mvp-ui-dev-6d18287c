@@ -179,17 +179,6 @@ const PricingSection = () => {
                   ))}
                 </ul>
 
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`w-full py-3 rounded-xl font-medium transition-colors ${
-                    plan.popular
-                      ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                      : "bg-white/5 text-foreground hover:bg-white/10 border border-white/10"
-                  }`}
-                >
-                  Select Plan
-                </motion.button>
               </motion.div>
             );
           })}
@@ -200,9 +189,10 @@ const PricingSection = () => {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="flex justify-center mt-10"
+          className="flex flex-col items-center mt-10"
         >
           <GoogleSignInButton variant="pricing" />
+          <p className="text-sm text-foreground/50 mt-3">Create account to get started</p>
         </motion.div>
       </div>
     </section>
