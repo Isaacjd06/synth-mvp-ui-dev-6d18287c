@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import QuickActionsBar from "@/components/chat/QuickActionsBar";
+import AutomationCreatedModal from "@/components/workflows/AutomationCreatedModal";
+import { toast } from "sonner";
 
 interface Message {
   id: string;
@@ -17,7 +20,17 @@ const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showAutomationModal, setShowAutomationModal] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Mock workflow for modal
+  const [createdWorkflow] = useState({
+    id: "new-1",
+    name: "Lead Capture Automation",
+    description: "Captures leads from forms and syncs them to your CRM with enrichment.",
+    trigger: "New form submission received",
+    actions: ["Enrich lead data", "Add to CRM", "Send notification"],
+  });
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -56,6 +69,29 @@ const Chat = () => {
     }
   };
 
+  const handleQuickAction = (action: string) => {
+    switch (action) {
+      case "create":
+        setInput("Create a new workflow that ");
+        break;
+      case "summarize":
+        setInput("Summarize my recent workflow activity");
+        break;
+      case "optimize":
+        setInput("Suggest optimizations for my workflows");
+        break;
+      case "reset":
+        setMessages([]);
+        toast.info("Conversation cleared");
+        break;
+    }
+  };
+
+  const handleCreateWorkflow = () => {
+    setShowAutomationModal(true);
+    toast.success("Workflow created successfully!");
+  };
+
   return (
     <AppShell>
       <div className="h-[calc(100vh-4rem)] flex flex-col">
@@ -68,6 +104,11 @@ const Chat = () => {
             </p>
           </PageItem>
         </PageTransition>
+
+        {/* Quick Actions Bar */}
+        <div className="px-4 border-b border-border/30">
+          <QuickActionsBar onAction={handleQuickAction} />
+        </div>
 
         {/* Chat Messages Area */}
         <ScrollArea className="flex-1 px-4">
@@ -112,7 +153,7 @@ const Chat = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2, duration: 0.3 }}
                       >
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" onClick={handleCreateWorkflow}>
                           Create Workflow From This
                         </Button>
                         <Button variant="outline" size="sm">
@@ -180,6 +221,13 @@ const Chat = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Automation Created Modal */}
+      <AutomationCreatedModal
+        open={showAutomationModal}
+        onOpenChange={setShowAutomationModal}
+        workflow={createdWorkflow}
+      />
     </AppShell>
   );
 };

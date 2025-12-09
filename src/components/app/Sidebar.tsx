@@ -7,6 +7,7 @@ import {
   Workflow,
   PlaySquare,
   CreditCard,
+  Sparkles,
   Menu,
   X,
 } from "lucide-react";
@@ -15,6 +16,7 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { title: "Dashboard", href: "/app/dashboard", icon: LayoutDashboard },
   { title: "Chat", href: "/app/chat", icon: MessageSquare },
+  { title: "Skills", href: "/app/skills", icon: Sparkles },
   { title: "Workflows", href: "/app/workflows", icon: Workflow },
   { title: "Executions", href: "/app/executions", icon: PlaySquare },
   { title: "Billing", href: "/app/billing", icon: CreditCard },

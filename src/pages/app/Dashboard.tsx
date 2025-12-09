@@ -4,6 +4,9 @@ import { PageTransition, PageItem } from "@/components/app/PageTransition";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import NextSuggestionCard from "@/components/dashboard/NextSuggestionCard";
+import SubscriptionBanner from "@/components/subscription/SubscriptionBanner";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 
 // Placeholder data
 const stats = {
@@ -14,11 +17,11 @@ const stats = {
 };
 
 const recentExecutions = [
-  { id: 1, workflow: "Daily Report Generator", status: "success", timestamp: "2 min ago" },
-  { id: 2, workflow: "Lead Sync", status: "running", timestamp: "5 min ago" },
-  { id: 3, workflow: "Invoice Processor", status: "success", timestamp: "12 min ago" },
-  { id: 4, workflow: "Email Campaign", status: "error", timestamp: "1 hour ago" },
-  { id: 5, workflow: "Data Backup", status: "success", timestamp: "2 hours ago" },
+  { id: 1, workflow: "Daily Report Generator", status: "success", timestamp: "2 min ago", duration: "1.2s" },
+  { id: 2, workflow: "Lead Sync", status: "running", timestamp: "5 min ago", duration: "—" },
+  { id: 3, workflow: "Invoice Processor", status: "success", timestamp: "12 min ago", duration: "0.8s" },
+  { id: 4, workflow: "Email Campaign", status: "error", timestamp: "1 hour ago", duration: "2.1s" },
+  { id: 5, workflow: "Data Backup", status: "success", timestamp: "2 hours ago", duration: "0.5s" },
 ];
 
 type StatusKey = "success" | "running" | "error" | "failure";
@@ -31,9 +34,18 @@ const statusVariants: Record<StatusKey, "success" | "running" | "error"> = {
 };
 
 const Dashboard = () => {
+  const { isSubscribed } = useSubscription();
+
   return (
     <AppShell>
       <PageTransition className="max-w-screen-xl mx-auto px-4 py-8 space-y-8">
+        {/* Subscription Banner */}
+        {!isSubscribed && (
+          <PageItem>
+            <SubscriptionBanner />
+          </PageItem>
+        )}
+
         {/* Page Header */}
         <PageItem>
           <h1 className="text-3xl font-display font-bold text-gradient synth-header">
@@ -69,7 +81,7 @@ const Dashboard = () => {
           </div>
         </PageItem>
 
-        {/* Recent Executions */}
+        {/* Recent Activity */}
         <PageItem>
           <Card>
             <CardHeader>
@@ -90,6 +102,7 @@ const Dashboard = () => {
                     </Badge>
                   </div>
                   <div className="flex items-center gap-4">
+                    <span className="text-sm text-muted-foreground font-mono">{execution.duration}</span>
                     <span className="text-sm text-muted-foreground font-light">{execution.timestamp}</span>
                     <Button variant="ghost" size="sm" asChild>
                       <Link to={`/app/executions`}>View</Link>
@@ -99,6 +112,11 @@ const Dashboard = () => {
               ))}
             </CardContent>
           </Card>
+        </PageItem>
+
+        {/* Next Suggestion Card */}
+        <PageItem>
+          <NextSuggestionCard />
         </PageItem>
 
         {/* Synth Advisory Panel */}
