@@ -137,8 +137,10 @@ const BillingSettings = () => {
                     </p>
                   </div>
                 </div>
-                <Button variant="ghost" size="sm">
-                  Update
+                <Button variant="ghost" size="sm" asChild>
+                  <Link to="/app/billing/payment-method">
+                    Update Payment Method
+                  </Link>
                 </Button>
               </div>
               
