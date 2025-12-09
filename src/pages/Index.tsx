@@ -35,7 +35,7 @@ const Index = () => {
       <div className="py-12 pb-16">
         <div className="container px-6 flex justify-center gap-4">
           <Button asChild className="px-6 py-3">
-            <Link to="/login">Get Started</Link>
+            <Link to="/signup">Get Started</Link>
           </Button>
           <GoogleSignInButton variant="footer" />
         </div>

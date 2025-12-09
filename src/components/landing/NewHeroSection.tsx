@@ -80,7 +80,7 @@ const NewHeroSection = () => {
               transition={{ delay: 0.5, duration: 0.6 }}
               className="flex flex-col sm:flex-row items-start gap-4 mb-5"
             >
-              <Link to="/login">
+              <Link to="/signup">
                 <motion.button
                   whileHover={{ scale: 1.02, y: -2 }}
                   whileTap={{ scale: 0.98 }}
