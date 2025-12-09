@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Sparkles, AlertTriangle, X, Clock } from "lucide-react";
+import { Send, Sparkles, AlertTriangle, X, Clock, Lock } from "lucide-react";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition, PageItem } from "@/components/app/PageTransition";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import QuickActionsBar from "@/components/chat/QuickActionsBar";
 import AutomationCreatedModal from "@/components/workflows/AutomationCreatedModal";
+import SubscriptionBanner from "@/components/subscription/SubscriptionBanner";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 import { toast } from "sonner";
 
 interface Message {
@@ -41,6 +43,7 @@ const processingMessages: Record<string, string> = {
 const Chat = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { isSubscribed, requireSubscription } = useSubscription();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -162,6 +165,9 @@ const Chat = () => {
   };
 
   const handleCreateWorkflow = () => {
+    // Check subscription before creating workflow
+    if (!requireSubscription("create automations")) return;
+    
     // Generate a dynamic workflow based on conversation
     const latestUserMessage = [...messages].reverse().find(m => m.role === "user");
     setCreatedWorkflow({
@@ -183,6 +189,13 @@ const Chat = () => {
   return (
     <AppShell>
       <div className="h-[calc(100vh-4rem)] flex flex-col">
+        {/* Subscription Banner */}
+        {!isSubscribed && (
+          <div className="px-4 pt-4">
+            <SubscriptionBanner feature="create and manage automations" />
+          </div>
+        )}
+
         {/* Page Header */}
         <PageTransition className="px-4 py-5 border-b border-border/50">
           <PageItem>
