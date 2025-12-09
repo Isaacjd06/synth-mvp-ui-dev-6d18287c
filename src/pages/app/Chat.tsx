@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import AppShell from "@/components/app/AppShell";
+import { PageTransition, PageItem } from "@/components/app/PageTransition";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -59,17 +60,14 @@ const Chat = () => {
     <AppShell>
       <div className="h-[calc(100vh-4rem)] flex flex-col">
         {/* Page Header */}
-        <motion.div 
-          className="px-4 py-5 border-b border-border/50"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <h1 className="text-2xl font-display font-bold text-gradient">Synth Chat</h1>
-          <p className="text-sm text-muted-foreground mt-1 font-light">
-            Your intelligent automation assistant
-          </p>
-        </motion.div>
+        <PageTransition className="px-4 py-5 border-b border-border/50">
+          <PageItem>
+            <h1 className="text-2xl font-display font-bold text-gradient">Synth Chat</h1>
+            <p className="text-sm text-muted-foreground mt-1 font-light">
+              Your intelligent automation assistant
+            </p>
+          </PageItem>
+        </PageTransition>
 
         {/* Chat Messages Area */}
         <ScrollArea className="flex-1 px-4">
@@ -157,7 +155,12 @@ const Chat = () => {
         </ScrollArea>
 
         {/* Message Input Area */}
-        <div className="px-4 py-4 border-t border-border/50 bg-background/50 backdrop-blur-sm">
+        <motion.div 
+          className="px-4 py-4 border-t border-border/50 bg-background/50 backdrop-blur-sm"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.4 }}
+        >
           <div className="max-w-2xl mx-auto flex gap-3">
             <Input
               value={input}
@@ -175,7 +178,7 @@ const Chat = () => {
               Send
             </Button>
           </div>
-        </div>
+        </motion.div>
       </div>
     </AppShell>
   );

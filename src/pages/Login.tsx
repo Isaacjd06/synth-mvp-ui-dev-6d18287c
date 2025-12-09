@@ -4,11 +4,34 @@ import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.5,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
 const Login = () => {
   const navigate = useNavigate();
 
   const handleGoogleLogin = () => {
-    // For MVP, just navigate to dashboard
     navigate("/app/dashboard");
   };
 
@@ -16,42 +39,42 @@ const Login = () => {
     <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background effects */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        <motion.div 
+          className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl"
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, delay: 0.2 }}
+        />
+        <motion.div 
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl"
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, delay: 0.4 }}
+        />
         <div className="absolute inset-0 grid-computation opacity-20" />
       </div>
       
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
       >
         <Card className="w-full max-w-sm glass-strong border-border/50">
           <CardHeader className="text-center space-y-5 pb-2">
             <motion.div 
               className="mx-auto w-14 h-14 rounded-2xl bg-primary/20 flex items-center justify-center shadow-[0_0_30px_-5px_hsl(217_100%_60%/0.4)]"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+              variants={itemVariants}
             >
               <Sparkles className="w-7 h-7 text-primary drop-shadow-[0_0_10px_hsl(217_100%_60%/0.5)]" />
             </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.4 }}
-            >
+            <motion.div variants={itemVariants}>
               <CardTitle className="text-2xl font-display font-bold text-gradient">
                 Sign in to Synth
               </CardTitle>
             </motion.div>
           </CardHeader>
           <CardContent className="pt-6">
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.4 }}
-            >
+            <motion.div variants={itemVariants}>
               <Button
                 onClick={handleGoogleLogin}
                 className="w-full btn-synth"
@@ -80,9 +103,7 @@ const Login = () => {
             </motion.div>
             <motion.p 
               className="text-center text-xs text-muted-foreground mt-5 font-light"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.4 }}
+              variants={itemVariants}
             >
               Synth will manage your automations intelligently
             </motion.p>

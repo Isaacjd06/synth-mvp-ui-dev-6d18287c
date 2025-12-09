@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import AppShell from "@/components/app/AppShell";
+import { PageTransition, PageItem } from "@/components/app/PageTransition";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -55,14 +55,9 @@ const Workflows = () => {
 
   return (
     <AppShell>
-      <div className="px-4 lg:px-6 py-8 space-y-8">
+      <PageTransition className="px-4 lg:px-6 py-8 space-y-8">
         {/* Header */}
-        <motion.div 
-          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
+        <PageItem className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-3xl font-display font-bold text-gradient synth-header">
               Workflows
@@ -74,15 +69,11 @@ const Workflows = () => {
           <Button asChild className="btn-synth">
             <Link to="/app/chat">Create Workflow</Link>
           </Button>
-        </motion.div>
+        </PageItem>
 
         {/* Empty State */}
         {workflows.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4 }}
-          >
+          <PageItem>
             <Card className="border-dashed border-2">
               <CardContent className="py-16 text-center">
                 <p className="text-muted-foreground mb-6 font-light">
@@ -93,23 +84,16 @@ const Workflows = () => {
                 </Button>
               </CardContent>
             </Card>
-          </motion.div>
+          </PageItem>
         ) : (
           /* Workflows List */
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.4 }}
-          >
+          <PageItem>
             <Card>
               <CardContent className="p-0">
                 <div className="divide-y divide-border/30">
-                  {workflows.map((workflow, index) => (
-                    <motion.div
+                  {workflows.map((workflow) => (
+                    <div
                       key={workflow.id}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.15 + index * 0.05, duration: 0.3 }}
                       className="flex items-center justify-between p-4 synth-row"
                     >
                       <div className="flex-1 min-w-0">
@@ -140,14 +124,14 @@ const Workflows = () => {
                           <Link to={`/app/workflows/${workflow.id}`}>View</Link>
                         </Button>
                       </div>
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          </PageItem>
         )}
-      </div>
+      </PageTransition>
     </AppShell>
   );
 };
