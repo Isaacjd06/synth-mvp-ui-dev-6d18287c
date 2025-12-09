@@ -196,7 +196,7 @@ const Chat = () => {
         )}
 
         {/* Page Header */}
-        <PageTransition className="px-4 py-5 border-b border-border/50">
+        <PageTransition className="px-4 py-5 border-b border-border/60">
           <PageItem>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center shadow-[0_0_20px_-5px_hsl(217_100%_60%/0.3)]">
@@ -249,7 +249,7 @@ const Chat = () => {
         </AnimatePresence>
 
         {/* Quick Actions Bar */}
-        <div className="px-4 border-b border-border/30">
+        <div className="px-4 border-b border-border/40">
           <QuickActionsBar onAction={handleQuickAction} />
         </div>
 
@@ -289,7 +289,7 @@ const Chat = () => {
                         "p-4 rounded-2xl max-w-[85%] transition-all duration-300",
                         message.role === "user"
                           ? "ml-auto bg-primary text-primary-foreground shadow-[0_4px_20px_-5px_hsl(217_100%_60%/0.4)]"
-                          : "bg-card/80 text-foreground border border-border/50 shadow-sm"
+                          : "bg-card/90 text-foreground border border-border/60 shadow-sm"
                       )}
                     >
                       <p className="text-sm leading-relaxed">{message.content}</p>
@@ -340,7 +340,7 @@ const Chat = () => {
             <AnimatePresence>
               {isLoading && (
                 <motion.div 
-                  className="bg-card/80 p-4 rounded-2xl max-w-[85%] border border-border/50 shadow-sm"
+                  className="bg-card/90 p-4 rounded-2xl max-w-[85%] border border-border/60 shadow-sm"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
@@ -390,7 +390,7 @@ const Chat = () => {
         </ScrollArea>
 
         {/* Message Input Area */}
-        <div className="px-4 py-4 border-t border-border/50 bg-background/80 backdrop-blur-sm">
+        <div className="px-4 py-4 border-t border-border/60 bg-background/90 backdrop-blur-sm">
           <div className="max-w-2xl mx-auto flex gap-3">
             <Input
               ref={inputRef}

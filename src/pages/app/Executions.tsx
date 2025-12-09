@@ -145,7 +145,7 @@ const Executions = () => {
           <PageItem>
             <Card>
               <CardContent className="p-0">
-                <div className="divide-y divide-border/30">
+                <div className="divide-y divide-border/40">
                   {executions.map((execution) => (
                     <div
                       key={execution.id}
@@ -218,7 +218,7 @@ const Executions = () => {
 
                 <div>
                   <span className="text-sm text-muted-foreground font-light">Input Data</span>
-                  <pre className="mt-2 p-3 rounded-lg bg-muted/50 text-xs font-mono text-foreground overflow-x-auto border border-border/30">
+                  <pre className="mt-2 p-3 rounded-lg bg-muted/50 text-xs font-mono text-foreground overflow-x-auto border border-border/40">
                     {JSON.stringify(selectedExecution.input, null, 2)}
                   </pre>
                 </div>
@@ -226,7 +226,7 @@ const Executions = () => {
                 {selectedExecution.output && (
                   <div>
                     <span className="text-sm text-muted-foreground font-light">Output Data</span>
-                    <pre className="mt-2 p-3 rounded-lg bg-muted/50 text-xs font-mono text-foreground overflow-x-auto border border-border/30">
+                    <pre className="mt-2 p-3 rounded-lg bg-muted/50 text-xs font-mono text-foreground overflow-x-auto border border-border/40">
                       {JSON.stringify(selectedExecution.output, null, 2)}
                     </pre>
                   </div>

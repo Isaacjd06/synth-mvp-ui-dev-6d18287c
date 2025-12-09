@@ -10,7 +10,7 @@ const AppCard = ({ children, className }: AppCardProps) => {
   return (
     <div
       className={cn(
-        "bg-card border border-border rounded-lg p-6",
+        "bg-card/90 border border-border/60 rounded-lg p-6 shadow-sm",
         className
       )}
     >

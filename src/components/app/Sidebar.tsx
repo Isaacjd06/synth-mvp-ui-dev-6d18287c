@@ -61,7 +61,7 @@ const Sidebar = () => {
               "group flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 relative overflow-hidden",
               isActive(item.href)
                 ? "bg-primary/15 text-primary shadow-[0_0_20px_-5px_hsl(217_100%_60%/0.3),inset_0_0_20px_hsl(217_100%_60%/0.05)] border border-primary/30"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent hover:border-border/50"
+                : "text-muted-foreground/90 hover:text-foreground hover:bg-muted/60 border border-transparent hover:border-border/60"
             )}
           >
             {/* Glow effect on hover */}
@@ -98,7 +98,7 @@ const Sidebar = () => {
       </button>
 
       {/* Desktop sidebar */}
-      <aside className="hidden lg:block fixed left-0 top-16 bottom-0 w-60 bg-background/80 backdrop-blur-xl border-r border-border/50 overflow-y-auto">
+      <aside className="hidden lg:block fixed left-0 top-16 bottom-0 w-60 bg-background/90 backdrop-blur-xl border-r border-border/60 overflow-y-auto">
         {/* Subtle glow at top */}
         <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
         <NavContent />

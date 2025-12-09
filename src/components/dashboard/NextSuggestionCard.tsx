@@ -24,7 +24,7 @@ const NextSuggestionCard = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
     >
-      <Card className="border-primary/20 bg-gradient-to-br from-card via-card to-primary/5 overflow-hidden">
+      <Card className="border-primary/30 bg-gradient-to-br from-card via-card to-primary/5 overflow-hidden">
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
