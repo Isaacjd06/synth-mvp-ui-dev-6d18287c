@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import AppShell from "@/components/app/AppShell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -54,77 +55,97 @@ const Workflows = () => {
 
   return (
     <AppShell>
-      <div className="px-4 lg:px-6 py-6 space-y-6">
+      <div className="px-4 lg:px-6 py-8 space-y-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <motion.div 
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Workflows</h1>
-            <p className="text-muted-foreground mt-1">
-              View and manage your workflows
+            <h1 className="text-3xl font-display font-bold text-gradient synth-header">
+              Workflows
+            </h1>
+            <p className="text-muted-foreground mt-2 font-light">
+              Manage your automations. Synth will optimize them over time.
             </p>
           </div>
-          <Button asChild>
+          <Button asChild className="btn-synth">
             <Link to="/app/chat">Create Workflow</Link>
           </Button>
-        </div>
+        </motion.div>
 
         {/* Empty State */}
         {workflows.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <p className="text-muted-foreground mb-4">
-                You have no workflows yet.
-              </p>
-              <Button asChild>
-                <Link to="/app/chat">Create Workflow</Link>
-              </Button>
-            </CardContent>
-          </Card>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+          >
+            <Card className="border-dashed border-2">
+              <CardContent className="py-16 text-center">
+                <p className="text-muted-foreground mb-6 font-light">
+                  Synth is ready. Create your first automation to begin optimizing your operations.
+                </p>
+                <Button asChild className="btn-synth">
+                  <Link to="/app/chat">Create Workflow</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
         ) : (
           /* Workflows List */
-          <Card>
-            <CardContent className="p-0">
-              <div className="divide-y divide-border">
-                {workflows.map((workflow) => (
-                  <div
-                    key={workflow.id}
-                    className="flex items-center justify-between p-4"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-foreground truncate">
-                        {workflow.name}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Last run: {workflow.lastRunTime}
-                      </p>
-                    </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.4 }}
+          >
+            <Card>
+              <CardContent className="p-0">
+                <div className="divide-y divide-border/30">
+                  {workflows.map((workflow, index) => (
+                    <motion.div
+                      key={workflow.id}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.15 + index * 0.05, duration: 0.3 }}
+                      className="flex items-center justify-between p-4 synth-row"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-foreground truncate">
+                          {workflow.name}
+                        </p>
+                        <p className="text-sm text-muted-foreground font-light">
+                          Last run: {workflow.lastRunTime}
+                        </p>
+                      </div>
 
-                    <div className="flex items-center gap-3 ml-4">
-                      <Badge
-                        variant={
-                          workflow.status === "active" ? "default" : "secondary"
-                        }
-                      >
-                        {workflow.status === "active" ? "Active" : "Inactive"}
-                      </Badge>
+                      <div className="flex items-center gap-3 ml-4">
+                        <Badge
+                          variant={workflow.status === "active" ? "default" : "inactive"}
+                        >
+                          {workflow.status === "active" ? "Active" : "Inactive"}
+                        </Badge>
 
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleToggleStatus(workflow.id)}
-                      >
-                        {workflow.status === "active" ? "Deactivate" : "Activate"}
-                      </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleToggleStatus(workflow.id)}
+                        >
+                          {workflow.status === "active" ? "Deactivate" : "Activate"}
+                        </Button>
 
-                      <Button variant="ghost" size="sm" asChild>
-                        <Link to={`/app/workflows/${workflow.id}`}>View</Link>
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                        <Button variant="ghost" size="sm" asChild>
+                          <Link to={`/app/workflows/${workflow.id}`}>View</Link>
+                        </Button>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         )}
       </div>
     </AppShell>

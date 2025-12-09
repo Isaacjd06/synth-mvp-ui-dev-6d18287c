@@ -62,6 +62,12 @@ export default {
           surface: "hsl(var(--synth-surface))",
           "surface-light": "hsl(var(--synth-surface-light))",
         },
+        status: {
+          success: "hsl(var(--status-success))",
+          error: "hsl(var(--status-error))",
+          warning: "hsl(var(--status-warning))",
+          running: "hsl(var(--status-running))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -131,6 +137,18 @@ export default {
             boxShadow: "0 0 30px hsl(217 100% 60% / 0.5), 0 0 60px hsl(217 100% 60% / 0.2)" 
           },
         },
+        "fade-in-up": {
+          "0%": { opacity: "0", transform: "translateY(10px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "scale-in": {
+          "0%": { opacity: "0", transform: "scale(0.95)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
+        "thinking-dot": {
+          "0%, 100%": { opacity: "0.3" },
+          "50%": { opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -146,6 +164,9 @@ export default {
         "scan": "scan 8s linear infinite",
         "particle-float": "particle-float 8s ease-in-out infinite",
         "glow-pulse": "glow-pulse 3s ease-in-out infinite",
+        "fade-in-up": "fade-in-up 0.4s ease-out",
+        "scale-in": "scale-in 0.3s ease-out",
+        "thinking-dot": "thinking-dot 1.4s ease-in-out infinite",
       },
     },
   },

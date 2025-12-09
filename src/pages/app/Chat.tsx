@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import AppShell from "@/components/app/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,7 +41,7 @@ const Chat = () => {
     const assistantMessage: Message = {
       id: crypto.randomUUID(),
       role: "assistant",
-      content: "I understand your request. Let me help you with that workflow. This is a simulated response — in production, Synth will provide intelligent guidance for building automations.",
+      content: "I understand your request. Let me help you design that automation. Based on your description, I can configure a workflow that handles this efficiently. Would you like me to proceed with the implementation?",
     };
 
     setMessages((prev) => [...prev, assistantMessage]);
@@ -58,77 +59,119 @@ const Chat = () => {
     <AppShell>
       <div className="h-[calc(100vh-4rem)] flex flex-col">
         {/* Page Header */}
-        <div className="px-4 py-4 border-b border-border">
-          <h1 className="text-2xl font-bold text-foreground">Synth Chat</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Your AI assistant for building workflows
+        <motion.div 
+          className="px-4 py-5 border-b border-border/50"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <h1 className="text-2xl font-display font-bold text-gradient">Synth Chat</h1>
+          <p className="text-sm text-muted-foreground mt-1 font-light">
+            Your intelligent automation assistant
           </p>
-        </div>
+        </motion.div>
 
         {/* Chat Messages Area */}
         <ScrollArea className="flex-1 px-4">
-          <div className="max-w-2xl mx-auto py-4 space-y-4">
-            {messages.length === 0 ? (
-              <div className="flex items-center justify-center h-64">
-                <p className="text-muted-foreground text-center">
-                  Start chatting with Synth to build and refine workflows.
-                </p>
-              </div>
-            ) : (
-              messages.map((message) => (
-                <div key={message.id} className="space-y-2">
-                  <div
-                    className={cn(
-                      "p-3 rounded-lg max-w-[85%]",
-                      message.role === "user"
-                        ? "ml-auto bg-primary text-primary-foreground"
-                        : "bg-muted text-foreground"
-                    )}
+          <div className="max-w-2xl mx-auto py-6 space-y-4">
+            <AnimatePresence mode="popLayout">
+              {messages.length === 0 ? (
+                <motion.div 
+                  className="flex items-center justify-center h-64"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <p className="text-muted-foreground text-center font-light">
+                    Describe your workflow, and Synth will build it for you.
+                  </p>
+                </motion.div>
+              ) : (
+                messages.map((message, index) => (
+                  <motion.div 
+                    key={message.id} 
+                    className="space-y-3"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05, duration: 0.3 }}
                   >
-                    <p className="text-sm">{message.content}</p>
-                  </div>
-
-                  {/* Workflow action buttons - only for assistant messages */}
-                  {message.role === "assistant" && (
-                    <div className="flex gap-2 flex-wrap">
-                      <Button variant="outline" size="sm">
-                        Create Workflow From This
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        Modify Existing Workflow
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        Explain Workflow
-                      </Button>
+                    <div
+                      className={cn(
+                        "p-4 rounded-xl max-w-[85%] transition-all duration-300",
+                        message.role === "user"
+                          ? "ml-auto bg-primary text-primary-foreground shadow-[0_0_20px_-5px_hsl(217_100%_60%/0.3)]"
+                          : "bg-muted/50 text-foreground border border-border/30 backdrop-blur-sm"
+                      )}
+                    >
+                      <p className="text-sm leading-relaxed">{message.content}</p>
                     </div>
-                  )}
-                </div>
-              ))
-            )}
+
+                    {/* Workflow action buttons - only for assistant messages */}
+                    {message.role === "assistant" && (
+                      <motion.div 
+                        className="flex gap-2 flex-wrap"
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2, duration: 0.3 }}
+                      >
+                        <Button variant="outline" size="sm">
+                          Create Workflow From This
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          Modify Existing Workflow
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          Explain Workflow
+                        </Button>
+                      </motion.div>
+                    )}
+                  </motion.div>
+                ))
+              )}
+            </AnimatePresence>
 
             {/* Thinking indicator */}
-            {isLoading && (
-              <div className="bg-muted p-3 rounded-lg max-w-[85%]">
-                <p className="text-sm text-muted-foreground">Synth is thinking…</p>
-              </div>
-            )}
+            <AnimatePresence>
+              {isLoading && (
+                <motion.div 
+                  className="bg-muted/50 p-4 rounded-xl max-w-[85%] border border-border/30 backdrop-blur-sm"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground font-light">Synth is thinking</span>
+                    <span className="flex gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-thinking-dot" style={{ animationDelay: "0s" }} />
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-thinking-dot" style={{ animationDelay: "0.2s" }} />
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-thinking-dot" style={{ animationDelay: "0.4s" }} />
+                    </span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <div ref={messagesEndRef} />
           </div>
         </ScrollArea>
 
         {/* Message Input Area */}
-        <div className="px-4 py-4 border-t border-border">
-          <div className="max-w-2xl mx-auto flex gap-2">
+        <div className="px-4 py-4 border-t border-border/50 bg-background/50 backdrop-blur-sm">
+          <div className="max-w-2xl mx-auto flex gap-3">
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Type a message..."
+              placeholder="Describe your automation..."
               disabled={isLoading}
-              className="flex-1"
+              className="flex-1 bg-muted/30 border-border/50 focus:border-primary/50 focus:ring-primary/20 transition-all duration-300"
             />
-            <Button onClick={handleSend} disabled={isLoading || !input.trim()}>
+            <Button 
+              onClick={handleSend} 
+              disabled={isLoading || !input.trim()}
+              className="btn-synth"
+            >
               Send
             </Button>
           </div>
