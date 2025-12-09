@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ReactNode, useMemo } from "react";
+import { ReactNode, createContext, useContext, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 
 interface PageTransitionProps {
@@ -34,6 +34,9 @@ const itemVariants = {
 // Track visited pages globally - persists across component remounts and navigation
 const visitedPages = new Set<string>();
 
+// Context to pass animation state to children
+const PageAnimationContext = createContext<boolean>(false);
+
 export const PageTransition = ({ children, className }: PageTransitionProps) => {
   const location = useLocation();
   const currentPath = location.pathname;
@@ -48,28 +51,29 @@ export const PageTransition = ({ children, className }: PageTransitionProps) => 
     return true;
   }, [currentPath]);
 
-  if (!shouldAnimate) {
-    // No animation - render static content
-    return <div className={className}>{children}</div>;
-  }
-
+  // Provide animation state to children via context
   return (
-    <motion.div
-      key={currentPath}
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className={className}
-    >
-      {children}
-    </motion.div>
+    <PageAnimationContext.Provider value={shouldAnimate}>
+      {shouldAnimate ? (
+        <motion.div
+          key={currentPath}
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className={className}
+        >
+          {children}
+        </motion.div>
+      ) : (
+        <div className={className}>{children}</div>
+      )}
+    </PageAnimationContext.Provider>
   );
 };
 
 export const PageItem = ({ children, className }: PageTransitionProps) => {
-  const location = useLocation();
-  // Check if already visited - if so, render static
-  const shouldAnimate = !visitedPages.has(location.pathname);
+  // Get animation state from parent PageTransition
+  const shouldAnimate = useContext(PageAnimationContext);
 
   if (!shouldAnimate) {
     return <div className={className}>{children}</div>;
