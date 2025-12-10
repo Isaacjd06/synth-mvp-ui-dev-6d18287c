@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import NextSuggestionCard from "@/components/dashboard/NextSuggestionCard";
 import SubscriptionBanner from "@/components/subscription/SubscriptionBanner";
-import SubscriptionCallout from "@/components/subscription/SubscriptionCallout";
+
 import LockedButton from "@/components/subscription/LockedButton";
 import PlanLimitIndicator from "@/components/subscription/PlanLimitIndicator";
 import { useSubscription } from "@/contexts/SubscriptionContext";
@@ -84,16 +84,6 @@ const Dashboard = () => {
             </PageItem>
           )}
 
-          {/* Large centered callout for unsubscribed users */}
-          {!isSubscribed && (
-            <PageItem>
-              <SubscriptionCallout
-                title="Subscription Required"
-                subtitle="Your account is in read-only mode until you subscribe."
-                feature="unlock Synth"
-              />
-            </PageItem>
-          )}
 
           {/* Plan Limits for subscribed users */}
           {isSubscribed && planLimits && (
