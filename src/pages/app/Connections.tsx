@@ -68,7 +68,7 @@ const initialIntegrations: Integration[] = [
   { id: "oracle-cloud", name: "Oracle Cloud Storage", description: "Enterprise cloud storage and data management", icon: "Oracle Cloud Storage", tier: "agency", category: "Storage", connected: false },
 ];
 
-const filterOptions = ["All", "Starter", "Pro", "Agency", "Coming Soon"] as const;
+const filterOptions = ["All", "Starter", "Pro", "Agency"] as const;
 type FilterOption = typeof filterOptions[number];
 
 const Connections = () => {
@@ -85,7 +85,6 @@ const Connections = () => {
       if (activeFilter === "Starter") matchesFilter = integration.tier === "starter";
       else if (activeFilter === "Pro") matchesFilter = integration.tier === "pro";
       else if (activeFilter === "Agency") matchesFilter = integration.tier === "agency";
-      else if (activeFilter === "Coming Soon") matchesFilter = !!integration.comingSoon;
       
       return matchesSearch && matchesFilter;
     });
