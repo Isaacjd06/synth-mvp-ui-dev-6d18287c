@@ -1,6 +1,7 @@
 import { Sparkles, LogOut } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import SubscriptionPill from "@/components/subscription/SubscriptionPill";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -24,15 +25,20 @@ const Header = () => {
           </span>
         </Link>
         
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleLogout}
-          className="text-muted-foreground hover:text-foreground group"
-        >
-          <LogOut className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:-translate-x-0.5" />
-          Logout
-        </Button>
+        <div className="flex items-center gap-3">
+          {/* Subscription Status Pill */}
+          <SubscriptionPill />
+          
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleLogout}
+            className="text-muted-foreground hover:text-foreground group"
+          >
+            <LogOut className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:-translate-x-0.5" />
+            Logout
+          </Button>
+        </div>
       </div>
     </header>
   );

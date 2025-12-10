@@ -1,12 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { Activity, MessageSquare, Zap } from "lucide-react";
+import { Activity, MessageSquare, Zap, Lock, RefreshCw, Play } from "lucide-react";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition, PageItem } from "@/components/app/PageTransition";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import SubscriptionBanner from "@/components/subscription/SubscriptionBanner";
+import LockedButton from "@/components/subscription/LockedButton";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 import {
   Dialog,
   DialogContent,
@@ -80,11 +84,29 @@ const statusVariants: Record<StatusKey, "success" | "running" | "error"> = {
 
 const Executions = () => {
   const [selectedExecution, setSelectedExecution] = useState<Execution | null>(null);
+  const { isSubscribed, requireSubscription } = useSubscription();
   const executions = mockExecutions;
+
+  const handleRunWorkflow = (workflowName: string) => {
+    if (!requireSubscription("run workflows manually")) return;
+    // Would trigger workflow run
+  };
+
+  const handleRetryExecution = (executionId: string) => {
+    if (!requireSubscription("retry executions")) return;
+    // Would retry execution
+  };
 
   return (
     <AppShell>
       <PageTransition className="px-4 lg:px-6 py-8 space-y-8">
+        {/* Subscription Banner */}
+        {!isSubscribed && (
+          <PageItem>
+            <SubscriptionBanner feature="access execution tools" />
+          </PageItem>
+        )}
+
         {/* Header */}
         <PageItem className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
@@ -123,12 +145,10 @@ const Executions = () => {
                     Create a workflow and Synth will begin tracking executions.
                   </p>
                   <div className="flex justify-center gap-3">
-                    <Button asChild className="bg-primary hover:bg-primary/90">
-                      <Link to="/app/chat">
-                        <MessageSquare className="w-4 h-4 mr-2" />
-                        Create Workflow
-                      </Link>
-                    </Button>
+                    <LockedButton className="bg-primary hover:bg-primary/90" feature="create workflows">
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      Create Workflow
+                    </LockedButton>
                     <Button variant="outline" asChild>
                       <Link to="/app/workflows">
                         <Zap className="w-4 h-4 mr-2" />
@@ -143,44 +163,79 @@ const Executions = () => {
         ) : (
           /* Executions List */
           <PageItem>
-            <Card>
-              <CardContent className="p-0">
-                <div className="divide-y divide-border/40">
-                  {executions.map((execution) => (
-                    <div
-                      key={execution.id}
-                      className="flex items-center justify-between p-4 synth-row"
-                    >
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-foreground truncate">
-                          {execution.workflowName}
-                        </p>
-                        <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1 font-light">
-                          <span>{execution.timestamp}</span>
-                          <span>•</span>
-                          <span className="font-mono">{execution.duration}</span>
+            <TooltipProvider>
+              <Card>
+                <CardContent className="p-0">
+                  <div className="divide-y divide-border/40">
+                    {executions.map((execution) => (
+                      <div
+                        key={execution.id}
+                        className="flex items-center justify-between p-4 synth-row"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-foreground truncate">
+                            {execution.workflowName}
+                          </p>
+                          <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1 font-light">
+                            <span>{execution.timestamp}</span>
+                            <span>•</span>
+                            <span className="font-mono">{execution.duration}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 ml-4">
+                          <Badge variant={statusVariants[execution.status as StatusKey]}>
+                            {execution.status}
+                          </Badge>
+                          
+                          {/* Action buttons - locked for unsubscribed */}
+                          {execution.status === "error" && (
+                            isSubscribed ? (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleRetryExecution(execution.id)}
+                                className="gap-1.5"
+                              >
+                                <RefreshCw className="w-3.5 h-3.5" />
+                                Retry
+                              </Button>
+                            ) : (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="opacity-40 cursor-not-allowed gap-1.5"
+                                    disabled
+                                  >
+                                    <Lock className="w-3 h-3" />
+                                    Retry
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p className="text-xs">Subscribe to retry executions</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            )
+                          )}
+                          
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            asChild
+                          >
+                            <Link to={`/app/executions/${execution.id}`}>
+                              View Details
+                            </Link>
+                          </Button>
                         </div>
                       </div>
-
-                      <div className="flex items-center gap-3 ml-4">
-                        <Badge variant={statusVariants[execution.status as StatusKey]}>
-                          {execution.status}
-                        </Badge>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          asChild
-                        >
-                          <Link to={`/app/executions/${execution.id}`}>
-                            View Details
-                          </Link>
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TooltipProvider>
           </PageItem>
         )}
       </PageTransition>
