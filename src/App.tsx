@@ -15,6 +15,7 @@ import Workflows from "./pages/app/Workflows";
 import WorkflowDetail from "./pages/app/WorkflowDetail";
 import Executions from "./pages/app/Executions";
 import ExecutionDetail from "./pages/app/ExecutionDetail";
+import Connections from "./pages/app/Connections";
 import Billing from "./pages/app/Billing";
 import BillingSettings from "./pages/app/BillingSettings";
 import PaymentMethod from "./pages/app/PaymentMethod";
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="/app/workflows/:id" element={<WorkflowDetail />} />
             <Route path="/app/executions" element={<Executions />} />
             <Route path="/app/executions/:id" element={<ExecutionDetail />} />
+            <Route path="/app/connections" element={<Connections />} />
             <Route path="/app/billing" element={<Billing />} />
             <Route path="/app/billing/settings" element={<BillingSettings />} />
             <Route path="/app/billing/payment-method" element={<PaymentMethod />} />

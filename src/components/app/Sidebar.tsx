@@ -8,6 +8,7 @@ import {
   PlaySquare,
   CreditCard,
   Sparkles,
+  Plug,
   Menu,
   X,
 } from "lucide-react";
@@ -19,6 +20,7 @@ const navItems = [
   { title: "Skills", href: "/app/skills", icon: Sparkles },
   { title: "Workflows", href: "/app/workflows", icon: Workflow },
   { title: "Executions", href: "/app/executions", icon: PlaySquare },
+  { title: "Connections", href: "/app/connections", icon: Plug },
   { title: "Billing", href: "/app/billing", icon: CreditCard },
 ];
 
