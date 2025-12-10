@@ -27,7 +27,7 @@ export interface Integration {
 }
 
 const integrations: Integration[] = [
-  // Starter tier (1-12)
+  // Starter tier (1-18)
   { id: "gmail", name: "Gmail", description: "Send and receive emails, manage drafts and labels", icon: "📧", tier: "starter", category: "Communication", connected: false, permissions: ["Read emails", "Send emails", "Manage labels"], version: "v2.1" },
   { id: "google-calendar", name: "Google Calendar", description: "Create events, manage schedules and reminders", icon: "📅", tier: "starter", category: "Productivity", connected: true, permissions: ["Read events", "Create events", "Modify events"], version: "v3.0" },
   { id: "google-sheets", name: "Google Sheets", description: "Read and write spreadsheet data", icon: "📊", tier: "starter", category: "Productivity", connected: false, permissions: ["Read spreadsheets", "Edit spreadsheets"], version: "v4.0" },
@@ -40,18 +40,38 @@ const integrations: Integration[] = [
   { id: "clickup", name: "ClickUp", description: "Manage tasks, projects and team workspaces", icon: "✅", tier: "starter", category: "Productivity", connected: false, permissions: ["Read tasks", "Create tasks", "Update projects"], version: "v2.0" },
   { id: "trello", name: "Trello", description: "Manage boards, cards and team collaboration", icon: "📋", tier: "starter", category: "Productivity", connected: false, permissions: ["Read boards", "Create cards", "Move cards"], version: "v1.0" },
   { id: "airtable", name: "Airtable", description: "Manage databases, records and automations", icon: "🗃️", tier: "starter", category: "Productivity", connected: false, permissions: ["Read records", "Create records", "Update records"], version: "v1.0" },
+  { id: "google-drive", name: "Google Drive", description: "Upload, download and organize files and folders", icon: "📁", tier: "starter", category: "Storage", connected: false, permissions: ["Read files", "Upload files", "Organize folders"], version: "v3.0" },
+  { id: "canva", name: "Canva", description: "Create and export designs and graphics", icon: "🎨", tier: "starter", category: "Design", connected: false, permissions: ["Create designs", "Export images", "Access templates"], version: "v1.0" },
+  { id: "dropbox-paper", name: "Dropbox Paper", description: "Create and collaborate on documents", icon: "📄", tier: "starter", category: "Productivity", connected: false, permissions: ["Read documents", "Create documents", "Share docs"], version: "v1.0" },
+  { id: "google-forms", name: "Google Forms", description: "Create forms and collect responses", icon: "📝", tier: "starter", category: "Productivity", connected: false, permissions: ["Create forms", "Read responses", "Manage forms"], version: "v1.0" },
+  { id: "instagram-api", name: "Instagram Basic API", description: "Post content and manage basic account features", icon: "📸", tier: "starter", category: "Social Media", connected: false, permissions: ["Read profile", "Post media", "View insights"], version: "v1.0" },
+  { id: "youtube-api", name: "YouTube API", description: "Upload videos and manage channel content", icon: "🎬", tier: "starter", category: "Social Media", connected: false, permissions: ["Upload videos", "Read analytics", "Manage playlists"], version: "v3.0" },
   
-  // Pro tier (13-16)
-  { id: "dropbox", name: "Dropbox", description: "Upload, download and manage files", icon: "📦", tier: "pro", category: "Storage", connected: false, permissions: ["Read files", "Upload files", "Share files"], version: "v2.0" },
+  // Pro tier (19-29)
+  { id: "dropbox", name: "Dropbox", description: "Upload, download and manage cloud files", icon: "📦", tier: "pro", category: "Storage", connected: false, permissions: ["Read files", "Upload files", "Share files"], version: "v2.0" },
   { id: "hubspot", name: "HubSpot CRM", description: "Manage contacts, deals and marketing campaigns", icon: "🧲", tier: "pro", category: "CRM", connected: false, permissions: ["Read contacts", "Create deals", "Track campaigns"], version: "v3.0" },
   { id: "monday", name: "Monday.com", description: "Manage projects, boards and team workflows", icon: "📌", tier: "pro", category: "Productivity", connected: false, permissions: ["Read boards", "Create items", "Update columns"], version: "v2.0" },
   { id: "quickbooks", name: "QuickBooks", description: "Manage invoices, expenses and financial reports", icon: "💰", tier: "pro", category: "Finance", connected: false, permissions: ["Read transactions", "Create invoices", "Generate reports"], version: "v1.0" },
+  { id: "twitter", name: "Twitter (X)", description: "Post tweets and manage social interactions", icon: "🐦", tier: "pro", category: "Social Media", connected: false, permissions: ["Post tweets", "Read timeline", "Manage followers"], version: "v2.0" },
+  { id: "openai", name: "OpenAI API", description: "Access GPT models for AI-powered automation", icon: "🤖", tier: "pro", category: "AI", connected: false, permissions: ["Generate text", "Create embeddings", "Use models"], version: "v1.0" },
+  { id: "calendly", name: "Calendly", description: "Schedule meetings and manage appointments", icon: "📆", tier: "pro", category: "Productivity", connected: false, permissions: ["Create events", "Read bookings", "Manage availability"], version: "v2.0" },
+  { id: "make-bridge", name: "Make.com Bridge", description: "Connect with Make.com scenarios and workflows", icon: "🔀", tier: "pro", category: "Developer", connected: false, permissions: ["Trigger scenarios", "Send data", "Receive webhooks"], version: "v1.0" },
+  { id: "facebook-pages", name: "Facebook Pages API", description: "Manage page content and engagement", icon: "👍", tier: "pro", category: "Social Media", connected: false, permissions: ["Post content", "Read insights", "Manage comments"], version: "v1.0" },
+  { id: "google-ads", name: "Google Ads", description: "Manage ad campaigns and track performance", icon: "📢", tier: "pro", category: "Marketing", connected: false, permissions: ["Create campaigns", "Read reports", "Manage budgets"], version: "v1.0" },
+  { id: "meta-ads", name: "Meta Ads Manager", description: "Run and optimize Facebook and Instagram ads", icon: "📣", tier: "pro", category: "Marketing", connected: false, permissions: ["Create ads", "Track conversions", "Manage audiences"], version: "v1.0" },
   
-  // Agency tier (17-20)
+  // Agency tier (30-40)
   { id: "salesforce", name: "Salesforce", description: "Manage leads, contacts and sales pipelines", icon: "☁️", tier: "agency", category: "CRM", connected: false, permissions: ["Read contacts", "Create leads", "Update opportunities"], version: "v1.0" },
   { id: "zoho", name: "Zoho CRM", description: "Manage sales, marketing and customer support", icon: "🔶", tier: "agency", category: "CRM", connected: false, permissions: ["Read records", "Create leads", "Update deals"], version: "v2.0" },
-  { id: "zapier", name: "Zapier Handoff", description: "Connect with 5000+ apps through Zapier", icon: "⚡", tier: "agency", category: "Developer", connected: false, comingSoon: true, permissions: ["Trigger zaps", "Receive data"], version: "v1.0" },
-  { id: "custom-api", name: "Custom API Integration", description: "Build custom integrations with full request builder", icon: "🛠️", tier: "agency", category: "Developer", connected: false, permissions: ["Full API access", "Custom headers", "Authentication"], version: "v1.0" },
+  { id: "zapier", name: "Zapier Handoff", description: "Connect with 5000+ apps through Zapier", icon: "⚡", tier: "agency", category: "Developer", connected: false, permissions: ["Trigger zaps", "Receive data"], version: "v1.0" },
+  { id: "shopify", name: "Shopify Admin API", description: "Manage products, orders and store settings", icon: "🛍️", tier: "agency", category: "E-commerce", connected: false, permissions: ["Read orders", "Manage products", "Update inventory"], version: "v1.0" },
+  { id: "aws-s3", name: "AWS S3", description: "Store and retrieve files from Amazon S3 buckets", icon: "🪣", tier: "agency", category: "Storage", connected: false, permissions: ["Read objects", "Upload files", "Manage buckets"], version: "v1.0" },
+  { id: "azure-blob", name: "Azure Blob Storage", description: "Manage files in Microsoft Azure storage", icon: "🔷", tier: "agency", category: "Storage", connected: false, permissions: ["Read blobs", "Upload files", "Manage containers"], version: "v1.0" },
+  { id: "gcs", name: "Google Cloud Storage", description: "Store and manage files in Google Cloud", icon: "🌐", tier: "agency", category: "Storage", connected: false, permissions: ["Read objects", "Upload files", "Manage buckets"], version: "v1.0" },
+  { id: "ms-teams", name: "Microsoft Teams", description: "Send messages and manage team channels", icon: "💼", tier: "agency", category: "Communication", connected: false, permissions: ["Send messages", "Create channels", "Manage teams"], version: "v1.0" },
+  { id: "jira", name: "Jira", description: "Manage issues, sprints and project tracking", icon: "🎯", tier: "agency", category: "Productivity", connected: false, permissions: ["Create issues", "Update sprints", "Read projects"], version: "v3.0" },
+  { id: "servicenow", name: "ServiceNow", description: "Manage IT service requests and incidents", icon: "🔧", tier: "agency", category: "Enterprise", connected: false, permissions: ["Create incidents", "Update tickets", "Read workflows"], version: "v1.0" },
+  { id: "oracle-cloud", name: "Oracle Cloud Storage", description: "Enterprise cloud storage and data management", icon: "🔴", tier: "agency", category: "Storage", connected: false, permissions: ["Read objects", "Upload files", "Manage buckets"], version: "v1.0" },
 ];
 
 const filterOptions = ["All", "Starter", "Pro", "Agency", "Coming Soon"] as const;
