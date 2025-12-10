@@ -54,29 +54,6 @@ const PaymentMethodModal = ({ open, onClose, currentCard, onSuccess }: PaymentMe
     }
   };
 
-  const handleOpenStripePortal = async () => {
-    setIsLoading(true);
-    
-    // In production, this would:
-    // 1. Call your backend to create a Stripe billing portal session
-    // 2. Redirect to the returned URL
-    try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Mock redirect to Stripe portal
-      synthToast.success("Opening Stripe Portal", "Redirecting you to Stripe to manage your payment method...");
-      
-      // In production: window.location.href = portalUrl;
-      // For demo, we just close the modal
-      setTimeout(() => {
-        onClose();
-      }, 1000);
-    } catch (error) {
-      synthToast.error("Portal Error", "Failed to open Stripe portal. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
@@ -164,16 +141,6 @@ const PaymentMethodModal = ({ open, onClose, currentCard, onSuccess }: PaymentMe
               )}
             </Button>
             
-            {currentCard && (
-              <Button 
-                variant="outline" 
-                onClick={handleOpenStripePortal}
-                className="w-full gap-2"
-                disabled={isLoading}
-              >
-                Manage in Stripe Portal
-              </Button>
-            )}
             
             <Button 
               variant="ghost" 
