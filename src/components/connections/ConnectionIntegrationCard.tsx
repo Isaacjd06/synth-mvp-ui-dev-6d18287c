@@ -49,7 +49,7 @@ const ConnectionIntegrationCard = ({
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500/50 via-green-400 to-green-500/50" />
         )}
 
-        <CardContent className="p-4">
+        <CardContent className="p-4 flex flex-col h-full min-h-[180px]">
           <div className="flex items-start gap-3 mb-3">
             <IntegrationIcon 
               app={integration.name} 
@@ -70,40 +70,40 @@ const ConnectionIntegrationCard = ({
             )}
           </div>
 
-          <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+          <p className="text-sm text-muted-foreground line-clamp-2 flex-grow">
             {integration.description}
           </p>
 
-          {/* Action Button */}
-          {!integration.comingSoon && (
-            <div className="mt-auto">
-              {integration.connected ? (
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="w-full border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDisconnect();
-                  }}
-                >
-                  Disconnect
-                </Button>
-              ) : (
-                <Button 
-                  size="sm"
-                  className="w-full bg-primary hover:bg-primary/90"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onConnect();
-                  }}
-                >
-                  <Plug className="w-4 h-4 mr-2" />
-                  Connect
-                </Button>
-              )}
-            </div>
-          )}
+          {/* Action Button - Fixed at bottom */}
+          <div className="mt-4 pt-2">
+            {integration.comingSoon ? (
+              <div className="h-9" />
+            ) : integration.connected ? (
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="w-full border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDisconnect();
+                }}
+              >
+                Disconnect
+              </Button>
+            ) : (
+              <Button 
+                size="sm"
+                className="w-full bg-primary hover:bg-primary/90"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onConnect();
+                }}
+              >
+                <Plug className="w-4 h-4 mr-2" />
+                Connect
+              </Button>
+            )}
+          </div>
         </CardContent>
 
         {/* Hover Glow Effect */}
