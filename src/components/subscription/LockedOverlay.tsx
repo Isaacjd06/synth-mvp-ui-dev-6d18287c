@@ -13,6 +13,12 @@ interface LockedOverlayProps {
   showButton?: boolean;
 }
 
+const planLabels: Record<string, string> = {
+  starter: "Starter",
+  pro: "Pro",
+  agency: "Agency",
+};
+
 const LockedOverlay = ({
   children,
   feature,
@@ -37,7 +43,7 @@ const LockedOverlay = ({
   const displayMessage = message || (
     !isSubscribed 
       ? "This feature requires a subscription" 
-      : `Available on ${requiredPlan?.charAt(0).toUpperCase()}${requiredPlan?.slice(1)} plan`
+      : `Available on ${requiredPlan ? planLabels[requiredPlan] : "higher"} plan`
   );
 
   return (
@@ -48,7 +54,7 @@ const LockedOverlay = ({
       </div>
       
       {/* Overlay */}
-      <div className="absolute inset-0 bg-background/10 backdrop-blur-[1px] flex items-center justify-center rounded-lg">
+      <div className="absolute inset-0 locked-overlay flex items-center justify-center rounded-lg">
         <div className="text-center p-6 max-w-sm">
           <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-muted/50 border border-border/50 flex items-center justify-center">
             <Lock className="w-6 h-6 text-muted-foreground" />

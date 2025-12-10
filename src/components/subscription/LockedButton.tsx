@@ -49,8 +49,7 @@ const LockedButton = forwardRef<HTMLButtonElement, LockedButtonProps>(
             ref={ref}
             onClick={handleLockedClick}
             className={cn(
-              "opacity-40 cursor-pointer relative group",
-              "hover:opacity-60 hover:animate-[shake_0.3s_ease-in-out]",
+              "opacity-40 cursor-pointer relative group locked-button",
               className
             )}
             {...props}
@@ -59,7 +58,10 @@ const LockedButton = forwardRef<HTMLButtonElement, LockedButtonProps>(
             {children}
           </Button>
         </TooltipTrigger>
-        <TooltipContent side="top" className="text-xs">
+        <TooltipContent 
+          side="top" 
+          className="text-xs bg-popover/95 backdrop-blur-sm border-border/60"
+        >
           {tooltip}
         </TooltipContent>
       </Tooltip>

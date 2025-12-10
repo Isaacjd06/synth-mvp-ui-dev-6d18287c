@@ -625,3 +625,46 @@
     opacity: 0;
   }
 }
+
+/* Subscription Gating Animations */
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-2px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(2px);
+  }
+}
+
+@keyframes lock-pulse {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Locked Overlay Styles */
+.locked-overlay {
+  background: hsl(0 0% 0% / 0.08);
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+  transition: all 0.3s ease;
+}
+
+.locked-overlay:hover {
+  background: hsl(0 0% 0% / 0.12);
+}
+
+/* Locked Button Animation */
+.locked-button {
+  transition: all 0.2s ease;
+}
+
+.locked-button:hover {
+  animation: shake 0.3s ease-in-out;
+}

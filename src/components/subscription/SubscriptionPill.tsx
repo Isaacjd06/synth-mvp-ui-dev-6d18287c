@@ -35,7 +35,8 @@ const SubscriptionPill = () => {
         className={cn(
           "cursor-pointer transition-all duration-300 hover:scale-105",
           "bg-amber-500/15 text-amber-300 border-amber-500/30",
-          "hover:bg-amber-500/25 hover:border-amber-500/50"
+          "hover:bg-amber-500/25 hover:border-amber-500/50",
+          "shadow-[0_0_12px_-3px_hsl(45_90%_50%/0.3)]"
         )}
       >
         <AlertTriangle className="w-3 h-3 mr-1.5 text-amber-400" />
@@ -53,7 +54,9 @@ const SubscriptionPill = () => {
         "transition-all duration-300",
         styles.bg,
         styles.text,
-        styles.border
+        styles.border,
+        planTier === "pro" && "shadow-[0_0_12px_-3px_hsl(217_91%_60%/0.3)]",
+        planTier === "agency" && "shadow-[0_0_12px_-3px_hsl(180_70%_50%/0.3)]"
       )}
     >
       <Crown className={cn("w-3 h-3 mr-1.5", styles.icon)} />
