@@ -15,7 +15,7 @@ interface ConnectionIntegrationCardProps {
 }
 
 const tierColors = {
-  basic: "bg-muted/50 text-muted-foreground border-muted",
+  starter: "bg-muted/50 text-muted-foreground border-muted",
   pro: "bg-primary/15 text-primary border-primary/30",
   agency: "bg-cyan-500/15 text-cyan-400 border-cyan-500/30",
 };
