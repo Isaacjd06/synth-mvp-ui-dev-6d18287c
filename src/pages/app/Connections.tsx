@@ -11,7 +11,7 @@ import ConnectionIntegrationCard from "@/components/connections/ConnectionIntegr
 import IntegrationDetailsDrawer from "@/components/connections/IntegrationDetailsDrawer";
 import { cn } from "@/lib/utils";
 
-export type IntegrationTier = "basic" | "pro" | "agency";
+export type IntegrationTier = "starter" | "pro" | "agency";
 
 export interface Integration {
   id: string;
@@ -27,38 +27,38 @@ export interface Integration {
 }
 
 const integrations: Integration[] = [
-  // Basic tier (1-7)
-  { id: "gmail", name: "Gmail", description: "Send and receive emails, manage drafts and labels", icon: "📧", tier: "basic", category: "Communication", connected: false, permissions: ["Read emails", "Send emails", "Manage labels"], version: "v2.1" },
-  { id: "google-calendar", name: "Google Calendar", description: "Create events, manage schedules and reminders", icon: "📅", tier: "basic", category: "Productivity", connected: true, permissions: ["Read events", "Create events", "Modify events"], version: "v3.0" },
-  { id: "google-sheets", name: "Google Sheets", description: "Read and write spreadsheet data", icon: "📊", tier: "basic", category: "Productivity", connected: false, permissions: ["Read spreadsheets", "Edit spreadsheets"], version: "v4.0" },
-  { id: "slack", name: "Slack", description: "Send messages, manage channels and workflows", icon: "💬", tier: "basic", category: "Communication", connected: true, permissions: ["Send messages", "Read channels", "Manage workflows"], version: "v2.0" },
-  { id: "notion", name: "Notion", description: "Create pages, update databases and manage content", icon: "📝", tier: "basic", category: "Productivity", connected: false, permissions: ["Read pages", "Create pages", "Update databases"], version: "v1.0" },
-  { id: "webhooks", name: "Webhooks", description: "Send and receive HTTP webhooks for custom integrations", icon: "🔗", tier: "basic", category: "Developer", connected: false, permissions: ["Send webhooks", "Receive webhooks"], version: "v1.0" },
-  { id: "email-smtp", name: "Email (SMTP)", description: "Send emails via custom SMTP server", icon: "✉️", tier: "basic", category: "Communication", connected: false, permissions: ["Send emails"], version: "v1.0" },
+  // Starter tier (1-12)
+  { id: "gmail", name: "Gmail", description: "Send and receive emails, manage drafts and labels", icon: "📧", tier: "starter", category: "Communication", connected: false, permissions: ["Read emails", "Send emails", "Manage labels"], version: "v2.1" },
+  { id: "google-calendar", name: "Google Calendar", description: "Create events, manage schedules and reminders", icon: "📅", tier: "starter", category: "Productivity", connected: true, permissions: ["Read events", "Create events", "Modify events"], version: "v3.0" },
+  { id: "google-sheets", name: "Google Sheets", description: "Read and write spreadsheet data", icon: "📊", tier: "starter", category: "Productivity", connected: false, permissions: ["Read spreadsheets", "Edit spreadsheets"], version: "v4.0" },
+  { id: "slack", name: "Slack", description: "Send messages, manage channels and workflows", icon: "💬", tier: "starter", category: "Communication", connected: true, permissions: ["Send messages", "Read channels", "Manage workflows"], version: "v2.0" },
+  { id: "notion", name: "Notion", description: "Create pages, update databases and manage content", icon: "📝", tier: "starter", category: "Productivity", connected: false, permissions: ["Read pages", "Create pages", "Update databases"], version: "v1.0" },
+  { id: "webhooks", name: "Webhooks", description: "Send and receive HTTP webhooks for custom integrations", icon: "🔗", tier: "starter", category: "Developer", connected: false, permissions: ["Send webhooks", "Receive webhooks"], version: "v1.0" },
+  { id: "email-smtp", name: "Email (SMTP)", description: "Send emails via custom SMTP server", icon: "✉️", tier: "starter", category: "Communication", connected: false, permissions: ["Send emails"], version: "v1.0" },
+  { id: "discord", name: "Discord", description: "Send messages, manage servers and bots", icon: "🎮", tier: "starter", category: "Communication", connected: false, permissions: ["Send messages", "Manage channels", "Bot commands"], version: "v1.0" },
+  { id: "stripe", name: "Stripe", description: "Manage payments, subscriptions and invoices", icon: "💳", tier: "starter", category: "Finance", connected: false, permissions: ["Read transactions", "Create charges", "Manage subscriptions"], version: "v2.0" },
+  { id: "clickup", name: "ClickUp", description: "Manage tasks, projects and team workspaces", icon: "✅", tier: "starter", category: "Productivity", connected: false, permissions: ["Read tasks", "Create tasks", "Update projects"], version: "v2.0" },
+  { id: "trello", name: "Trello", description: "Manage boards, cards and team collaboration", icon: "📋", tier: "starter", category: "Productivity", connected: false, permissions: ["Read boards", "Create cards", "Move cards"], version: "v1.0" },
+  { id: "airtable", name: "Airtable", description: "Manage databases, records and automations", icon: "🗃️", tier: "starter", category: "Productivity", connected: false, permissions: ["Read records", "Create records", "Update records"], version: "v1.0" },
   
-  // Pro tier (8-13)
-  { id: "discord", name: "Discord", description: "Send messages, manage servers and bots", icon: "🎮", tier: "pro", category: "Communication", connected: false, permissions: ["Send messages", "Manage channels", "Bot commands"], version: "v1.0" },
-  { id: "stripe", name: "Stripe", description: "Manage payments, subscriptions and invoices", icon: "💳", tier: "pro", category: "Finance", connected: false, permissions: ["Read transactions", "Create charges", "Manage subscriptions"], version: "v2.0" },
-  { id: "clickup", name: "ClickUp", description: "Manage tasks, projects and team workspaces", icon: "✅", tier: "pro", category: "Productivity", connected: false, permissions: ["Read tasks", "Create tasks", "Update projects"], version: "v2.0" },
-  { id: "trello", name: "Trello", description: "Manage boards, cards and team collaboration", icon: "📋", tier: "pro", category: "Productivity", connected: false, permissions: ["Read boards", "Create cards", "Move cards"], version: "v1.0" },
-  { id: "airtable", name: "Airtable", description: "Manage databases, records and automations", icon: "🗃️", tier: "pro", category: "Productivity", connected: false, permissions: ["Read records", "Create records", "Update records"], version: "v1.0" },
+  // Pro tier (13-16)
   { id: "dropbox", name: "Dropbox", description: "Upload, download and manage files", icon: "📦", tier: "pro", category: "Storage", connected: false, permissions: ["Read files", "Upload files", "Share files"], version: "v2.0" },
+  { id: "hubspot", name: "HubSpot CRM", description: "Manage contacts, deals and marketing campaigns", icon: "🧲", tier: "pro", category: "CRM", connected: false, permissions: ["Read contacts", "Create deals", "Track campaigns"], version: "v3.0" },
+  { id: "monday", name: "Monday.com", description: "Manage projects, boards and team workflows", icon: "📌", tier: "pro", category: "Productivity", connected: false, permissions: ["Read boards", "Create items", "Update columns"], version: "v2.0" },
+  { id: "quickbooks", name: "QuickBooks", description: "Manage invoices, expenses and financial reports", icon: "💰", tier: "pro", category: "Finance", connected: false, permissions: ["Read transactions", "Create invoices", "Generate reports"], version: "v1.0" },
   
-  // Agency tier (14-20)
+  // Agency tier (17-20)
   { id: "salesforce", name: "Salesforce", description: "Manage leads, contacts and sales pipelines", icon: "☁️", tier: "agency", category: "CRM", connected: false, permissions: ["Read contacts", "Create leads", "Update opportunities"], version: "v1.0" },
-  { id: "hubspot", name: "HubSpot CRM", description: "Manage contacts, deals and marketing campaigns", icon: "🧲", tier: "agency", category: "CRM", connected: false, permissions: ["Read contacts", "Create deals", "Track campaigns"], version: "v3.0" },
-  { id: "monday", name: "Monday.com", description: "Manage projects, boards and team workflows", icon: "📌", tier: "agency", category: "Productivity", connected: false, permissions: ["Read boards", "Create items", "Update columns"], version: "v2.0" },
   { id: "zoho", name: "Zoho CRM", description: "Manage sales, marketing and customer support", icon: "🔶", tier: "agency", category: "CRM", connected: false, permissions: ["Read records", "Create leads", "Update deals"], version: "v2.0" },
-  { id: "quickbooks", name: "QuickBooks", description: "Manage invoices, expenses and financial reports", icon: "💰", tier: "agency", category: "Finance", connected: false, permissions: ["Read transactions", "Create invoices", "Generate reports"], version: "v1.0" },
   { id: "zapier", name: "Zapier Handoff", description: "Connect with 5000+ apps through Zapier", icon: "⚡", tier: "agency", category: "Developer", connected: false, comingSoon: true, permissions: ["Trigger zaps", "Receive data"], version: "v1.0" },
   { id: "custom-api", name: "Custom API Integration", description: "Build custom integrations with full request builder", icon: "🛠️", tier: "agency", category: "Developer", connected: false, permissions: ["Full API access", "Custom headers", "Authentication"], version: "v1.0" },
 ];
 
-const filterOptions = ["All", "Basic", "Pro", "Agency", "Coming Soon"] as const;
+const filterOptions = ["All", "Starter", "Pro", "Agency", "Coming Soon"] as const;
 type FilterOption = typeof filterOptions[number];
 
 const tierColors = {
-  basic: "bg-muted text-muted-foreground",
+  starter: "bg-muted text-muted-foreground",
   pro: "bg-primary/20 text-primary",
   agency: "bg-cyan-500/20 text-cyan-400",
 };
@@ -73,8 +73,8 @@ const Connections = () => {
   const isIntegrationLocked = (tier: IntegrationTier): boolean => {
     if (!isSubscribed) return true;
     
-    const tierLevel = { basic: 1, pro: 2, agency: 3 };
-    const userLevel = tierLevel[planTier] || 0;
+    const tierLevel = { starter: 1, pro: 2, agency: 3 };
+    const userLevel = tierLevel[planTier as keyof typeof tierLevel] || 0;
     const requiredLevel = tierLevel[tier];
     
     return userLevel < requiredLevel;
@@ -82,8 +82,8 @@ const Connections = () => {
 
   const getUpgradeMessage = (tier: IntegrationTier): string => {
     if (!isSubscribed) return "Subscribe to unlock integrations";
-    if (tier === "pro") return "Upgrade to Pro";
-    if (tier === "agency") return "Upgrade to Agency";
+    if (tier === "pro") return "Upgrade to Pro or Agency";
+    if (tier === "agency") return "Available on Agency plan";
     return "Upgrade Plan";
   };
 
@@ -95,7 +95,7 @@ const Connections = () => {
       
       // Category filter
       let matchesFilter = true;
-      if (activeFilter === "Basic") matchesFilter = integration.tier === "basic";
+      if (activeFilter === "Starter") matchesFilter = integration.tier === "starter";
       else if (activeFilter === "Pro") matchesFilter = integration.tier === "pro";
       else if (activeFilter === "Agency") matchesFilter = integration.tier === "agency";
       else if (activeFilter === "Coming Soon") matchesFilter = !!integration.comingSoon;

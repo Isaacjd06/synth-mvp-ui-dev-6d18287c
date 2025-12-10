@@ -16,7 +16,7 @@ interface IntegrationDetailsDrawerProps {
 }
 
 const tierColors = {
-  basic: "bg-muted/50 text-muted-foreground",
+  starter: "bg-muted/50 text-muted-foreground",
   pro: "bg-primary/15 text-primary",
   agency: "bg-cyan-500/15 text-cyan-400",
 };
