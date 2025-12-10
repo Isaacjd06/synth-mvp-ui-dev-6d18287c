@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { AlertTriangle, ArrowRight, Lock } from "lucide-react";
+import { AlertTriangle, ArrowRight, Lock, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { cn } from "@/lib/utils";
@@ -8,9 +8,15 @@ interface SubscriptionBannerProps {
   feature?: string;
   variant?: "warning" | "info" | "compact";
   className?: string;
+  dismissible?: boolean;
 }
 
-const SubscriptionBanner = ({ feature, variant = "warning", className }: SubscriptionBannerProps) => {
+const SubscriptionBanner = ({ 
+  feature, 
+  variant = "warning", 
+  className,
+  dismissible = false,
+}: SubscriptionBannerProps) => {
   const { openSubscriptionModal, isSubscribed } = useSubscription();
 
   if (isSubscribed) return null;
@@ -47,14 +53,20 @@ const SubscriptionBanner = ({ feature, variant = "warning", className }: Subscri
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       className={cn(
-        "p-4 rounded-xl border backdrop-blur-sm",
+        "p-4 rounded-xl border backdrop-blur-sm relative overflow-hidden",
         variant === "warning" 
           ? "bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border-amber-500/30"
           : "bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-primary/30",
         className
       )}
     >
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      {/* Subtle glow effect */}
+      <div className={cn(
+        "absolute top-0 left-0 w-32 h-32 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2",
+        variant === "warning" ? "bg-amber-500/15" : "bg-primary/15"
+      )} />
+
+      <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-start sm:items-center gap-3">
           <div className={cn(
             "w-10 h-10 rounded-lg flex items-center justify-center shrink-0",
@@ -72,7 +84,7 @@ const SubscriptionBanner = ({ feature, variant = "warning", className }: Subscri
             <p className="text-sm text-muted-foreground font-light">
               {feature
                 ? `Subscribe to ${feature}`
-                : "Subscribe to activate workflows, runs, integrations, and advanced features."}
+                : "Subscribe to activate workflows, runs, integrations, and more."}
             </p>
           </div>
         </div>
@@ -85,8 +97,8 @@ const SubscriptionBanner = ({ feature, variant = "warning", className }: Subscri
               : "bg-primary hover:bg-primary/90"
           )}
         >
+          <Sparkles className="w-4 h-4" />
           Upgrade Now
-          <ArrowRight className="w-4 h-4" />
         </Button>
       </div>
     </motion.div>

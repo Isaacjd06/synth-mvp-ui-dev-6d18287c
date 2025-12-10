@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Zap, Activity, Clock, CheckCircle, MessageSquare, Plus, ChevronRight, Sparkles, Lock, AlertTriangle } from "lucide-react";
+import { Zap, Activity, Clock, CheckCircle, MessageSquare, Plus, ChevronRight, Sparkles } from "lucide-react";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition, PageItem } from "@/components/app/PageTransition";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import NextSuggestionCard from "@/components/dashboard/NextSuggestionCard";
 import SubscriptionBanner from "@/components/subscription/SubscriptionBanner";
+import SubscriptionCallout from "@/components/subscription/SubscriptionCallout";
 import LockedButton from "@/components/subscription/LockedButton";
 import PlanLimitIndicator from "@/components/subscription/PlanLimitIndicator";
 import { useSubscription } from "@/contexts/SubscriptionContext";
@@ -76,29 +77,21 @@ const Dashboard = () => {
     <AppShell>
       <TooltipProvider>
         <PageTransition className="max-w-screen-xl mx-auto px-4 py-8 space-y-8">
-          {/* Subscription Banner - Large callout for unsubscribed */}
+          {/* Non-dismissible Subscription Banner */}
           {!isSubscribed && (
             <PageItem>
-              <Card className="border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent">
-                <CardContent className="py-8 text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
-                    <AlertTriangle className="w-8 h-8 text-amber-400" />
-                  </div>
-                  <h3 className="text-xl font-display font-bold text-foreground mb-2">
-                    You are not subscribed
-                  </h3>
-                  <p className="text-muted-foreground font-light max-w-md mx-auto mb-6">
-                    Subscribe to activate workflows, runs, integrations, and advanced features.
-                  </p>
-                  <LockedButton 
-                    feature="unlock Synth"
-                    className="bg-amber-500 hover:bg-amber-600 text-black"
-                  >
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Upgrade Now
-                  </LockedButton>
-                </CardContent>
-              </Card>
+              <SubscriptionBanner feature="activate workflows, runs, integrations, and more" />
+            </PageItem>
+          )}
+
+          {/* Large centered callout for unsubscribed users */}
+          {!isSubscribed && (
+            <PageItem>
+              <SubscriptionCallout
+                title="Subscription Required"
+                subtitle="Your account is in read-only mode until you subscribe."
+                feature="unlock Synth"
+              />
             </PageItem>
           )}
 
@@ -254,7 +247,7 @@ const Dashboard = () => {
             </Card>
           </PageItem>
 
-          {/* Quick Actions */}
+          {/* Quick Actions - Locked for unsubscribed */}
           <PageItem className="flex flex-wrap gap-3">
             <LockedButton className="bg-primary hover:bg-primary/90" feature="create automations">
               <Plus className="w-4 h-4 mr-1.5" />

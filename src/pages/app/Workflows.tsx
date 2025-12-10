@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Zap, Lock, Eye, AlertTriangle } from "lucide-react";
+import { Zap, Lock, Eye, AlertTriangle, ArrowRight } from "lucide-react";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition, PageItem } from "@/components/app/PageTransition";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import SubscriptionBanner from "@/components/subscription/SubscriptionBanner";
 import LockedButton from "@/components/subscription/LockedButton";
 import PlanLimitIndicator from "@/components/subscription/PlanLimitIndicator";
+import ReadOnlyBadge from "@/components/subscription/ReadOnlyBadge";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { synthToast } from "@/lib/synth-toast";
 import { cn } from "@/lib/utils";
@@ -50,7 +51,7 @@ const initialWorkflows = [
 
 const Workflows = () => {
   const [workflows, setWorkflows] = useState(initialWorkflows);
-  const { isSubscribed, requireSubscription, isAtLimit, planLimits, usageStats } = useSubscription();
+  const { isSubscribed, requireSubscription, isAtLimit, planLimits, usageStats, openSubscriptionModal, planTier } = useSubscription();
 
   const handleToggleStatus = (id: string) => {
     if (!requireSubscription("activate workflows")) return;
@@ -84,6 +85,7 @@ const Workflows = () => {
   const activeCount = workflows.filter(w => w.status === "active").length;
   const maxWorkflows = planLimits?.maxWorkflows || 3;
   const isAtWorkflowLimit = isSubscribed && activeCount >= maxWorkflows;
+  const upgradePlan = planTier === "starter" ? "Pro" : planTier === "pro" ? "Agency" : null;
 
   return (
     <AppShell>
@@ -126,17 +128,30 @@ const Workflows = () => {
                 <Link to="/app/chat">Create Workflow</Link>
               </Button>
             ) : isSubscribed && isAtWorkflowLimit ? (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button className="opacity-40 cursor-not-allowed" disabled>
-                    <Lock className="w-3.5 h-3.5 mr-1.5" />
-                    Workflow limit reached ({activeCount}/{maxWorkflows})
+              <div className="flex flex-col items-end gap-2">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button className="opacity-40 cursor-not-allowed locked-button" disabled>
+                      <Lock className="w-3.5 h-3.5 mr-1.5" />
+                      Workflow limit reached ({activeCount}/{maxWorkflows})
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-xs">Upgrade for more workflows</p>
+                  </TooltipContent>
+                </Tooltip>
+                {upgradePlan && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => openSubscriptionModal("more workflows")}
+                    className="text-xs text-primary hover:text-primary h-auto py-1"
+                  >
+                    Upgrade to {upgradePlan} for more
+                    <ArrowRight className="w-3 h-3 ml-1" />
                   </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="text-xs">Upgrade for more workflows</p>
-                </TooltipContent>
-              </Tooltip>
+                )}
+              </div>
             ) : (
               <LockedButton feature="create workflows">
                 Create Workflow
@@ -189,12 +204,7 @@ const Workflows = () => {
                               <p className="font-medium text-foreground truncate">
                                 {workflow.name}
                               </p>
-                              {!isSubscribed && (
-                                <Badge variant="outline" className="text-[10px] border-muted-foreground/30 text-muted-foreground">
-                                  <Eye className="w-2.5 h-2.5 mr-1" />
-                                  View only
-                                </Badge>
-                              )}
+                              {!isSubscribed && <ReadOnlyBadge size="sm" />}
                             </div>
                             <p className="text-sm text-muted-foreground font-light">
                               Last run: {workflow.lastRunTime}
@@ -202,7 +212,7 @@ const Workflows = () => {
                             {showLimitWarning && (
                               <p className="text-xs text-amber-400 flex items-center gap-1 mt-1">
                                 <AlertTriangle className="w-3 h-3" />
-                                Upgrade to activate more workflows
+                                Inactive — Upgrade to activate more workflows
                               </p>
                             )}
                           </div>
@@ -237,7 +247,7 @@ const Workflows = () => {
                                     variant="outline"
                                     size="sm"
                                     disabled
-                                    className="opacity-40 cursor-not-allowed"
+                                    className="opacity-40 cursor-not-allowed locked-button"
                                   >
                                     <Lock className="w-3 h-3 mr-1.5" />
                                     {workflow.status === "active" ? "Deactivate" : "Activate"}
