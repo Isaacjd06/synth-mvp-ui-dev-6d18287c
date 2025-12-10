@@ -1,38 +1,25 @@
 import { motion } from "framer-motion";
-import { Lock, Check } from "lucide-react";
+import { Check, Plug } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useSubscription } from "@/contexts/SubscriptionContext";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Integration } from "@/pages/app/Connections";
 import IntegrationIcon from "./IntegrationIcon";
 
 interface ConnectionIntegrationCardProps {
   integration: Integration;
-  isLocked: boolean;
-  upgradeMessage: string;
-  onClick: () => void;
+  onConnect: () => void;
+  onDisconnect: () => void;
   index: number;
 }
 
-const tierColors = {
-  starter: "bg-muted/50 text-muted-foreground border-muted",
-  pro: "bg-primary/15 text-primary border-primary/30",
-  agency: "bg-cyan-500/15 text-cyan-400 border-cyan-500/30",
-};
-
-const ConnectionIntegrationCard = ({ integration, isLocked, upgradeMessage, onClick, index }: ConnectionIntegrationCardProps) => {
-  const { openSubscriptionModal } = useSubscription();
-
-  const handleClick = () => {
-    if (integration.comingSoon) return;
-    if (isLocked) {
-      openSubscriptionModal(`${integration.name} integration`);
-    } else {
-      onClick();
-    }
-  };
-
+const ConnectionIntegrationCard = ({ 
+  integration, 
+  onConnect, 
+  onDisconnect, 
+  index 
+}: ConnectionIntegrationCardProps) => {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -40,13 +27,12 @@ const ConnectionIntegrationCard = ({ integration, isLocked, upgradeMessage, onCl
       transition={{ delay: index * 0.03, duration: 0.3 }}
     >
       <Card
-        onClick={handleClick}
         className={cn(
-          "relative overflow-hidden cursor-pointer transition-all duration-300 group h-full",
+          "relative overflow-hidden transition-all duration-300 group h-full",
           "hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/5",
           "border-border/60 bg-card/50 backdrop-blur-sm",
-          isLocked && "opacity-60",
-          integration.comingSoon && "opacity-50 cursor-default"
+          integration.connected && "border-green-500/30",
+          integration.comingSoon && "opacity-50"
         )}
       >
         {/* Coming Soon Badge */}
@@ -58,59 +44,66 @@ const ConnectionIntegrationCard = ({ integration, isLocked, upgradeMessage, onCl
           </div>
         )}
 
-        {/* Lock Overlay */}
-        {isLocked && !integration.comingSoon && (
-          <div className="absolute inset-0 bg-background/40 backdrop-blur-[1px] z-10 flex items-center justify-center">
-            <div className="text-center p-4">
-              <div className="w-10 h-10 mx-auto rounded-full bg-muted/80 flex items-center justify-center mb-2">
-                <Lock className="w-5 h-5 text-muted-foreground" />
-              </div>
-              <p className="text-xs text-muted-foreground mb-2">{upgradeMessage}</p>
-            </div>
-          </div>
-        )}
-
         {/* Connected Indicator Glow */}
-        {integration.connected && !isLocked && (
+        {integration.connected && (
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500/50 via-green-400 to-green-500/50" />
         )}
 
         <CardContent className="p-4">
-          <div className="flex items-start justify-between mb-3">
-            <div className="flex items-center gap-3">
-              <IntegrationIcon 
-                app={integration.name} 
-                size="md"
-                className="group-hover:border-primary/30 transition-colors duration-300"
-              />
-              <div>
-                <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
-                  {integration.name}
-                </h3>
-                <Badge 
-                  variant="outline" 
-                  className={cn("text-[10px] px-1.5 py-0 capitalize", tierColors[integration.tier])}
-                >
-                  {integration.tier}
-                </Badge>
-              </div>
+          <div className="flex items-start gap-3 mb-3">
+            <IntegrationIcon 
+              app={integration.name} 
+              size="md"
+              className="group-hover:border-primary/30 transition-colors duration-300 flex-shrink-0"
+            />
+            <div className="min-w-0 flex-1">
+              <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">
+                {integration.name}
+              </h3>
+              <span className="text-xs text-muted-foreground/70">{integration.category}</span>
             </div>
+            {integration.connected && (
+              <Badge className="bg-green-500/15 text-green-400 border-green-500/30 text-xs gap-1 flex-shrink-0">
+                <Check className="w-3 h-3" />
+                Connected
+              </Badge>
+            )}
           </div>
 
           <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
             {integration.description}
           </p>
 
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground/70">{integration.category}</span>
-            
-            {integration.connected && !isLocked && (
-              <Badge className="bg-green-500/15 text-green-400 border-green-500/30 text-xs gap-1">
-                <Check className="w-3 h-3" />
-                Connected
-              </Badge>
-            )}
-          </div>
+          {/* Action Button */}
+          {!integration.comingSoon && (
+            <div className="mt-auto">
+              {integration.connected ? (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="w-full border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDisconnect();
+                  }}
+                >
+                  Disconnect
+                </Button>
+              ) : (
+                <Button 
+                  size="sm"
+                  className="w-full bg-primary hover:bg-primary/90"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onConnect();
+                  }}
+                >
+                  <Plug className="w-4 h-4 mr-2" />
+                  Connect
+                </Button>
+              )}
+            </div>
+          )}
         </CardContent>
 
         {/* Hover Glow Effect */}
