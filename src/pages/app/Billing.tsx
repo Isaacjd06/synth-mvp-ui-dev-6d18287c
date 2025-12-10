@@ -548,12 +548,6 @@ const Billing = () => {
                       </p>
                       <p className="text-lg font-semibold text-foreground">{formatDate(subscription.renewalDate)}</p>
                     </div>
-                    <div className="p-4 rounded-xl bg-secondary/30 border border-border">
-                      <Button onClick={handleOpenStripePortal} variant="outline" className="w-full gap-2">
-                        <ExternalLink className="w-4 h-4" />
-                        Manage in Stripe
-                      </Button>
-                    </div>
                   </div>
 
                   <Separator className="bg-border/50" />
