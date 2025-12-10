@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { cn } from "@/lib/utils";
 import type { Integration } from "@/pages/app/Connections";
+import IntegrationIcon from "./IntegrationIcon";
 
 interface IntegrationDetailsDrawerProps {
   integration: Integration | null;
@@ -70,12 +71,7 @@ const IntegrationDetailsDrawer = ({
             <div className="sticky top-0 bg-card/95 backdrop-blur-xl border-b border-border/50 p-6 z-10">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-4">
-                  <div className={cn(
-                    "w-16 h-16 rounded-2xl flex items-center justify-center text-3xl",
-                    "bg-muted/50 border border-border/50"
-                  )}>
-                    {integration.icon}
-                  </div>
+                  <IntegrationIcon app={integration.name} size="lg" />
                   <div>
                     <h2 className="text-xl font-semibold text-foreground">{integration.name}</h2>
                     <div className="flex items-center gap-2 mt-1">

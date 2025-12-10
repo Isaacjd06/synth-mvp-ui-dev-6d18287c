@@ -43,6 +43,7 @@ import { synthToast } from "@/lib/synth-toast";
 import { useStripePrices, StripePlan, StripeAddon } from "@/hooks/use-stripe-prices";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import PaymentMethodModal from "@/components/billing/PaymentMethodModal";
 
 // Mock subscription state - set to active subscription for testing
 const mockSubscription: {
@@ -108,10 +109,12 @@ const Billing = () => {
   const [loading, setLoading] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showChangePlanModal, setShowChangePlanModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [cancelConfirmation, setCancelConfirmation] = useState("");
   const [cancelReason, setCancelReason] = useState("");
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [changePlanLoading, setChangePlanLoading] = useState(false);
 
   const hasSubscription = subscription !== null;
   const isCancelConfirmValid = cancelConfirmation === "UNSUBSCRIBE";
@@ -135,7 +138,8 @@ const Billing = () => {
   };
 
   const handlePlanSelect = (planId: string) => {
-    setSelectedPlan(selectedPlan === planId ? null : planId);
+    // Always set the selected plan (not toggle)
+    setSelectedPlan(planId);
   };
 
   const handleAddonToggle = (addonId: string) => {
@@ -176,9 +180,52 @@ const Billing = () => {
     }
   };
 
-  const handleOpenStripePortal = () => {
-    synthToast.success("Opening Portal", "Redirecting to Stripe...");
-    // In production, this would redirect to Stripe Portal
+  const handleOpenPaymentModal = () => {
+    setShowPaymentModal(true);
+  };
+
+  const handlePaymentMethodUpdate = (newCard: { brand: string; last4: string; expiryMonth: number; expiryYear: number }) => {
+    if (subscription) {
+      setSubscription({
+        ...subscription,
+        paymentMethod: {
+          type: "card",
+          last4: newCard.last4,
+          brand: newCard.brand,
+          expiryMonth: newCard.expiryMonth,
+          expiryYear: newCard.expiryYear,
+        },
+      });
+    }
+  };
+
+  const handleConfirmPlanChange = async () => {
+    if (!selectedPlan || selectedPlan === subscription?.planId) return;
+    
+    setChangePlanLoading(true);
+    
+    try {
+      // Simulate API call to change plan
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      const newPlan = plans.find(p => p.id === selectedPlan);
+      if (newPlan && subscription) {
+        // Update subscription state with new plan
+        setSubscription({
+          ...subscription,
+          planId: selectedPlan,
+          planName: newPlan.name,
+        });
+        
+        synthToast.success("Plan Changed", `Your plan has been updated to ${newPlan.name}. Changes take effect next billing cycle.`);
+        setShowChangePlanModal(false);
+        setSelectedPlan(null);
+      }
+    } catch (error) {
+      synthToast.error("Plan Change Failed", "Failed to update your plan. Please try again.");
+    } finally {
+      setChangePlanLoading(false);
+    }
   };
 
   const handlePurchaseAddon = (addonId: string) => {
@@ -663,7 +710,7 @@ const Billing = () => {
                         </p>
                       </div>
                     </div>
-                    <Button variant="ghost" size="sm" onClick={handleOpenStripePortal}>
+                    <Button variant="ghost" size="sm" onClick={handleOpenPaymentModal}>
                       Update
                     </Button>
                   </div>
@@ -909,25 +956,33 @@ const Billing = () => {
               <PlanSelectionUI compact />
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setShowChangePlanModal(false)}>
+              <Button variant="outline" onClick={() => setShowChangePlanModal(false)} disabled={changePlanLoading}>
                 Cancel
               </Button>
               <Button
-                onClick={() => {
-                  if (selectedPlan) {
-                    synthToast.success("Plan Changed", "Your new plan will start next billing cycle.");
-                    setShowChangePlanModal(false);
-                    setSelectedPlan(null);
-                  }
-                }}
-                disabled={!selectedPlan || selectedPlan === subscription?.planId}
+                onClick={handleConfirmPlanChange}
+                disabled={!selectedPlan || selectedPlan === subscription?.planId || changePlanLoading}
                 className="btn-synth"
               >
+                {changePlanLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                 Confirm Change
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Payment Method Modal */}
+        <PaymentMethodModal
+          open={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          currentCard={subscription?.paymentMethod ? {
+            brand: subscription.paymentMethod.brand,
+            last4: subscription.paymentMethod.last4,
+            expiryMonth: subscription.paymentMethod.expiryMonth,
+            expiryYear: subscription.paymentMethod.expiryYear,
+          } : null}
+          onSuccess={handlePaymentMethodUpdate}
+        />
       </PageTransition>
 
       {/* Sticky Checkout Footer - Only show when no subscription */}

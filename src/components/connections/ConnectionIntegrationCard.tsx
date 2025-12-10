@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { cn } from "@/lib/utils";
 import type { Integration } from "@/pages/app/Connections";
+import IntegrationIcon from "./IntegrationIcon";
 
 interface ConnectionIntegrationCardProps {
   integration: Integration;
@@ -77,13 +78,11 @@ const ConnectionIntegrationCard = ({ integration, isLocked, upgradeMessage, onCl
         <CardContent className="p-4">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-3">
-              <div className={cn(
-                "w-12 h-12 rounded-xl flex items-center justify-center text-2xl",
-                "bg-muted/50 border border-border/50",
-                "group-hover:border-primary/30 transition-colors duration-300"
-              )}>
-                {integration.icon}
-              </div>
+              <IntegrationIcon 
+                app={integration.name} 
+                size="md"
+                className="group-hover:border-primary/30 transition-colors duration-300"
+              />
               <div>
                 <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
                   {integration.name}
