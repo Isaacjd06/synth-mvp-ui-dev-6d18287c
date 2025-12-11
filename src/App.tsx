@@ -17,9 +17,6 @@ import Executions from "./pages/app/Executions";
 import ExecutionDetail from "./pages/app/ExecutionDetail";
 import Connections from "./pages/app/Connections";
 import Billing from "./pages/app/Billing";
-import BillingSettings from "./pages/app/BillingSettings";
-import PaymentMethod from "./pages/app/PaymentMethod";
-
 import Skills from "./pages/app/Skills";
 
 const queryClient = new QueryClient();
@@ -44,9 +41,6 @@ const App = () => (
             <Route path="/app/executions/:id" element={<ExecutionDetail />} />
             <Route path="/app/connections" element={<Connections />} />
             <Route path="/app/billing" element={<Billing />} />
-            <Route path="/app/billing/settings" element={<BillingSettings />} />
-            <Route path="/app/billing/payment-method" element={<PaymentMethod />} />
-            
             <Route path="/app/skills" element={<Skills />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
