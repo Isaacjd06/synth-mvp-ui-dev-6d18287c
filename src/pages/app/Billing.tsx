@@ -910,13 +910,10 @@ const Billing = () => {
                 variant="outline"
                 onClick={handleCancelSubscription}
                 disabled={!isCancelConfirmValid || loading}
-                className={isCancelConfirmValid 
-                  ? "border-emerald-500 text-emerald-400 hover:bg-emerald-500/10" 
-                  : "border-destructive/50 text-destructive hover:bg-destructive/10"
-                }
+                className="border-destructive/50 text-destructive hover:bg-destructive/10"
               >
                 {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                {isCancelConfirmValid ? "Confirm Cancellation" : "Confirm Cancellation"}
+                Confirm Cancellation
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -951,7 +948,12 @@ const Billing = () => {
         </Dialog>
 
         {/* Start Subscription Modal */}
-        <Dialog open={showStartSubscriptionModal} onOpenChange={setShowStartSubscriptionModal}>
+        <Dialog open={showStartSubscriptionModal} onOpenChange={(open) => {
+          setShowStartSubscriptionModal(open);
+          if (open && !isSubscribed) {
+            setSelectedPlan(null);
+          }
+        }}>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Start Subscription</DialogTitle>
