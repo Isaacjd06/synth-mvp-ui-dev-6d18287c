@@ -103,12 +103,14 @@ const mockPurchaseLog = [
 const Billing = () => {
   const { plans, addons, loading: pricesLoading, error: pricesError } = useStripePrices();
   const [subscription, setSubscription] = useState<SubscriptionData>(defaultSubscription);
+  const [isSubscribed, setIsSubscribed] = useState(true);
   const [billingInterval, setBillingInterval] = useState<"monthly" | "yearly">("monthly");
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showChangePlanModal, setShowChangePlanModal] = useState(false);
+  const [showStartSubscriptionModal, setShowStartSubscriptionModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [cancelConfirmation, setCancelConfirmation] = useState("");
   const [cancelReason, setCancelReason] = useState("");
@@ -148,12 +150,30 @@ const Billing = () => {
         : [...prev, addonId]
     );
   };
+  const handleCancelSubscription = async () => {
+    if (!isCancelConfirmValid) return;
+    setLoading(true);
+
+    try {
+      await new Promise((r) => setTimeout(r, 1500));
+
+      setIsSubscribed(false);
+      setShowCancelModal(false);
+      setCancelConfirmation("");
+      setCancelReason("");
+      synthToast.success("Subscription Canceled", "Your plan has been canceled.");
+    } catch (error) {
+      setErrorMessage("Failed to cancel subscription. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleStartSubscription = async () => {
     if (!selectedPlan) return;
     
-    // Check if payment method exists (mock check)
-    const hasPaymentMethod = subscription?.paymentMethod || false;
+    // Check if payment method exists
+    const hasPaymentMethod = subscription?.paymentMethod?.last4;
     
     if (!hasPaymentMethod) {
       synthToast.error("Payment Method Required", "Please add a payment method before subscribing.");
@@ -168,51 +188,26 @@ const Billing = () => {
       const planData = plans.find(p => p.id === selectedPlan);
       if (planData) {
         setSubscription({
+          ...subscription,
           planId: selectedPlan,
           planName: planData.name,
           status: "active",
           billingInterval,
           renewalDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          ownedAddons: selectedAddons,
           usageLimits: {
             workflowsUsed: 0,
             workflowsLimit: selectedPlan === "starter" ? 5 : selectedPlan === "pro" ? 25 : 100,
             executionsUsed: 0,
             executionsLimit: selectedPlan === "starter" ? 1000 : selectedPlan === "pro" ? 10000 : 50000,
           },
-          paymentMethod: {
-            type: "card",
-            last4: "4242",
-            brand: "Visa",
-            expiryMonth: 12,
-            expiryYear: 2026,
-          },
         });
-        synthToast.success("Subscription Started", `Welcome to ${planData.name}!`);
+        setIsSubscribed(true);
+        setShowStartSubscriptionModal(false);
         setSelectedPlan(null);
-        setSelectedAddons([]);
+        synthToast.success("Subscription Started", `Welcome to ${planData.name}!`);
       }
     } catch (error) {
       synthToast.error("Subscription Failed", "Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCancelSubscription = async () => {
-    if (!isCancelConfirmValid) return;
-    setLoading(true);
-
-    try {
-      await new Promise((r) => setTimeout(r, 1500));
-
-      setSubscription(null);
-      setShowCancelModal(false);
-      setCancelConfirmation("");
-      setCancelReason("");
-      synthToast.success("Subscription Canceled", "Your plan has been canceled.");
-    } catch (error) {
-      setErrorMessage("Failed to cancel subscription. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -618,25 +613,50 @@ const Billing = () => {
                 <CardContent>
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>
-                      <p className="text-foreground">
-                        You're currently on the <span className="font-semibold text-primary">{subscription.planName}</span> plan
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Upgrade or downgrade your plan anytime
-                      </p>
+                      {isSubscribed ? (
+                        <>
+                          <p className="text-foreground">
+                            You're currently on the <span className="font-semibold text-primary">{subscription.planName}</span> plan
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Upgrade or downgrade your plan anytime
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-foreground">
+                            You don't have an active subscription
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Subscribe to activate workflows and automations
+                          </p>
+                        </>
+                      )}
                     </div>
                     <div className="flex gap-3">
-                      <Button variant="outline" onClick={() => setShowChangePlanModal(true)} className="gap-2">
-                        <RefreshCw className="w-4 h-4" />
-                        Change Plan
-                      </Button>
-                      <Button
-                        variant="outline"
-                        onClick={() => setShowCancelModal(true)}
-                        className="border-destructive/50 text-destructive hover:bg-destructive/10"
-                      >
-                        Cancel Subscription
-                      </Button>
+                      {isSubscribed ? (
+                        <>
+                          <Button variant="outline" onClick={() => setShowChangePlanModal(true)} className="gap-2">
+                            <RefreshCw className="w-4 h-4" />
+                            Change Plan
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setShowCancelModal(true)}
+                            className="border-destructive/50 text-destructive hover:bg-destructive/10"
+                          >
+                            Cancel Subscription
+                          </Button>
+                        </>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          onClick={() => setShowStartSubscriptionModal(true)}
+                          className="border-emerald-500 text-emerald-400 hover:bg-emerald-500/10"
+                        >
+                          Start Subscription
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </CardContent>
@@ -887,12 +907,16 @@ const Billing = () => {
                 Keep Subscription
               </Button>
               <Button
-                variant="destructive"
+                variant="outline"
                 onClick={handleCancelSubscription}
                 disabled={!isCancelConfirmValid || loading}
+                className={isCancelConfirmValid 
+                  ? "border-emerald-500 text-emerald-400 hover:bg-emerald-500/10" 
+                  : "border-destructive/50 text-destructive hover:bg-destructive/10"
+                }
               >
                 {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                Confirm Cancellation
+                {isCancelConfirmValid ? "Confirm Cancellation" : "Confirm Cancellation"}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -921,6 +945,35 @@ const Billing = () => {
               >
                 {changePlanLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                 Confirm Change
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Start Subscription Modal */}
+        <Dialog open={showStartSubscriptionModal} onOpenChange={setShowStartSubscriptionModal}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Start Subscription</DialogTitle>
+              <DialogDescription>
+                Select a plan to get started with Synth.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <PlanSelectionUI compact />
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowStartSubscriptionModal(false)} disabled={loading}>
+                Cancel
+              </Button>
+              <Button
+                onClick={handleStartSubscription}
+                disabled={!selectedPlan || loading}
+                className="border-emerald-500 text-emerald-400 hover:bg-emerald-500/10 bg-transparent"
+                variant="outline"
+              >
+                {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                Start Subscription
               </Button>
             </DialogFooter>
           </DialogContent>
