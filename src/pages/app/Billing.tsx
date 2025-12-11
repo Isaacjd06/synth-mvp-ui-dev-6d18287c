@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CreditCard,
@@ -12,7 +11,6 @@ import {
   Download,
   X,
   Loader2,
-  ArrowRight,
   ExternalLink,
   Settings,
   Package,
@@ -100,7 +98,6 @@ const mockPurchaseLog = [
 ];
 
 const Billing = () => {
-  const navigate = useNavigate();
   const { plans, addons, loading: pricesLoading, error: pricesError } = useStripePrices();
   const [subscription, setSubscription] = useState(mockSubscription);
   const [billingInterval, setBillingInterval] = useState<"monthly" | "yearly">("monthly");
@@ -150,15 +147,54 @@ const Billing = () => {
     );
   };
 
-  const handleContinueToCheckout = () => {
+  const handleStartSubscription = async () => {
     if (!selectedPlan) return;
-    const params = new URLSearchParams();
-    params.set("plan", selectedPlan);
-    params.set("interval", billingInterval);
-    if (selectedAddons.length > 0) {
-      params.set("addons", selectedAddons.join(","));
+    
+    // Check if payment method exists (mock check)
+    const hasPaymentMethod = subscription?.paymentMethod || false;
+    
+    if (!hasPaymentMethod) {
+      synthToast.error("Payment Method Required", "Please add a payment method before subscribing.");
+      setShowPaymentModal(true);
+      return;
     }
-    navigate(`/app/checkout?${params.toString()}`);
+    
+    setLoading(true);
+    try {
+      await new Promise(r => setTimeout(r, 1500));
+      
+      const planData = plans.find(p => p.id === selectedPlan);
+      if (planData) {
+        setSubscription({
+          planId: selectedPlan,
+          planName: planData.name,
+          status: "active",
+          billingInterval,
+          renewalDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          ownedAddons: selectedAddons,
+          usageLimits: {
+            workflowsUsed: 0,
+            workflowsLimit: selectedPlan === "starter" ? 5 : selectedPlan === "pro" ? 25 : 100,
+            executionsUsed: 0,
+            executionsLimit: selectedPlan === "starter" ? 1000 : selectedPlan === "pro" ? 10000 : 50000,
+          },
+          paymentMethod: {
+            type: "card",
+            last4: "4242",
+            brand: "Visa",
+            expiryMonth: 12,
+            expiryYear: 2026,
+          },
+        });
+        synthToast.success("Subscription Started", `Welcome to ${planData.name}!`);
+        setSelectedPlan(null);
+        setSelectedAddons([]);
+      }
+    } catch (error) {
+      synthToast.error("Subscription Failed", "Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCancelSubscription = async () => {
@@ -932,9 +968,10 @@ const Billing = () => {
                 Keep Subscription
               </Button>
               <Button
-                variant="destructive"
+                variant={isCancelConfirmValid && !subscription ? "outline" : "destructive"}
                 onClick={handleCancelSubscription}
                 disabled={!isCancelConfirmValid || loading}
+                className={isCancelConfirmValid && !subscription ? "border-emerald-500 text-emerald-400 hover:bg-emerald-500/10" : ""}
               >
                 {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                 Confirm Cancellation
@@ -1016,12 +1053,13 @@ const Billing = () => {
               )}
             </div>
             <Button
-              onClick={handleContinueToCheckout}
-              disabled={!selectedPlan}
-              className="btn-synth min-w-[200px]"
+              onClick={handleStartSubscription}
+              disabled={!selectedPlan || loading}
+              className="min-w-[200px] border-emerald-500 text-emerald-400 hover:bg-emerald-500/10 bg-transparent"
+              variant="outline"
             >
-              Continue to Checkout
-              <ArrowRight className="w-4 h-4 ml-2" />
+              {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              Start Subscription
             </Button>
           </div>
         </motion.div>
