@@ -43,8 +43,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PaymentMethodModal from "@/components/billing/PaymentMethodModal";
 
-// Mock subscription state - set to active subscription for testing
-const mockSubscription: {
+// Subscription type
+interface SubscriptionData {
   planId: string;
   planName: string;
   status: "active" | "trialing" | "past_due" | "canceling" | "canceled";
@@ -65,13 +65,16 @@ const mockSubscription: {
     expiryMonth: number;
     expiryYear: number;
   };
-} | null = {
+}
+
+// Default subscription data - always have an active subscription
+const defaultSubscription: SubscriptionData = {
   planId: "pro",
   planName: "Pro",
   status: "active",
   billingInterval: "monthly",
-  renewalDate: "2025-01-15",
-  ownedAddons: ["addon-1"],
+  renewalDate: "2025-01-14",
+  ownedAddons: [],
   usageLimits: {
     workflowsUsed: 8,
     workflowsLimit: 25,
@@ -99,7 +102,7 @@ const mockPurchaseLog = [
 
 const Billing = () => {
   const { plans, addons, loading: pricesLoading, error: pricesError } = useStripePrices();
-  const [subscription, setSubscription] = useState(mockSubscription);
+  const [subscription, setSubscription] = useState<SubscriptionData>(defaultSubscription);
   const [billingInterval, setBillingInterval] = useState<"monthly" | "yearly">("monthly");
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
@@ -113,7 +116,6 @@ const Billing = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [changePlanLoading, setChangePlanLoading] = useState(false);
 
-  const hasSubscription = subscription !== null;
   const isCancelConfirmValid = cancelConfirmation === "UNSUBSCRIBE";
 
   const formatDate = (dateString: string) => {
@@ -368,7 +370,7 @@ const Billing = () => {
           </>
         ) : (
           plans.map((plan) => {
-            const isCurrentPlan = hasSubscription && subscription?.planId === plan.id;
+            const isCurrentPlan = subscription.planId === plan.id;
             return (
               <motion.div
                 key={plan.id}
@@ -464,12 +466,10 @@ const Billing = () => {
         {/* Header */}
         <PageItem className="text-center mb-10">
           <h1 className="font-display text-3xl md:text-4xl text-foreground mb-3 synth-header">
-            {hasSubscription ? "Billing Settings" : "Billing & Subscription"}
+            Billing Settings
           </h1>
           <p className="text-muted-foreground text-lg font-light">
-            {hasSubscription
-              ? "Manage your subscription, billing, and add-ons"
-              : "Choose a plan to get started with Synth"}
+            Manage your subscription, billing, and add-ons
           </p>
         </PageItem>
 
@@ -522,88 +522,9 @@ const Billing = () => {
           )}
         </AnimatePresence>
 
-        {/* NO SUBSCRIPTION STATE */}
-        {!hasSubscription && (
-          <>
-            {/* Subscribe Banner */}
-            <PageItem className="mb-8">
-              <div className="p-6 rounded-xl bg-gradient-to-r from-primary/20 via-primary/10 to-transparent border border-primary/30">
-                <div className="flex items-center gap-3 mb-2">
-                  <Sparkles className="w-6 h-6 text-primary" />
-                  <h3 className="font-accent text-xl text-foreground">Unlock Synth's Full Power</h3>
-                </div>
-                <p className="text-muted-foreground">
-                  Subscribe to a plan to activate workflows, access AI automation, and scale your operations.
-                </p>
-              </div>
-            </PageItem>
-
-            {/* Plan Selection */}
-            <PageItem className="mb-8">
-              <PlanSelectionUI />
-            </PageItem>
-
-            {/* Add-ons Section - Vertical Cards */}
-            <PageItem className="mb-8">
-              <AppCard>
-                <div className="flex items-center gap-3 mb-2">
-                  <Sparkles className="w-5 h-5 text-primary" />
-                  <h2 className="font-accent text-xl text-foreground">Add-ons</h2>
-                </div>
-                <p className="text-muted-foreground mb-6">
-                  Enhance your workflow with these one-time purchases (optional)
-                </p>
-                <div className="flex flex-col gap-4">
-                  {pricesLoading ? (
-                    <>
-                      <AddonSkeleton />
-                      <AddonSkeleton />
-                      <AddonSkeleton />
-                    </>
-                  ) : (
-                    addons.map((addon) => {
-                      const isSelected = selectedAddons.includes(addon.id);
-                      return (
-                        <div
-                          key={addon.id}
-                          onClick={() => handleAddonToggle(addon.id)}
-                          className={`p-5 rounded-xl border transition-all cursor-pointer ${
-                            isSelected
-                              ? "border-primary ring-2 ring-primary/30 bg-primary/5"
-                              : "border-border hover:border-primary/50 bg-card"
-                          }`}
-                        >
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-2">
-                                <h4 className="font-medium text-foreground text-lg">{addon.name}</h4>
-                                {isSelected && (
-                                  <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
-                                )}
-                              </div>
-                              <p className="text-muted-foreground">{addon.description}</p>
-                            </div>
-                            <div className="text-right shrink-0">
-                              <span className="text-2xl font-bold text-foreground">${addon.price}</span>
-                              <p className="text-xs text-muted-foreground">one-time</p>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-              </AppCard>
-            </PageItem>
-          </>
-        )}
-
-        {/* HAS SUBSCRIPTION STATE */}
-        {hasSubscription && subscription && (
-          <>
-            {/* Subscription Summary Card */}
-            <PageItem className="mb-6">
-              <Card className="border-primary/20 bg-gradient-to-br from-card via-card to-primary/5">
+        {/* Subscription Summary Card */}
+        <PageItem className="mb-6">
+          <Card className="border-primary/20 bg-gradient-to-br from-card via-card to-primary/5">
                 <CardHeader className="pb-4">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg flex items-center gap-2">
@@ -913,8 +834,6 @@ const Billing = () => {
                 </CardContent>
               </Card>
             </PageItem>
-          </>
-        )}
 
         {/* Cancel Subscription Modal */}
         <Dialog open={showCancelModal} onOpenChange={setShowCancelModal}>
@@ -968,10 +887,9 @@ const Billing = () => {
                 Keep Subscription
               </Button>
               <Button
-                variant={isCancelConfirmValid && !subscription ? "outline" : "destructive"}
+                variant="destructive"
                 onClick={handleCancelSubscription}
                 disabled={!isCancelConfirmValid || loading}
-                className={isCancelConfirmValid && !subscription ? "border-emerald-500 text-emerald-400 hover:bg-emerald-500/10" : ""}
               >
                 {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                 Confirm Cancellation
@@ -1022,48 +940,6 @@ const Billing = () => {
         />
       </PageTransition>
 
-      {/* Sticky Checkout Footer - Only show when no subscription */}
-      {!hasSubscription && (
-        <motion.div
-          initial={{ y: 100 }}
-          animate={{ y: 0 }}
-          className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-xl border-t border-border p-4 z-50"
-        >
-          <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-6">
-              {selectedPlan ? (
-                <>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Selected Plan</p>
-                    <p className="font-semibold text-foreground capitalize">
-                      {selectedPlanData?.name} - ${planTotal}/{billingInterval === "yearly" ? "year" : "month"}
-                    </p>
-                  </div>
-                  {selectedAddons.length > 0 && (
-                    <div>
-                      <p className="text-sm text-muted-foreground">Add-ons</p>
-                      <p className="font-semibold text-foreground">
-                        {selectedAddons.length} selected (+${addonsTotal})
-                      </p>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <p className="text-muted-foreground">Select a plan to continue</p>
-              )}
-            </div>
-            <Button
-              onClick={handleStartSubscription}
-              disabled={!selectedPlan || loading}
-              className="min-w-[200px] border-emerald-500 text-emerald-400 hover:bg-emerald-500/10 bg-transparent"
-              variant="outline"
-            >
-              {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              Start Subscription
-            </Button>
-          </div>
-        </motion.div>
-      )}
     </AppShell>
   );
 };
