@@ -5,6 +5,7 @@ import AppShell from "@/components/app/AppShell";
 import { PageTransition } from "@/components/app/PageTransition";
 import { Input } from "@/components/ui/input";
 import ConnectionIntegrationCard from "@/components/connections/ConnectionIntegrationCard";
+import ConnectIntegrationModal from "@/components/connections/ConnectIntegrationModal";
 import { cn } from "@/lib/utils";
 
 export type IntegrationTier = "starter" | "pro" | "agency";
@@ -75,11 +76,16 @@ const Connections = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterOption>("All");
   const [integrations, setIntegrations] = useState<Integration[]>(initialIntegrations);
+  const [connectModalOpen, setConnectModalOpen] = useState(false);
+  const [selectedIntegration, setSelectedIntegration] = useState<Integration | null>(null);
 
   const filteredIntegrations = useMemo(() => {
     return integrations.filter((integration) => {
-      const matchesSearch = integration.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        integration.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const searchLower = searchQuery.toLowerCase();
+      const matchesSearch = 
+        integration.name.toLowerCase().includes(searchLower) ||
+        integration.description.toLowerCase().includes(searchLower) ||
+        integration.category.toLowerCase().includes(searchLower);
       
       let matchesFilter = true;
       if (activeFilter === "Starter") matchesFilter = integration.tier === "starter";
@@ -90,26 +96,32 @@ const Connections = () => {
     });
   }, [searchQuery, activeFilter, integrations]);
 
-  const handleConnect = (integrationId: string) => {
-    setIntegrations(prev => 
-      prev.map(i => i.id === integrationId ? { ...i, connected: true } : i)
-    );
-    console.log("Connected:", integrationId);
+  const handleConnect = (integration: Integration) => {
+    setSelectedIntegration(integration);
+    setConnectModalOpen(true);
+  };
+
+  const handleConfirmConnect = () => {
+    if (selectedIntegration) {
+      setIntegrations(prev => 
+        prev.map(i => i.id === selectedIntegration.id ? { ...i, connected: true } : i)
+      );
+    }
   };
 
   const handleDisconnect = (integrationId: string) => {
     setIntegrations(prev => 
       prev.map(i => i.id === integrationId ? { ...i, connected: false } : i)
     );
-    console.log("Disconnected:", integrationId);
   };
 
   const connectedCount = integrations.filter(i => i.connected).length;
+  const totalCount = integrations.length;
 
   return (
     <AppShell>
       <PageTransition>
-        <div className="space-y-8">
+        <div className="space-y-6">
           {/* Header */}
           <div>
             <motion.h1
@@ -117,7 +129,9 @@ const Connections = () => {
               animate={{ opacity: 1, y: 0 }}
               className="text-3xl font-display font-bold text-foreground tracking-tight flex items-center gap-3"
             >
-              <Plug className="w-8 h-8 text-primary" />
+              <div className="p-2 rounded-xl bg-primary/10 border border-primary/20">
+                <Plug className="w-6 h-6 text-primary" />
+              </div>
               Connections
             </motion.h1>
             <motion.p
@@ -139,50 +153,46 @@ const Connections = () => {
             <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <Input
-                placeholder="Search integrations..."
+                placeholder="Search by name, category, or description..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 h-12 bg-card/50 border-border/60 focus:border-primary/50 focus:ring-primary/20"
+                className="pl-12 h-12 bg-card/50 border-border/60 focus:border-primary/50 focus:ring-primary/20 shadow-sm"
               />
             </div>
           </motion.div>
 
-          {/* Filter Pills */}
+          {/* Filter Pills & Stats Row */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="flex flex-wrap gap-2"
+            className="flex flex-wrap items-center justify-between gap-4"
           >
-            {filterOptions.map((filter) => (
-              <button
-                key={filter}
-                onClick={() => setActiveFilter(filter)}
-                className={cn(
-                  "px-4 py-2 rounded-full text-sm font-medium transition-all duration-300",
-                  activeFilter === filter
-                    ? "bg-primary text-primary-foreground shadow-[0_0_20px_-5px_hsl(var(--primary))]"
-                    : "bg-card/50 text-muted-foreground hover:bg-card hover:text-foreground border border-border/50"
-                )}
-              >
-                {filter}
-              </button>
-            ))}
-          </motion.div>
+            <div className="flex flex-wrap gap-2">
+              {filterOptions.map((filter) => (
+                <button
+                  key={filter}
+                  onClick={() => setActiveFilter(filter)}
+                  className={cn(
+                    "px-4 py-2 rounded-full text-sm font-medium transition-all duration-300",
+                    activeFilter === filter
+                      ? "bg-primary text-primary-foreground shadow-[0_0_20px_-5px_hsl(var(--primary))]"
+                      : "bg-card/60 text-muted-foreground hover:bg-card hover:text-foreground border border-border/50 hover:border-border"
+                  )}
+                >
+                  {filter}
+                </button>
+              ))}
+            </div>
 
-          {/* Stats Summary */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 }}
-            className="flex gap-6 text-sm"
-          >
-            <span className="text-muted-foreground">
-              <span className="text-foreground font-medium">{filteredIntegrations.length}</span> integrations
-            </span>
-            <span className="text-muted-foreground">
-              <span className="text-green-400 font-medium">{connectedCount}</span> connected
-            </span>
+            {/* Stats */}
+            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+              <span className="text-foreground font-semibold">{totalCount}</span>
+              <span>integrations</span>
+              <span className="mx-2 text-border">·</span>
+              <span className="text-green-400 font-semibold">{connectedCount}</span>
+              <span>connected</span>
+            </div>
           </motion.div>
 
           {/* Integrations Grid */}
@@ -190,13 +200,13 @@ const Connections = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
           >
             {filteredIntegrations.map((integration, index) => (
               <ConnectionIntegrationCard
                 key={integration.id}
                 integration={integration}
-                onConnect={() => handleConnect(integration.id)}
+                onConnect={() => handleConnect(integration)}
                 onDisconnect={() => handleDisconnect(integration.id)}
                 index={index}
               />
@@ -219,6 +229,14 @@ const Connections = () => {
           )}
         </div>
       </PageTransition>
+
+      {/* Connect Integration Modal */}
+      <ConnectIntegrationModal
+        open={connectModalOpen}
+        onOpenChange={setConnectModalOpen}
+        integrationName={selectedIntegration?.name || ""}
+        onConfirm={handleConfirmConnect}
+      />
     </AppShell>
   );
 };
