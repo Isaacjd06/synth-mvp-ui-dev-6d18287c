@@ -5,6 +5,7 @@ import AppShell from "@/components/app/AppShell";
 import { PageTransition } from "@/components/app/PageTransition";
 import { Input } from "@/components/ui/input";
 import ConnectionIntegrationCard from "@/components/connections/ConnectionIntegrationCard";
+import ConnectIntegrationModal from "@/components/connections/ConnectIntegrationModal";
 import { cn } from "@/lib/utils";
 
 export type IntegrationTier = "starter" | "pro" | "agency";
@@ -20,7 +21,6 @@ export interface Integration {
   comingSoon?: boolean;
 }
 
-// This would come from backend/props in production
 const initialIntegrations: Integration[] = [
   // Starter tier (1-18)
   { id: "gmail", name: "Gmail", description: "Send and receive emails, manage drafts and labels", icon: "Gmail", tier: "starter", category: "Communication", connected: false },
@@ -72,24 +72,12 @@ const initialIntegrations: Integration[] = [
 const filterOptions = ["All", "Starter", "Pro", "Agency"] as const;
 type FilterOption = typeof filterOptions[number];
 
-interface ConnectionsProps {
-  integrations?: Integration[];
-  isSubscribed?: boolean;
-  onConnect?: (integrationId: string) => void;
-  onDisconnect?: (integrationId: string) => void;
-}
-
-const Connections = ({ 
-  integrations: propIntegrations,
-  isSubscribed = true, // Default to true for UI development
-  onConnect: propOnConnect,
-  onDisconnect: propOnDisconnect,
-}: ConnectionsProps) => {
+const Connections = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterOption>("All");
-  
-  // Use prop integrations if provided, otherwise use initial data
-  const integrations = propIntegrations || initialIntegrations;
+  const [integrations, setIntegrations] = useState<Integration[]>(initialIntegrations);
+  const [connectModalOpen, setConnectModalOpen] = useState(false);
+  const [selectedIntegration, setSelectedIntegration] = useState<Integration | null>(null);
 
   const filteredIntegrations = useMemo(() => {
     return integrations.filter((integration) => {
@@ -108,22 +96,23 @@ const Connections = ({
     });
   }, [searchQuery, activeFilter, integrations]);
 
-  // Handler for connect - just calls the prop handler, no UI state changes
-  const handleConnect = (integrationId: string) => {
-    if (propOnConnect) {
-      propOnConnect(integrationId);
-    }
-    // Backend will handle the actual redirect to Pipedream OAuth
-    console.log(`Connect requested for: ${integrationId}`);
+  const handleConnect = (integration: Integration) => {
+    setSelectedIntegration(integration);
+    setConnectModalOpen(true);
   };
 
-  // Handler for disconnect - just calls the prop handler, no UI state changes
-  const handleDisconnect = (integrationId: string) => {
-    if (propOnDisconnect) {
-      propOnDisconnect(integrationId);
+  const handleConfirmConnect = () => {
+    if (selectedIntegration) {
+      setIntegrations(prev => 
+        prev.map(i => i.id === selectedIntegration.id ? { ...i, connected: true } : i)
+      );
     }
-    // Backend will handle the actual disconnection
-    console.log(`Disconnect requested for: ${integrationId}`);
+  };
+
+  const handleDisconnect = (integrationId: string) => {
+    setIntegrations(prev => 
+      prev.map(i => i.id === integrationId ? { ...i, connected: false } : i)
+    );
   };
 
   const connectedCount = integrations.filter(i => i.connected).length;
@@ -217,8 +206,7 @@ const Connections = ({
               <ConnectionIntegrationCard
                 key={integration.id}
                 integration={integration}
-                isSubscribed={isSubscribed}
-                onConnect={() => handleConnect(integration.id)}
+                onConnect={() => handleConnect(integration)}
                 onDisconnect={() => handleDisconnect(integration.id)}
                 index={index}
               />
@@ -241,6 +229,14 @@ const Connections = ({
           )}
         </div>
       </PageTransition>
+
+      {/* Connect Integration Modal */}
+      <ConnectIntegrationModal
+        open={connectModalOpen}
+        onOpenChange={setConnectModalOpen}
+        integrationName={selectedIntegration?.name || ""}
+        onConfirm={handleConfirmConnect}
+      />
     </AppShell>
   );
 };

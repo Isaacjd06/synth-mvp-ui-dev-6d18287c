@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
-import { Check, Plug, Lock } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Check, Plug } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,7 +9,6 @@ import IntegrationIcon from "./IntegrationIcon";
 
 interface ConnectionIntegrationCardProps {
   integration: Integration;
-  isSubscribed: boolean;
   onConnect: () => void;
   onDisconnect: () => void;
   index: number;
@@ -33,7 +31,6 @@ const categoryColors: Record<string, string> = {
 
 const ConnectionIntegrationCard = ({ 
   integration, 
-  isSubscribed,
   onConnect, 
   onDisconnect, 
   index 
@@ -109,18 +106,6 @@ const ConnectionIntegrationCard = ({
                 }}
               >
                 Disconnect
-              </Button>
-            ) : !isSubscribed ? (
-              <Button 
-                size="sm"
-                variant="outline"
-                className="w-full border-border/60 text-muted-foreground hover:border-primary/50 hover:text-primary transition-all duration-300"
-                asChild
-              >
-                <Link to="/app/billing">
-                  <Lock className="w-4 h-4 mr-2" />
-                  Upgrade to Connect
-                </Link>
               </Button>
             ) : (
               <Button 
