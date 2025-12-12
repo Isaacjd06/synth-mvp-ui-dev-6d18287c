@@ -9,6 +9,7 @@ import {
   CreditCard,
   Sparkles,
   Plug,
+  Brain,
   Menu,
   X,
 } from "lucide-react";
@@ -20,6 +21,7 @@ const navItems = [
   { title: "Skills", href: "/app/skills", icon: Sparkles },
   { title: "Workflows", href: "/app/workflows", icon: Workflow },
   { title: "Executions", href: "/app/executions", icon: PlaySquare },
+  { title: "Insights", href: "/app/insights", icon: Brain },
   { title: "Connections", href: "/app/connections", icon: Plug },
   { title: "Billing", href: "/app/billing", icon: CreditCard },
 ];
