@@ -4,9 +4,11 @@ import AppShell from "@/components/app/AppShell";
 import ExecutionHeader from "@/components/execution-detail/ExecutionHeader";
 import SummaryCards from "@/components/execution-detail/SummaryCards";
 import ExecutionTimelineNew from "@/components/execution-detail/ExecutionTimelineNew";
-import DataViewerCard from "@/components/execution-detail/DataViewerCard";
 import ErrorPanel from "@/components/execution-detail/ErrorPanel";
-import ExecutionFooter from "@/components/execution-detail/ExecutionFooter";
+import { synthToast } from "@/lib/synth-toast";
+
+// Mock subscription state (UI only)
+const isSubscribed = true;
 
 // Mock execution data
 const mockExecutionData = {
@@ -19,27 +21,6 @@ const mockExecutionData = {
   duration: "2.1s",
   triggerType: "Webhook",
   workflowVersion: "v1.3.2",
-  input: {
-    email: "john.doe@example.com",
-    name: "John Doe",
-    company: "Acme Inc",
-    source: "contact_form",
-    metadata: {
-      utm_source: "google",
-      utm_campaign: "winter_promo",
-      landing_page: "/pricing",
-    },
-  },
-  output: {
-    crmId: "CRM-12345",
-    enriched: true,
-    enrichmentData: {
-      company_size: "50-100",
-      industry: "Technology",
-      linkedin: "linkedin.com/in/johndoe",
-    },
-    slackNotified: false,
-  },
   error: {
     message: "Failed to send Slack notification: channel_not_found",
     code: "SLACK_API_ERROR",
@@ -57,13 +38,14 @@ const mockExecutionData = {
       status: "completed" as const,
       timestamp: "14:32:15",
       duration: "0.1s",
-      description: "Webhook triggered by incoming form submission from the website contact form.",
-      details: {
-        "Webhook URL": "https://api.synth.io/hooks/abc123",
-        "Method": "POST",
-        "Content-Type": "application/json",
+      inputData: {
+        source: "website_form",
+        timestamp: "2024-12-09T14:32:15Z",
       },
-      logs: "[14:32:15] Webhook received\n[14:32:15] Payload validated\n[14:32:15] Trigger complete",
+      outputData: {
+        validated: true,
+        payload_size: "1.2kb",
+      },
     },
     {
       id: "s2",
@@ -71,11 +53,15 @@ const mockExecutionData = {
       status: "completed" as const,
       timestamp: "14:32:15",
       duration: "0.2s",
-      description: "Validates the incoming data against the expected schema and sanitizes inputs.",
-      details: {
-        "Fields Validated": "4",
-        "Schema Version": "2.1",
-        "Sanitization": "Enabled",
+      inputData: {
+        email: "john.doe@example.com",
+        name: "John Doe",
+        company: "Acme Inc",
+      },
+      outputData: {
+        valid: true,
+        sanitized: true,
+        fields_processed: 3,
       },
     },
     {
@@ -84,13 +70,16 @@ const mockExecutionData = {
       status: "completed" as const,
       timestamp: "14:32:16",
       duration: "1.2s",
-      description: "Enriches lead data using Clearbit API to gather company and contact information.",
-      details: {
-        "API Endpoint": "api.clearbit.com/v2",
-        "Records Matched": "1",
-        "Data Points": "12",
+      inputData: {
+        email: "john.doe@example.com",
+        domain: "example.com",
       },
-      logs: "[14:32:16] Clearbit lookup started\n[14:32:17] Company data found\n[14:32:17] Enrichment complete",
+      outputData: {
+        company_size: "50-100",
+        industry: "Technology",
+        linkedin: "linkedin.com/in/johndoe",
+        enrichment_score: 0.92,
+      },
     },
     {
       id: "s4",
@@ -98,11 +87,16 @@ const mockExecutionData = {
       status: "completed" as const,
       timestamp: "14:32:17",
       duration: "0.4s",
-      description: "Creates or updates the contact record in HubSpot CRM with enriched data.",
-      details: {
-        "CRM": "HubSpot",
-        "Action": "Create",
-        "Contact ID": "CRM-12345",
+      inputData: {
+        name: "John Doe",
+        email: "john.doe@example.com",
+        company: "Acme Inc",
+        enriched: true,
+      },
+      outputData: {
+        crm_id: "CRM-12345",
+        created_at: "2024-12-09T14:32:17Z",
+        status: "new",
       },
     },
     {
@@ -111,13 +105,14 @@ const mockExecutionData = {
       status: "error" as const,
       timestamp: "14:32:17",
       duration: "0.2s",
-      description: "Sends notification to the sales team Slack channel about the new lead.",
-      details: {
-        "Channel": "#sales-leads",
-        "Status": "Failed",
-        "Error": "channel_not_found",
+      inputData: {
+        channel: "#sales-leads",
+        message: "New lead: John Doe from Acme Inc",
       },
-      logs: "[14:32:17] Attempting to send Slack message\n[14:32:17] ERROR: channel_not_found\n[14:32:17] Step failed",
+      errorDetails: {
+        message: "channel_not_found: The channel #sales-leads does not exist or bot lacks access.",
+        cause: "The Slack channel may have been renamed or the Synth bot permissions were revoked.",
+      },
     },
   ],
 };
@@ -126,6 +121,10 @@ const ExecutionDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const execution = mockExecutionData;
+
+  const handleRunAgain = () => {
+    synthToast.success("Execution Started", "Workflow is now running.");
+  };
 
   const handleFixInChat = () => {
     navigate("/app/chat", {
@@ -139,7 +138,7 @@ const ExecutionDetail = () => {
     <AppShell>
       <div className="min-h-screen bg-gradient-to-b from-background via-background to-synth-navy-light/20">
         <div className="space-y-6">
-          {/* Header */}
+          {/* Header with Sticky Back Buttons */}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -149,13 +148,12 @@ const ExecutionDetail = () => {
               workflowName={execution.workflowName}
               workflowId={execution.workflowId}
               executionId={execution.shortId}
-              status={execution.status}
-              timestamp={execution.timestamp}
-              duration={execution.duration}
+              isSubscribed={isSubscribed}
+              onRunAgain={handleRunAgain}
             />
           </motion.div>
 
-          {/* Summary Cards */}
+          {/* Summary Cards with Tooltips */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -169,38 +167,15 @@ const ExecutionDetail = () => {
             />
           </motion.div>
 
-          {/* Execution Timeline */}
+          {/* Interactive Execution Timeline */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
           >
-            <ExecutionTimelineNew steps={execution.steps} />
-          </motion.div>
-
-          {/* Input Data */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.3 }}
-          >
-            <DataViewerCard
-              title="Input Data"
-              data={execution.input}
-              defaultExpanded={true}
-            />
-          </motion.div>
-
-          {/* Output Data */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.35 }}
-          >
-            <DataViewerCard
-              title="Output Data"
-              data={execution.output}
-              defaultExpanded={false}
+            <ExecutionTimelineNew 
+              steps={execution.steps} 
+              isSubscribed={isSubscribed}
             />
           </motion.div>
 
@@ -209,7 +184,7 @@ const ExecutionDetail = () => {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.4 }}
+              transition={{ duration: 0.4, delay: 0.3 }}
             >
               <ErrorPanel
                 errorMessage={execution.error.message}
@@ -217,18 +192,10 @@ const ExecutionDetail = () => {
                 possibleCause={execution.error.possibleCause}
                 stackTrace={execution.error.stack}
                 onFixInChat={handleFixInChat}
+                isSubscribed={isSubscribed}
               />
             </motion.div>
           )}
-
-          {/* Footer Actions */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.45 }}
-          >
-            <ExecutionFooter workflowId={execution.workflowId} />
-          </motion.div>
         </div>
       </div>
     </AppShell>
