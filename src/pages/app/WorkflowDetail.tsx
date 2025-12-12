@@ -1,494 +1,189 @@
-import { useState, useRef, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
-import { 
-  ArrowLeft, 
-  Play, 
-  Trash2, 
-  Zap, 
-  Clock, 
-  CheckCircle2, 
-  AlertCircle,
-  RefreshCw,
-  Copy,
-  Power,
-  ChevronLeft,
-  ChevronRight,
-  Pencil,
-  Check,
-  X
-} from "lucide-react";
+import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { motion } from "framer-motion";
 import AppShell from "@/components/app/AppShell";
-import { PageTransition, PageItem } from "@/components/app/PageTransition";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Separator } from "@/components/ui/separator";
+import WorkflowSidebar, { WorkflowStep } from "@/components/workflow-detail/WorkflowSidebar";
+import WorkflowHeader from "@/components/workflow-detail/WorkflowHeader";
+import TriggerCard from "@/components/workflow-detail/TriggerCard";
+import StepsCard from "@/components/workflow-detail/StepsCard";
+import AnalyticsCard from "@/components/workflow-detail/AnalyticsCard";
+import RunHistoryCard from "@/components/workflow-detail/RunHistoryCard";
 import { synthToast } from "@/lib/synth-toast";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 
 // Mock data
 const mockWorkflow = {
   id: "1",
   name: "Lead Intake → CRM",
-  description: "Automatically captures leads from web forms and syncs them to your CRM with enrichment data.",
-  status: "active" as "active" | "inactive",
-  triggerType: "Webhook",
-  triggerLabel: "New form submission",
-  lastRun: "2 hours ago",
-  createdAt: "December 1, 2024",
-  lastModified: "2 days ago",
-  reliability: "98.2%",
-  actions: [
-    "Enrich lead data with Clearbit",
-    "Add contact to HubSpot CRM",
-    "Send Slack notification",
+  isActive: true,
+  trigger: {
+    type: "Webhook",
+    label: "New form submission",
+    description: "This workflow triggers when a new lead form is submitted on your website. The webhook receives the form data and initiates the automation sequence.",
+    lastTriggered: "2 hours ago",
+  },
+  steps: [
+    {
+      id: "step-1",
+      name: "Enrich lead data with Clearbit",
+      description: "Fetches company and contact information to enrich the lead profile.",
+      icon: "database" as const,
+      status: "completed" as const,
+    },
+    {
+      id: "step-2",
+      name: "Add contact to HubSpot CRM",
+      description: "Creates or updates the contact record in your CRM system.",
+      icon: "mail" as const,
+      status: "completed" as const,
+    },
+    {
+      id: "step-3",
+      name: "Send Slack notification",
+      description: "Notifies the sales team about the new lead in your designated channel.",
+      icon: "message" as const,
+      status: "completed" as const,
+    },
   ],
+  analytics: {
+    totalRuns: 1247,
+    avgExecutionTime: "1.2s",
+    successRate: "98.2%",
+    lastRun: "2 hours ago",
+  },
 };
 
 const mockExecutions = [
-  { id: "e1", status: "success", timestamp: "2 hours ago", duration: "1.2s", input: { email: "john@example.com" }, output: { crmId: "CRM-123" } },
-  { id: "e2", status: "success", timestamp: "4 hours ago", duration: "0.9s", input: { email: "jane@company.com" }, output: { crmId: "CRM-124" } },
-  { id: "e3", status: "error", timestamp: "6 hours ago", duration: "2.1s", input: { email: "test@test.com" }, output: null },
-  { id: "e4", status: "success", timestamp: "Yesterday", duration: "1.0s", input: { email: "user@domain.com" }, output: { crmId: "CRM-125" } },
-  { id: "e5", status: "success", timestamp: "Yesterday", duration: "0.8s", input: { email: "lead@business.com" }, output: { crmId: "CRM-126" } },
-  { id: "e6", status: "success", timestamp: "2 days ago", duration: "1.1s", input: { email: "contact@firm.com" }, output: { crmId: "CRM-127" } },
-  { id: "e7", status: "error", timestamp: "2 days ago", duration: "1.5s", input: { email: "bad@email" }, output: null },
-  { id: "e8", status: "success", timestamp: "3 days ago", duration: "0.7s", input: { email: "sales@corp.com" }, output: { crmId: "CRM-128" } },
+  { id: "e1", name: "Lead Intake → CRM", status: "success" as const, duration: "1.2s", timestamp: "2 hours ago" },
+  { id: "e2", name: "Lead Intake → CRM", status: "success" as const, duration: "0.9s", timestamp: "4 hours ago" },
+  { id: "e3", name: "Lead Intake → CRM", status: "error" as const, duration: "2.1s", timestamp: "6 hours ago" },
+  { id: "e4", name: "Lead Intake → CRM", status: "success" as const, duration: "1.0s", timestamp: "Yesterday" },
+  { id: "e5", name: "Lead Intake → CRM", status: "success" as const, duration: "0.8s", timestamp: "Yesterday" },
 ];
-
-const ITEMS_PER_PAGE = 5;
-
-const getStatusVariant = (status: string) => {
-  switch (status) {
-    case "success":
-      return "success";
-    case "error":
-    case "failure":
-      return "error";
-    case "running":
-      return "running";
-    default:
-      return "secondary";
-  }
-};
 
 const WorkflowDetail = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
+  const [isActive, setIsActive] = useState(mockWorkflow.isActive);
+  const [activeStepId, setActiveStepId] = useState<string | null>(null);
 
-  // Workflow state
-  const [workflow, setWorkflow] = useState(mockWorkflow);
-  const [isActive, setIsActive] = useState(workflow.status === "active");
+  // Build sidebar steps from trigger + actions
+  const sidebarSteps: WorkflowStep[] = [
+    { id: "trigger", name: mockWorkflow.trigger.label, icon: "trigger", type: "trigger" },
+    ...mockWorkflow.steps.map((step) => ({
+      id: step.id,
+      name: step.name,
+      icon: step.icon,
+      type: "action" as const,
+    })),
+  ];
 
-  // Inline editing state
-  const [isEditingName, setIsEditingName] = useState(false);
-  const [isEditingDescription, setIsEditingDescription] = useState(false);
-  const [editedName, setEditedName] = useState(workflow.name);
-  const [editedDescription, setEditedDescription] = useState(workflow.description);
-  const nameInputRef = useRef<HTMLInputElement>(null);
-  const descriptionInputRef = useRef<HTMLTextAreaElement>(null);
-
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(mockExecutions.length / ITEMS_PER_PAGE);
-  const paginatedExecutions = mockExecutions.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
-
-  // Focus input when editing starts
-  useEffect(() => {
-    if (isEditingName && nameInputRef.current) {
-      nameInputRef.current.focus();
-      nameInputRef.current.select();
-    }
-  }, [isEditingName]);
-
-  useEffect(() => {
-    if (isEditingDescription && descriptionInputRef.current) {
-      descriptionInputRef.current.focus();
-      descriptionInputRef.current.select();
-    }
-  }, [isEditingDescription]);
-
-  const handleSaveName = () => {
-    if (editedName.trim()) {
-      setWorkflow((prev) => ({ ...prev, name: editedName.trim() }));
-      synthToast.workflowUpdated(editedName.trim());
+  const handleToggleActive = (active: boolean) => {
+    setIsActive(active);
+    if (active) {
+      synthToast.success("Workflow Activated", `"${mockWorkflow.name}" is now running.`);
     } else {
-      setEditedName(workflow.name);
-    }
-    setIsEditingName(false);
-  };
-
-  const handleSaveDescription = () => {
-    setWorkflow((prev) => ({ ...prev, description: editedDescription.trim() }));
-    synthToast.success("Description Updated", "Your changes have been saved.");
-    setIsEditingDescription(false);
-  };
-
-  const handleCancelNameEdit = () => {
-    setEditedName(workflow.name);
-    setIsEditingName(false);
-  };
-
-  const handleCancelDescriptionEdit = () => {
-    setEditedDescription(workflow.description);
-    setIsEditingDescription(false);
-  };
-
-  const handleToggleActive = (checked: boolean) => {
-    setIsActive(checked);
-    setWorkflow((prev) => ({ ...prev, status: checked ? "active" : "inactive" }));
-    if (checked) {
-      synthToast.success("Workflow Activated", `"${workflow.name}" is now running.`);
-    } else {
-      synthToast.warning("Workflow Paused", `"${workflow.name}" has been deactivated.`);
+      synthToast.warning("Workflow Paused", `"${mockWorkflow.name}" has been deactivated.`);
     }
   };
 
-  const handleRun = () => {
-    synthToast.success("Execution Started", "Workflow is now running.");
-  };
-
-  const handleDelete = () => {
-    synthToast.success("Workflow Deleted", "The workflow has been removed.");
-    navigate("/app/workflows");
-  };
-
-  const handleRegenerate = () => {
-    synthToast.success("Regenerating Logic", "Synth is optimizing your workflow.");
-  };
-
-  const handleDuplicate = () => {
-    synthToast.workflowCreated(workflow.name + " (Copy)");
+  const handleStepClick = (stepId: string) => {
+    setActiveStepId(stepId);
+    // Scroll to the step if it's not the trigger
+    if (stepId !== "trigger") {
+      const element = document.getElementById(`step-${stepId}`);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
   };
 
   return (
     <AppShell>
-      <PageTransition className="px-4 lg:px-6 py-6 space-y-6 max-w-4xl">
-        {/* Back Button */}
-        <PageItem>
-          <Button variant="ghost" size="sm" asChild className="group">
-            <Link to="/app/workflows" className="flex items-center gap-2">
-              <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-              Back to Workflows
-            </Link>
-          </Button>
-        </PageItem>
+      <div className="min-h-screen bg-gradient-to-b from-background via-background to-synth-navy-light/20">
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Left Sidebar - Workflow Structure */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <WorkflowSidebar
+              workflowName={mockWorkflow.name}
+              isActive={isActive}
+              steps={sidebarSteps}
+              activeStepId={activeStepId}
+              onStepClick={handleStepClick}
+            />
+          </motion.div>
 
-        {/* Workflow Overview Section */}
-        <PageItem>
-          <Card className="border-primary/20">
-            <CardHeader className="pb-4">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Zap className="w-5 h-5 text-primary" />
-                  Workflow Overview
-                </CardTitle>
-                <Badge variant={isActive ? "success" : "inactive"}>
-                  {isActive ? "Active" : "Inactive"}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Editable Name */}
-              <div className="space-y-2">
-                <label className="text-xs text-muted-foreground uppercase tracking-wider">
-                  Workflow Name
-                </label>
-                {isEditingName ? (
-                  <div className="flex items-center gap-2">
-                    <Input
-                      ref={nameInputRef}
-                      value={editedName}
-                      onChange={(e) => setEditedName(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") handleSaveName();
-                        if (e.key === "Escape") handleCancelNameEdit();
-                      }}
-                      className="text-xl font-bold bg-muted/30"
-                    />
-                    <Button size="icon" variant="ghost" onClick={handleSaveName}>
-                      <Check className="w-4 h-4 text-primary" />
-                    </Button>
-                    <Button size="icon" variant="ghost" onClick={handleCancelNameEdit}>
-                      <X className="w-4 h-4 text-muted-foreground" />
-                    </Button>
-                  </div>
-                ) : (
-                  <div
-                    className="flex items-center gap-2 group cursor-pointer"
-                    onClick={() => setIsEditingName(true)}
-                  >
-                    <h2 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
-                      {workflow.name}
-                    </h2>
-                    <Pencil className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </div>
-                )}
-              </div>
+          {/* Right Main Panel */}
+          <div className="flex-1 min-w-0 space-y-6">
+            {/* Header */}
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <WorkflowHeader
+                name={mockWorkflow.name}
+                isActive={isActive}
+                onToggleActive={handleToggleActive}
+              />
+            </motion.div>
 
-              {/* Editable Description */}
-              <div className="space-y-2">
-                <label className="text-xs text-muted-foreground uppercase tracking-wider">
-                  Description
-                </label>
-                {isEditingDescription ? (
-                  <div className="space-y-2">
-                    <Textarea
-                      ref={descriptionInputRef}
-                      value={editedDescription}
-                      onChange={(e) => setEditedDescription(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Escape") handleCancelDescriptionEdit();
-                      }}
-                      className="bg-muted/30 min-h-[80px]"
-                    />
-                    <div className="flex gap-2">
-                      <Button size="sm" onClick={handleSaveDescription}>
-                        Save
-                      </Button>
-                      <Button size="sm" variant="ghost" onClick={handleCancelDescriptionEdit}>
-                        Cancel
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div
-                    className="group cursor-pointer"
-                    onClick={() => setIsEditingDescription(true)}
-                  >
-                    <p className="text-muted-foreground group-hover:text-foreground transition-colors">
-                      {workflow.description || "Click to add a description..."}
-                      <Pencil className="w-3 h-3 inline-block ml-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </p>
-                  </div>
-                )}
-              </div>
+            {/* Trigger Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+            >
+              <TriggerCard
+                triggerType={mockWorkflow.trigger.type}
+                triggerLabel={mockWorkflow.trigger.label}
+                description={mockWorkflow.trigger.description}
+                lastTriggered={mockWorkflow.trigger.lastTriggered}
+              />
+            </motion.div>
 
-              <Separator className="bg-border/50" />
+            {/* Steps Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+            >
+              <StepsCard
+                steps={mockWorkflow.steps}
+                activeStepId={activeStepId}
+              />
+            </motion.div>
 
-              {/* Overview Grid */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">Trigger</p>
-                  <p className="text-foreground font-medium">{workflow.triggerType}</p>
-                  <p className="text-sm text-muted-foreground">{workflow.triggerLabel}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">Actions</p>
-                  <p className="text-foreground font-medium">{workflow.actions.length} steps</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">Last Run</p>
-                  <p className="text-foreground font-medium">{workflow.lastRun}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">Created</p>
-                  <p className="text-foreground font-medium">{workflow.createdAt}</p>
-                </div>
-              </div>
+            {/* Analytics Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.3 }}
+            >
+              <AnalyticsCard
+                totalRuns={mockWorkflow.analytics.totalRuns}
+                avgExecutionTime={mockWorkflow.analytics.avgExecutionTime}
+                successRate={mockWorkflow.analytics.successRate}
+                lastRun={mockWorkflow.analytics.lastRun}
+              />
+            </motion.div>
 
-              {/* Actions Preview */}
-              <div className="space-y-2">
-                <p className="text-xs text-muted-foreground uppercase tracking-wider">Actions Preview</p>
-                <div className="flex flex-wrap gap-2">
-                  {workflow.actions.map((action, index) => (
-                    <Badge key={index} variant="secondary" className="font-normal">
-                      {index + 1}. {action}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </PageItem>
-
-        {/* Settings Panel */}
-        <PageItem>
-          <Card>
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg">Settings</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Activate/Deactivate Toggle */}
-              <div className="flex items-center justify-between p-4 rounded-lg bg-muted/30 border border-border/50">
-                <div className="flex items-center gap-3">
-                  <Power className={`w-5 h-5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
-                  <div>
-                    <p className="font-medium text-foreground">Workflow Status</p>
-                    <p className="text-sm text-muted-foreground">
-                      {isActive ? "Workflow is active and running" : "Workflow is paused"}
-                    </p>
-                  </div>
-                </div>
-                <Switch
-                  checked={isActive}
-                  onCheckedChange={handleToggleActive}
-                  className="data-[state=checked]:bg-primary"
-                />
-              </div>
-
-              {/* Action Buttons */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                <Button onClick={handleRun} className="gap-2">
-                  <Play className="w-4 h-4" />
-                  Run Now
-                </Button>
-                <Button variant="outline" onClick={handleRegenerate} className="gap-2">
-                  <RefreshCw className="w-4 h-4" />
-                  Regenerate
-                </Button>
-                <Button variant="outline" onClick={handleDuplicate} className="gap-2">
-                  <Copy className="w-4 h-4" />
-                  Duplicate
-                </Button>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="gap-2 text-destructive hover:text-destructive border-destructive/30 hover:border-destructive/50 hover:bg-destructive/10"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      Delete
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent className="glass-strong border-border/50">
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Delete Workflow</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Are you sure you want to delete "{workflow.name}"? This action cannot be undone.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={handleDelete}
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                      >
-                        Delete
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
-            </CardContent>
-          </Card>
-        </PageItem>
-
-        {/* Execution History with Pagination */}
-        <PageItem>
-          <Card>
-            <CardHeader className="pb-4">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-muted-foreground" />
-                  Execution History
-                </CardTitle>
-                <span className="text-sm text-muted-foreground">
-                  {mockExecutions.length} total executions
-                </span>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {mockExecutions.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-muted/50 border border-border/50 flex items-center justify-center">
-                    <Clock className="w-6 h-6 text-muted-foreground/60" />
-                  </div>
-                  <h4 className="text-foreground font-medium mb-1">No Runs Yet</h4>
-                  <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-                    Activate this workflow or click "Run Now" to see execution history.
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {/* Execution List */}
-                  <div className="space-y-2">
-                    {paginatedExecutions.map((exec) => (
-                      <div
-                        key={exec.id}
-                        className="flex items-center justify-between p-4 rounded-lg bg-muted/20 border border-border/30 hover:border-primary/20 hover:bg-muted/30 transition-all duration-200"
-                      >
-                        <div className="flex items-center gap-4 flex-1 min-w-0">
-                          <Badge variant={getStatusVariant(exec.status) as any} className="shrink-0">
-                            {exec.status === "success" && <CheckCircle2 className="w-3 h-3 mr-1" />}
-                            {exec.status === "error" && <AlertCircle className="w-3 h-3 mr-1" />}
-                            {exec.status}
-                          </Badge>
-                          
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-3 text-sm">
-                              <span className="text-muted-foreground">{exec.timestamp}</span>
-                              <span className="text-muted-foreground">•</span>
-                              <span className="text-muted-foreground font-mono">{exec.duration}</span>
-                            </div>
-                            <p className="text-xs text-muted-foreground truncate mt-1">
-                              Input: {JSON.stringify(exec.input).slice(0, 50)}...
-                            </p>
-                          </div>
-                        </div>
-                        
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          asChild
-                          className="shrink-0"
-                        >
-                          <Link to="/app/executions">View Details</Link>
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Pagination Controls */}
-                  {totalPages > 1 && (
-                    <div className="flex items-center justify-between pt-4 border-t border-border/30">
-                      <p className="text-sm text-muted-foreground">
-                        Page {currentPage} of {totalPages}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                          disabled={currentPage === 1}
-                        >
-                          <ChevronLeft className="w-4 h-4" />
-                          Previous
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                          disabled={currentPage === totalPages}
-                        >
-                          Next
-                          <ChevronRight className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </PageItem>
-      </PageTransition>
+            {/* Run History Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.4 }}
+            >
+              <RunHistoryCard
+                executions={mockExecutions}
+                workflowId={id || "1"}
+              />
+            </motion.div>
+          </div>
+        </div>
+      </div>
     </AppShell>
   );
 };
