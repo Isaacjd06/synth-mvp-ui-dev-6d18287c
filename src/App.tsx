@@ -18,6 +18,7 @@ import ExecutionDetail from "./pages/app/ExecutionDetail";
 import Connections from "./pages/app/Connections";
 import Billing from "./pages/app/Billing";
 import Skills from "./pages/app/Skills";
+import Insights from "./pages/app/Insights";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/app/connections" element={<Connections />} />
             <Route path="/app/billing" element={<Billing />} />
             <Route path="/app/skills" element={<Skills />} />
+            <Route path="/app/insights" element={<Insights />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </SubscriptionProvider>
