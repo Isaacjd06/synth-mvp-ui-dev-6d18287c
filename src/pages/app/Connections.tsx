@@ -1,14 +1,13 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Search, Plug, Lock } from "lucide-react";
+import { Plug, Lock } from "lucide-react";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition } from "@/components/app/PageTransition";
-import { Input } from "@/components/ui/input";
 import ConnectionIntegrationCard from "@/components/connections/ConnectionIntegrationCard";
 import ConnectIntegrationModal from "@/components/connections/ConnectIntegrationModal";
 import SubscriptionBanner from "@/components/subscription/SubscriptionBanner";
 import { useSubscription, PlanTier } from "@/contexts/SubscriptionContext";
-import { cn } from "@/lib/utils";
+
 
 export type IntegrationTier = "starter" | "pro" | "agency";
 
@@ -71,8 +70,6 @@ const initialIntegrations: Integration[] = [
   { id: "oracle-cloud", name: "Oracle Cloud Storage", description: "Enterprise cloud storage and data management", icon: "Oracle Cloud Storage", tier: "agency", category: "Storage", connected: false },
 ];
 
-const filterOptions = ["All", "Starter", "Pro", "Agency"] as const;
-type FilterOption = typeof filterOptions[number];
 
 const tierLevel: Record<IntegrationTier, number> = {
   starter: 1,
@@ -87,8 +84,6 @@ const planTierLevel: Record<PlanTier & string, number> = {
 };
 
 const Connections = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activeFilter, setActiveFilter] = useState<FilterOption>("All");
   const [integrations, setIntegrations] = useState<Integration[]>(initialIntegrations);
   const [connectModalOpen, setConnectModalOpen] = useState(false);
   const [selectedIntegration, setSelectedIntegration] = useState<Integration | null>(null);
@@ -106,22 +101,6 @@ const Connections = () => {
     return integration.tier.charAt(0).toUpperCase() + integration.tier.slice(1);
   };
 
-  const filteredIntegrations = useMemo(() => {
-    return integrations.filter((integration) => {
-      const searchLower = searchQuery.toLowerCase();
-      const matchesSearch = 
-        integration.name.toLowerCase().includes(searchLower) ||
-        integration.description.toLowerCase().includes(searchLower) ||
-        integration.category.toLowerCase().includes(searchLower);
-      
-      let matchesFilter = true;
-      if (activeFilter === "Starter") matchesFilter = integration.tier === "starter";
-      else if (activeFilter === "Pro") matchesFilter = integration.tier === "pro";
-      else if (activeFilter === "Agency") matchesFilter = integration.tier === "agency";
-      
-      return matchesSearch && matchesFilter;
-    });
-  }, [searchQuery, activeFilter, integrations]);
 
   const handleConnect = (integration: Integration) => {
     if (isIntegrationLocked(integration)) {
@@ -183,75 +162,38 @@ const Connections = () => {
             </motion.p>
           </div>
 
-          {/* Search Bar */}
+          {/* Stats Row */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
+            className="flex items-center gap-1 text-sm text-muted-foreground"
           >
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                placeholder="Search by name, category, or description..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 h-12 bg-card/50 border-border/60 focus:border-primary/50 focus:ring-primary/20 shadow-sm"
-              />
-            </div>
-          </motion.div>
-
-          {/* Filter Pills & Stats Row */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="flex flex-wrap items-center justify-between gap-4"
-          >
-            <div className="flex flex-wrap gap-2">
-              {filterOptions.map((filter) => (
-                <button
-                  key={filter}
-                  onClick={() => setActiveFilter(filter)}
-                  className={cn(
-                    "px-4 py-2 rounded-full text-sm font-medium transition-all duration-300",
-                    activeFilter === filter
-                      ? "bg-primary text-primary-foreground shadow-[0_0_20px_-5px_hsl(var(--primary))]"
-                      : "bg-card/60 text-muted-foreground hover:bg-card hover:text-foreground border border-border/50 hover:border-border"
-                  )}
-                >
-                  {filter}
-                </button>
-              ))}
-            </div>
-
-            {/* Stats */}
-            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-              {isSubscribed ? (
-                <>
-                  <span className="text-foreground font-semibold">{availableCount}</span>
-                  <span>available</span>
-                  <span className="mx-2 text-border">·</span>
-                  <span className="text-green-400 font-semibold">{connectedCount}</span>
-                  <span>connected</span>
-                </>
-              ) : (
-                <>
-                  <Lock className="w-4 h-4 mr-1 text-muted-foreground" />
-                  <span className="text-foreground font-semibold">{totalCount}</span>
-                  <span>integrations locked</span>
-                </>
-              )}
-            </div>
+            {isSubscribed ? (
+              <>
+                <span className="text-foreground font-semibold">{availableCount}</span>
+                <span>available</span>
+                <span className="mx-2 text-border">·</span>
+                <span className="text-green-400 font-semibold">{connectedCount}</span>
+                <span>connected</span>
+              </>
+            ) : (
+              <>
+                <Lock className="w-4 h-4 mr-1 text-muted-foreground" />
+                <span className="text-foreground font-semibold">{totalCount}</span>
+                <span>integrations locked</span>
+              </>
+            )}
           </motion.div>
 
           {/* Integrations Grid */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.2 }}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
           >
-            {filteredIntegrations.map((integration, index) => (
+            {integrations.map((integration, index) => (
               <ConnectionIntegrationCard
                 key={integration.id}
                 integration={integration}
@@ -265,17 +207,17 @@ const Connections = () => {
           </motion.div>
 
           {/* Empty State */}
-          {filteredIntegrations.length === 0 && (
+          {integrations.length === 0 && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="text-center py-16"
             >
               <div className="w-16 h-16 mx-auto rounded-2xl bg-muted/50 flex items-center justify-center mb-4">
-                <Search className="w-8 h-8 text-muted-foreground" />
+                <Plug className="w-8 h-8 text-muted-foreground" />
               </div>
-              <h3 className="text-lg font-medium text-foreground mb-2">No integrations found</h3>
-              <p className="text-muted-foreground">Try adjusting your search or filter</p>
+              <h3 className="text-lg font-medium text-foreground mb-2">No integrations available</h3>
+              <p className="text-muted-foreground">Check back later for new integrations</p>
             </motion.div>
           )}
         </div>
