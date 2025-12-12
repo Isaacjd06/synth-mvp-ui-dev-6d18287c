@@ -3,14 +3,13 @@ import { useNavigate } from "react-router-dom";
 import {
   Sparkles,
   MessageSquare,
-  Zap,
   Mail,
   FileText,
   Bell,
   Users,
   ToggleLeft,
-  Filter,
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition, PageItem } from "@/components/app/PageTransition";
 import { Button } from "@/components/ui/button";
@@ -99,7 +98,7 @@ const CATEGORIES = ["All", "Sales", "Productivity", "Operations", "Communication
 const Skills = () => {
   const [skills, setSkills] = useState(initialSkills);
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [customizeSkill, setCustomizeSkill] = useState<PrebuiltSkill | null>(null);
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
@@ -107,8 +106,8 @@ const Skills = () => {
   const navigate = useNavigate();
   const { isSubscribed, planTier, requireSubscription } = useSubscription();
 
-  // Group skills by category
-  const groupedSkills = useMemo(() => {
+  // Filter and group skills
+  const { filteredSkills, groupedSkills } = useMemo(() => {
     const filtered =
       selectedCategory === "All"
         ? skills
@@ -123,7 +122,7 @@ const Skills = () => {
       groups[skill.category].push(skill);
     });
 
-    return groups;
+    return { filteredSkills: filtered, groupedSkills: groups };
   }, [skills, selectedCategory]);
 
   const handleToggle = async (id: string) => {
@@ -133,8 +132,6 @@ const Skills = () => {
     if (!skill) return;
 
     setTogglingId(id);
-
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 400));
 
     const willBeEnabled = !skill.isEnabled;
@@ -186,7 +183,7 @@ const Skills = () => {
 
   return (
     <AppShell>
-      <PageTransition className="px-4 lg:px-6 py-8 space-y-8">
+      <PageTransition className="px-4 lg:px-6 py-6 space-y-6">
         {/* Subscription Banner */}
         {!isSubscribed && (
           <PageItem>
@@ -197,45 +194,66 @@ const Skills = () => {
         {/* Header */}
         <PageItem className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-display font-bold text-foreground flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-primary" />
+            <h1 className="text-2xl sm:text-3xl font-display font-bold text-foreground flex items-center gap-3">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
               </div>
               Prebuilt Skills
             </h1>
-            <p className="text-muted-foreground mt-2 font-light">
+            <p className="text-muted-foreground mt-1.5 text-sm sm:text-base font-light">
               Turn on ready-made automations for your business.
             </p>
           </div>
           <Badge
             variant="outline"
-            className="self-start px-4 py-2 border-primary/30 bg-primary/5 text-primary"
+            className="self-start px-3 py-1.5 border-primary/30 bg-primary/5 text-primary text-sm"
           >
             <ToggleLeft className="w-3.5 h-3.5 mr-1.5" />
             {enabledCount} Active
           </Badge>
         </PageItem>
 
-        {/* Category Filters */}
+        {/* Category Filter Bar */}
         <PageItem>
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            <Filter className="w-4 h-4 text-muted-foreground shrink-0" />
-            {CATEGORIES.map((category) => (
-              <Button
-                key={category}
-                variant={selectedCategory === category ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedCategory(category)}
-                className={cn(
-                  "shrink-0 transition-all",
-                  selectedCategory === category
-                    ? "bg-primary hover:bg-primary/90"
-                    : "border-border/50 hover:border-primary/30 hover:bg-primary/5"
-                )}
-              >
-                {category}
-              </Button>
-            ))}
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
+            {CATEGORIES.map((category) => {
+              const count = category === "All" 
+                ? skills.length 
+                : skills.filter(s => s.category === category).length;
+              const isActive = selectedCategory === category;
+              
+              return (
+                <motion.div
+                  key={category}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Button
+                    variant={isActive ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSelectedCategory(category)}
+                    className={cn(
+                      "shrink-0 transition-all duration-200 px-4 gap-2",
+                      isActive
+                        ? "bg-primary hover:bg-primary/90 shadow-md shadow-primary/20"
+                        : "border-border/60 hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
+                    )}
+                  >
+                    {category}
+                    {count > 0 && (
+                      <span className={cn(
+                        "text-xs px-1.5 py-0.5 rounded-full",
+                        isActive 
+                          ? "bg-primary-foreground/20 text-primary-foreground" 
+                          : "bg-muted text-muted-foreground"
+                      )}>
+                        {count}
+                      </span>
+                    )}
+                  </Button>
+                </motion.div>
+              );
+            })}
           </div>
         </PageItem>
 
@@ -244,63 +262,86 @@ const Skills = () => {
           <PageItem>
             <SkillsLoadingState />
           </PageItem>
-        ) : skills.length === 0 ? (
+        ) : filteredSkills.length === 0 ? (
           /* Empty State */
           <PageItem>
             <Card className="border-dashed border-2 border-border/50 bg-card/50">
-              <CardContent className="py-16 text-center">
-                <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                  <Sparkles className="w-8 h-8 text-primary" />
+              <CardContent className="py-12 sm:py-16 text-center">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-5 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                  <Sparkles className="w-7 h-7 sm:w-8 sm:h-8 text-primary" />
                 </div>
                 <h3 className="text-lg font-medium text-foreground mb-2">
-                  No Prebuilt Skills Available
+                  {selectedCategory === "All" 
+                    ? "No Prebuilt Skills Available" 
+                    : `No ${selectedCategory} Skills`}
                 </h3>
-                <p className="text-muted-foreground mb-6 font-light max-w-md mx-auto">
-                  Your Synth account has no prebuilt skills yet. Create custom workflows in Chat.
+                <p className="text-muted-foreground mb-6 font-light max-w-md mx-auto text-sm">
+                  {selectedCategory === "All"
+                    ? "Your Synth account has no prebuilt skills yet. Create custom workflows in Chat."
+                    : `No skills found in the ${selectedCategory} category. Try selecting a different filter.`}
                 </p>
-                <Button
-                  onClick={() => navigate("/app/chat")}
-                  className="bg-primary hover:bg-primary/90"
-                >
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  Create Custom Workflow
-                </Button>
+                {selectedCategory === "All" && (
+                  <Button
+                    onClick={() => navigate("/app/chat")}
+                    className="bg-primary hover:bg-primary/90"
+                  >
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    Create Custom Workflow
+                  </Button>
+                )}
               </CardContent>
             </Card>
           </PageItem>
         ) : (
           /* Skills by Category */
-          <TooltipProvider>
-            {Object.entries(groupedSkills).map(([category, categorySkills]) => (
-              <PageItem key={category} className="space-y-4">
-                {/* Category Header */}
-                {selectedCategory === "All" && (
-                  <div className="flex items-center gap-3">
-                    <h2 className="text-lg font-semibold text-foreground">{category}</h2>
-                    <div className="h-px flex-1 bg-border/40" />
-                    <Badge variant="secondary" className="text-xs">
-                      {categorySkills.length} skill{categorySkills.length !== 1 ? "s" : ""}
-                    </Badge>
-                  </div>
-                )}
+          <TooltipProvider delayDuration={200}>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={selectedCategory}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                className="space-y-6"
+              >
+                {Object.entries(groupedSkills).map(([category, categorySkills]) => (
+                  <PageItem key={category} className="space-y-4">
+                    {/* Category Header */}
+                    {selectedCategory === "All" && (
+                      <div className="flex items-center gap-4">
+                        <h2 className="text-base sm:text-lg font-semibold text-foreground whitespace-nowrap">
+                          {category}
+                        </h2>
+                        <div className="h-px flex-1 bg-gradient-to-r from-border/60 to-transparent" />
+                        <Badge 
+                          variant="secondary" 
+                          className="text-xs bg-muted/60 text-muted-foreground px-2.5 py-1 shrink-0"
+                        >
+                          {categorySkills.length} skill{categorySkills.length !== 1 ? "s" : ""}
+                        </Badge>
+                      </div>
+                    )}
 
-                {/* Skills Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                  {categorySkills.map((skill) => (
-                    <SkillCard
-                      key={skill.id}
-                      skill={skill}
-                      isSubscribed={isSubscribed}
-                      userPlan={planTier}
-                      onToggle={handleToggle}
-                      onCustomize={handleCustomize}
-                      onViewRuns={handleViewRuns}
-                      isToggling={togglingId === skill.id}
-                    />
-                  ))}
-                </div>
-              </PageItem>
-            ))}
+                    {/* Skills Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                      {categorySkills.map((skill, index) => (
+                        <SkillCard
+                          key={skill.id}
+                          skill={skill}
+                          isSubscribed={isSubscribed}
+                          userPlan={planTier}
+                          onToggle={handleToggle}
+                          onCustomize={handleCustomize}
+                          onViewRuns={handleViewRuns}
+                          isToggling={togglingId === skill.id}
+                          index={index}
+                        />
+                      ))}
+                    </div>
+                  </PageItem>
+                ))}
+              </motion.div>
+            </AnimatePresence>
           </TooltipProvider>
         )}
       </PageTransition>

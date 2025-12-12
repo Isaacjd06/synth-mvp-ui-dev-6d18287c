@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Settings2, MessageSquare, Save, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Settings2, MessageSquare, Save, X, type LucideIcon } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -32,25 +32,24 @@ export const SkillCustomizeModal = ({
   onSave,
   onOpenChat,
 }: SkillCustomizeModalProps) => {
-  const [name, setName] = useState(skill?.name || "");
-  const [description, setDescription] = useState(skill?.description || "");
-  const [isEnabled, setIsEnabled] = useState(skill?.isEnabled || false);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [isEnabled, setIsEnabled] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   // Reset form when skill changes
-  useState(() => {
+  useEffect(() => {
     if (skill) {
       setName(skill.name);
       setDescription(skill.description);
       setIsEnabled(skill.isEnabled);
     }
-  });
+  }, [skill]);
 
   const handleSave = async () => {
     if (!skill) return;
     
     setIsSaving(true);
-    // Simulate save delay
     await new Promise((resolve) => setTimeout(resolve, 500));
     
     onSave(skill, { name, description, isEnabled });
@@ -67,13 +66,15 @@ export const SkillCustomizeModal = ({
 
   if (!skill) return null;
 
+  const IconComponent = skill.icon;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg bg-card border-border/60">
         <DialogHeader>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-              <skill.icon className="w-5 h-5 text-primary" />
+              <IconComponent className="w-5 h-5 text-primary" />
             </div>
             <div className="flex-1">
               <DialogTitle className="text-lg font-semibold">Customize Skill</DialogTitle>
