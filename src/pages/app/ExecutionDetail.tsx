@@ -1,34 +1,24 @@
-import { useParams, Link, useNavigate } from "react-router-dom";
-import { 
-  ArrowLeft, 
-  CheckCircle2, 
-  XCircle, 
-  Loader2, 
-  Clock, 
-  Hash,
-  ExternalLink,
-  MessageSquare,
-  AlertTriangle
-} from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import AppShell from "@/components/app/AppShell";
-import { PageTransition, PageItem } from "@/components/app/PageTransition";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import JsonViewer from "@/components/executions/JsonViewer";
-import ExecutionTimeline from "@/components/executions/ExecutionTimeline";
+import ExecutionHeader from "@/components/execution-detail/ExecutionHeader";
+import SummaryCards from "@/components/execution-detail/SummaryCards";
+import ExecutionTimelineNew from "@/components/execution-detail/ExecutionTimelineNew";
+import DataViewerCard from "@/components/execution-detail/DataViewerCard";
+import ErrorPanel from "@/components/execution-detail/ErrorPanel";
+import ExecutionFooter from "@/components/execution-detail/ExecutionFooter";
 
 // Mock execution data
 const mockExecutionData = {
   id: "exec_abc123xyz",
-  pipedreamId: "pd_1234567890",
+  shortId: "#7fs8db2",
   workflowId: "1",
   workflowName: "Lead Intake → CRM",
-  status: "error" as "success" | "error" | "running",
-  startTime: "2024-12-09 14:32:15",
-  endTime: "2024-12-09 14:32:17",
+  status: "error" as const,
+  timestamp: "2 hours ago",
   duration: "2.1s",
+  triggerType: "Webhook",
+  workflowVersion: "v1.3.2",
   input: {
     email: "john.doe@example.com",
     name: "John Doe",
@@ -53,70 +43,91 @@ const mockExecutionData = {
   error: {
     message: "Failed to send Slack notification: channel_not_found",
     code: "SLACK_API_ERROR",
+    possibleCause: "The configured Slack channel may have been deleted or renamed. Verify the channel exists and the Synth bot has access to post messages.",
     stack: `Error: channel_not_found
     at SlackClient.postMessage (/workflows/slack-integration.js:42:15)
     at ExecutionRunner.runStep (/core/runner.js:128:22)
-    at async ExecutionRunner.execute (/core/runner.js:85:12)`,
+    at async ExecutionRunner.execute (/core/runner.js:85:12)
+    at async WorkflowEngine.run (/engine/workflow.js:156:8)`,
   },
   steps: [
-    { id: "s1", label: "Form Submission Received", status: "completed" as const, duration: "0.1s" },
-    { id: "s2", label: "Validate Input Data", status: "completed" as const, duration: "0.2s" },
-    { id: "s3", label: "Enrich with Clearbit", status: "completed" as const, duration: "1.2s" },
-    { id: "s4", label: "Create CRM Contact", status: "completed" as const, duration: "0.4s" },
-    { id: "s5", label: "Send Slack Notification", status: "error" as const, duration: "0.2s" },
+    {
+      id: "s1",
+      name: "Form Submission Received",
+      status: "completed" as const,
+      timestamp: "14:32:15",
+      duration: "0.1s",
+      description: "Webhook triggered by incoming form submission from the website contact form.",
+      details: {
+        "Webhook URL": "https://api.synth.io/hooks/abc123",
+        "Method": "POST",
+        "Content-Type": "application/json",
+      },
+      logs: "[14:32:15] Webhook received\n[14:32:15] Payload validated\n[14:32:15] Trigger complete",
+    },
+    {
+      id: "s2",
+      name: "Validate Input Data",
+      status: "completed" as const,
+      timestamp: "14:32:15",
+      duration: "0.2s",
+      description: "Validates the incoming data against the expected schema and sanitizes inputs.",
+      details: {
+        "Fields Validated": "4",
+        "Schema Version": "2.1",
+        "Sanitization": "Enabled",
+      },
+    },
+    {
+      id: "s3",
+      name: "Enrich with Clearbit",
+      status: "completed" as const,
+      timestamp: "14:32:16",
+      duration: "1.2s",
+      description: "Enriches lead data using Clearbit API to gather company and contact information.",
+      details: {
+        "API Endpoint": "api.clearbit.com/v2",
+        "Records Matched": "1",
+        "Data Points": "12",
+      },
+      logs: "[14:32:16] Clearbit lookup started\n[14:32:17] Company data found\n[14:32:17] Enrichment complete",
+    },
+    {
+      id: "s4",
+      name: "Create CRM Contact",
+      status: "completed" as const,
+      timestamp: "14:32:17",
+      duration: "0.4s",
+      description: "Creates or updates the contact record in HubSpot CRM with enriched data.",
+      details: {
+        "CRM": "HubSpot",
+        "Action": "Create",
+        "Contact ID": "CRM-12345",
+      },
+    },
+    {
+      id: "s5",
+      name: "Send Slack Notification",
+      status: "error" as const,
+      timestamp: "14:32:17",
+      duration: "0.2s",
+      description: "Sends notification to the sales team Slack channel about the new lead.",
+      details: {
+        "Channel": "#sales-leads",
+        "Status": "Failed",
+        "Error": "channel_not_found",
+      },
+      logs: "[14:32:17] Attempting to send Slack message\n[14:32:17] ERROR: channel_not_found\n[14:32:17] Step failed",
+    },
   ],
-};
-
-const getStatusConfig = (status: string) => {
-  switch (status) {
-    case "success":
-      return {
-        variant: "success" as const,
-        icon: CheckCircle2,
-        label: "Completed",
-        color: "text-emerald-400",
-        bgColor: "bg-emerald-400/10",
-        borderColor: "border-emerald-400/30",
-      };
-    case "error":
-      return {
-        variant: "error" as const,
-        icon: XCircle,
-        label: "Failed",
-        color: "text-destructive",
-        bgColor: "bg-destructive/10",
-        borderColor: "border-destructive/30",
-      };
-    case "running":
-      return {
-        variant: "running" as const,
-        icon: Loader2,
-        label: "Running",
-        color: "text-primary",
-        bgColor: "bg-primary/10",
-        borderColor: "border-primary/30",
-      };
-    default:
-      return {
-        variant: "secondary" as const,
-        icon: Clock,
-        label: "Unknown",
-        color: "text-muted-foreground",
-        bgColor: "bg-muted/10",
-        borderColor: "border-border",
-      };
-  }
 };
 
 const ExecutionDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const execution = mockExecutionData;
-  const statusConfig = getStatusConfig(execution.status);
-  const StatusIcon = statusConfig.icon;
 
   const handleFixInChat = () => {
-    // Navigate to chat with context preloaded
     navigate("/app/chat", {
       state: {
         prefill: `Help me fix this workflow error: ${execution.error?.message}`,
@@ -126,164 +137,100 @@ const ExecutionDetail = () => {
 
   return (
     <AppShell>
-      <PageTransition className="px-4 lg:px-6 py-6 space-y-6 max-w-4xl">
-        {/* Back Button */}
-        <PageItem>
-          <Button variant="ghost" size="sm" asChild className="group">
-            <Link to="/app/executions" className="flex items-center gap-2">
-              <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-              Back to Executions
-            </Link>
-          </Button>
-        </PageItem>
+      <div className="min-h-screen bg-gradient-to-b from-background via-background to-synth-navy-light/20">
+        <div className="space-y-6">
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <ExecutionHeader
+              workflowName={execution.workflowName}
+              workflowId={execution.workflowId}
+              executionId={execution.shortId}
+              status={execution.status}
+              timestamp={execution.timestamp}
+              duration={execution.duration}
+            />
+          </motion.div>
 
-        {/* Execution Summary Card */}
-        <PageItem>
-          <Card className={`${statusConfig.borderColor} ${statusConfig.bgColor}`}>
-            <CardHeader className="pb-4">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <StatusIcon className={`w-5 h-5 ${statusConfig.color} ${execution.status === "running" ? "animate-spin" : ""}`} />
-                  Execution Summary
-                </CardTitle>
-                <Badge variant={statusConfig.variant}>
-                  {statusConfig.label}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Workflow Link */}
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Workflow</p>
-                  <Link 
-                    to={`/app/workflows/${execution.workflowId}`}
-                    className="text-foreground font-medium hover:text-primary transition-colors flex items-center gap-2"
-                  >
-                    {execution.workflowName}
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-              </div>
+          {/* Summary Cards */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
+            <SummaryCards
+              status={execution.status}
+              executionTime={execution.duration}
+              triggerType={execution.triggerType}
+              workflowVersion={execution.workflowVersion}
+            />
+          </motion.div>
 
-              <Separator className="bg-border/50" />
+          {/* Execution Timeline */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+          >
+            <ExecutionTimelineNew steps={execution.steps} />
+          </motion.div>
 
-              {/* IDs and Timestamps */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-                    <Hash className="w-3 h-3" />
-                    Execution ID
-                  </p>
-                  <p className="text-foreground font-mono text-sm">{execution.id}</p>
-                </div>
-                {execution.pipedreamId && (
-                  <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                      Pipedream ID
-                    </p>
-                    <p className="text-foreground font-mono text-sm">{execution.pipedreamId}</p>
-                  </div>
-                )}
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-                    <Clock className="w-3 h-3" />
-                    Start Time
-                  </p>
-                  <p className="text-foreground text-sm">{execution.startTime}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                    End Time
-                  </p>
-                  <p className="text-foreground text-sm">{execution.endTime}</p>
-                </div>
-              </div>
+          {/* Input Data */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+          >
+            <DataViewerCard
+              title="Input Data"
+              data={execution.input}
+              defaultExpanded={true}
+            />
+          </motion.div>
 
-              {/* Duration */}
-              <div className="flex items-center gap-4 p-3 rounded-lg bg-background/50 border border-border/30">
-                <Clock className="w-5 h-5 text-muted-foreground" />
-                <div>
-                  <p className="text-xs text-muted-foreground">Total Duration</p>
-                  <p className="text-lg font-mono font-medium text-foreground">{execution.duration}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </PageItem>
+          {/* Output Data */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.35 }}
+          >
+            <DataViewerCard
+              title="Output Data"
+              data={execution.output}
+              defaultExpanded={false}
+            />
+          </motion.div>
 
-        {/* Error Inspector (only if error) */}
-        {execution.status === "error" && execution.error && (
-          <PageItem>
-            <Card className="border-destructive/30 bg-destructive/5">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg flex items-center gap-2 text-destructive">
-                  <AlertTriangle className="w-5 h-5" />
-                  Error Details
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Error Message */}
-                <div className="space-y-2">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">Error Message</p>
-                  <p className="text-destructive font-medium">{execution.error.message}</p>
-                  {execution.error.code && (
-                    <Badge variant="outline" className="border-destructive/30 text-destructive">
-                      {execution.error.code}
-                    </Badge>
-                  )}
-                </div>
+          {/* Error Panel (only if error) */}
+          {execution.status === "error" && execution.error && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.4 }}
+            >
+              <ErrorPanel
+                errorMessage={execution.error.message}
+                errorCode={execution.error.code}
+                possibleCause={execution.error.possibleCause}
+                stackTrace={execution.error.stack}
+                onFixInChat={handleFixInChat}
+              />
+            </motion.div>
+          )}
 
-                {/* Stack Trace */}
-                {execution.error.stack && (
-                  <div className="space-y-2">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Stack Trace</p>
-                    <pre className="p-3 rounded-lg bg-background/80 border border-destructive/20 text-xs font-mono text-muted-foreground overflow-x-auto max-h-[200px]">
-                      {execution.error.stack}
-                    </pre>
-                  </div>
-                )}
-
-                {/* Fix in Chat Button */}
-                <Button onClick={handleFixInChat} className="gap-2">
-                  <MessageSquare className="w-4 h-4" />
-                  Fix in Chat
-                </Button>
-              </CardContent>
-            </Card>
-          </PageItem>
-        )}
-
-        {/* Input Data Viewer */}
-        <PageItem>
-          <Card>
-            <CardContent className="p-0">
-              <JsonViewer data={execution.input} title="Input Data" defaultExpanded={true} />
-            </CardContent>
-          </Card>
-        </PageItem>
-
-        {/* Output Data Viewer */}
-        <PageItem>
-          <Card>
-            <CardContent className="p-0">
-              <JsonViewer data={execution.output} title="Output Data" defaultExpanded={true} />
-            </CardContent>
-          </Card>
-        </PageItem>
-
-        {/* Execution Timeline */}
-        <PageItem>
-          <Card>
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg">Execution Timeline</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ExecutionTimeline steps={execution.steps} />
-            </CardContent>
-          </Card>
-        </PageItem>
-      </PageTransition>
+          {/* Footer Actions */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.45 }}
+          >
+            <ExecutionFooter workflowId={execution.workflowId} />
+          </motion.div>
+        </div>
+      </div>
     </AppShell>
   );
 };
