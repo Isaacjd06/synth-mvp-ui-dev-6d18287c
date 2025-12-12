@@ -30,7 +30,23 @@ const insights = [
   },
 ];
 
-const DashboardAdvisoryCard = () => {
+interface DashboardAdvisoryCardProps {
+  isEmpty?: boolean;
+}
+
+const DashboardAdvisoryCard = ({ isEmpty = false }: DashboardAdvisoryCardProps) => {
+  // Hidden empty state - will be shown when isEmpty is true (wired by backend later)
+  if (isEmpty) {
+    return (
+      <Card className="hidden relative overflow-hidden rounded-2xl border-border/40 bg-gradient-to-b from-card to-synth-navy-light">
+        <CardContent className="py-12 text-center">
+          <Sparkles className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+          <p className="text-muted-foreground font-light">No insights available yet.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="relative overflow-hidden rounded-2xl border-border/40 bg-gradient-to-b from-card to-synth-navy-light">
       {/* Decorative glow */}

@@ -1,4 +1,4 @@
-import { Zap, Activity, Clock, CheckCircle, ChevronRight, Sparkles } from "lucide-react";
+import { Zap, Activity, Clock, CheckCircle, ChevronRight, Sparkles, AlertCircle } from "lucide-react";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition, PageItem } from "@/components/app/PageTransition";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -65,6 +65,16 @@ const Dashboard = () => {
             <DashboardSuggestionCard />
           </PageItem>
 
+          {/* Section Divider */}
+          <div className="relative py-2">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-primary/10" />
+            </div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-32 h-1 bg-gradient-to-r from-transparent via-primary/20 to-transparent blur-sm" />
+            </div>
+          </div>
+
           {/* 4. Metrics Row - 4 Stat Cards */}
           <PageItem>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
@@ -105,6 +115,12 @@ const Dashboard = () => {
                       timestamp={activity.timestamp}
                     />
                   ))}
+                </div>
+                
+                {/* Hidden empty state - will be shown when no activity exists */}
+                <div className="hidden py-12 text-center">
+                  <Activity className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                  <p className="text-muted-foreground font-light">No workflow activity found.</p>
                 </div>
               </CardContent>
             </Card>
