@@ -1,11 +1,13 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Search, Plug } from "lucide-react";
+import { Search, Plug, Lock } from "lucide-react";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition } from "@/components/app/PageTransition";
 import { Input } from "@/components/ui/input";
 import ConnectionIntegrationCard from "@/components/connections/ConnectionIntegrationCard";
 import ConnectIntegrationModal from "@/components/connections/ConnectIntegrationModal";
+import SubscriptionBanner from "@/components/subscription/SubscriptionBanner";
+import { useSubscription, PlanTier } from "@/contexts/SubscriptionContext";
 import { cn } from "@/lib/utils";
 
 export type IntegrationTier = "starter" | "pro" | "agency";
@@ -72,12 +74,37 @@ const initialIntegrations: Integration[] = [
 const filterOptions = ["All", "Starter", "Pro", "Agency"] as const;
 type FilterOption = typeof filterOptions[number];
 
+const tierLevel: Record<IntegrationTier, number> = {
+  starter: 1,
+  pro: 2,
+  agency: 3,
+};
+
+const planTierLevel: Record<PlanTier & string, number> = {
+  starter: 1,
+  pro: 2,
+  agency: 3,
+};
+
 const Connections = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterOption>("All");
   const [integrations, setIntegrations] = useState<Integration[]>(initialIntegrations);
   const [connectModalOpen, setConnectModalOpen] = useState(false);
   const [selectedIntegration, setSelectedIntegration] = useState<Integration | null>(null);
+  
+  const { isSubscribed, planTier, openSubscriptionModal } = useSubscription();
+  
+  const userTierLevel = planTier ? planTierLevel[planTier] : 0;
+
+  const isIntegrationLocked = (integration: Integration): boolean => {
+    if (!isSubscribed) return true;
+    return tierLevel[integration.tier] > userTierLevel;
+  };
+
+  const getRequiredPlan = (integration: Integration): string => {
+    return integration.tier.charAt(0).toUpperCase() + integration.tier.slice(1);
+  };
 
   const filteredIntegrations = useMemo(() => {
     return integrations.filter((integration) => {
@@ -97,6 +124,10 @@ const Connections = () => {
   }, [searchQuery, activeFilter, integrations]);
 
   const handleConnect = (integration: Integration) => {
+    if (isIntegrationLocked(integration)) {
+      openSubscriptionModal(`${integration.name} integration`);
+      return;
+    }
     setSelectedIntegration(integration);
     setConnectModalOpen(true);
   };
@@ -117,11 +148,19 @@ const Connections = () => {
 
   const connectedCount = integrations.filter(i => i.connected).length;
   const totalCount = integrations.length;
+  const availableCount = integrations.filter(i => !isIntegrationLocked(i)).length;
 
   return (
     <AppShell>
       <PageTransition>
         <div className="space-y-6">
+          {/* Subscription Banner */}
+          {!isSubscribed && (
+            <SubscriptionBanner 
+              feature="connect integrations and unlock automation capabilities"
+            />
+          )}
+
           {/* Header */}
           <div>
             <motion.h1
@@ -187,11 +226,21 @@ const Connections = () => {
 
             {/* Stats */}
             <div className="flex items-center gap-1 text-sm text-muted-foreground">
-              <span className="text-foreground font-semibold">{totalCount}</span>
-              <span>integrations</span>
-              <span className="mx-2 text-border">·</span>
-              <span className="text-green-400 font-semibold">{connectedCount}</span>
-              <span>connected</span>
+              {isSubscribed ? (
+                <>
+                  <span className="text-foreground font-semibold">{availableCount}</span>
+                  <span>available</span>
+                  <span className="mx-2 text-border">·</span>
+                  <span className="text-green-400 font-semibold">{connectedCount}</span>
+                  <span>connected</span>
+                </>
+              ) : (
+                <>
+                  <Lock className="w-4 h-4 mr-1 text-muted-foreground" />
+                  <span className="text-foreground font-semibold">{totalCount}</span>
+                  <span>integrations locked</span>
+                </>
+              )}
             </div>
           </motion.div>
 
@@ -209,6 +258,8 @@ const Connections = () => {
                 onConnect={() => handleConnect(integration)}
                 onDisconnect={() => handleDisconnect(integration.id)}
                 index={index}
+                isLocked={isIntegrationLocked(integration)}
+                requiredPlan={getRequiredPlan(integration)}
               />
             ))}
           </motion.div>
