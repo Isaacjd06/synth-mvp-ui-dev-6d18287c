@@ -15,6 +15,7 @@ import { PageTransition, PageItem } from "@/components/app/PageTransition";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import SubscriptionBanner from "@/components/subscription/SubscriptionBanner";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { synthToast } from "@/lib/synth-toast";
@@ -22,7 +23,6 @@ import { SkillCard, type PrebuiltSkill } from "@/components/skills/SkillCard";
 import { SkillCustomizeModal } from "@/components/skills/SkillCustomizeModal";
 import { SkillsLoadingState } from "@/components/skills/SkillsLoadingState";
 import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 
 const initialSkills: PrebuiltSkill[] = [
   {
@@ -215,7 +215,7 @@ const Skills = () => {
 
         {/* Category Filter Bar */}
         <PageItem>
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
+          <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
             {CATEGORIES.map((category) => {
               const count = category === "All" 
                 ? skills.length 
@@ -223,35 +223,28 @@ const Skills = () => {
               const isActive = selectedCategory === category;
               
               return (
-                <motion.div
+                <motion.button
                   key={category}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => setSelectedCategory(category)}
+                  className={cn(
+                    "shrink-0 snap-start flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                    isActive
+                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                      : "bg-muted/40 text-muted-foreground border border-border/50 hover:border-primary/40 hover:bg-primary/10 hover:text-foreground"
+                  )}
                 >
-                  <Button
-                    variant={isActive ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setSelectedCategory(category)}
-                    className={cn(
-                      "shrink-0 transition-all duration-200 px-4 gap-2",
-                      isActive
-                        ? "bg-primary hover:bg-primary/90 shadow-md shadow-primary/20"
-                        : "border-border/60 hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
-                    )}
-                  >
-                    {category}
-                    {count > 0 && (
-                      <span className={cn(
-                        "text-xs px-1.5 py-0.5 rounded-full",
-                        isActive 
-                          ? "bg-primary-foreground/20 text-primary-foreground" 
-                          : "bg-muted text-muted-foreground"
-                      )}>
-                        {count}
-                      </span>
-                    )}
-                  </Button>
-                </motion.div>
+                  {category}
+                  <span className={cn(
+                    "text-xs px-1.5 py-0.5 rounded-full min-w-[20px] text-center",
+                    isActive 
+                      ? "bg-primary-foreground/20 text-primary-foreground" 
+                      : "bg-background/50 text-muted-foreground"
+                  )}>
+                    {count}
+                  </span>
+                </motion.button>
               );
             })}
           </div>
@@ -302,28 +295,27 @@ const Skills = () => {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
-                className="space-y-6"
+                className="space-y-8 pb-8"
               >
-                {Object.entries(groupedSkills).map(([category, categorySkills]) => (
-                  <PageItem key={category} className="space-y-4">
+                {Object.entries(groupedSkills).map(([category, categorySkills], catIndex) => (
+                  <PageItem key={category}>
                     {/* Category Header */}
                     {selectedCategory === "All" && (
-                      <div className="flex items-center gap-4">
-                        <h2 className="text-base sm:text-lg font-semibold text-foreground whitespace-nowrap">
+                      <div className="flex items-center justify-between gap-4 mb-4 mt-6 first:mt-0">
+                        <h4 className="text-base font-semibold text-foreground">
                           {category}
-                        </h2>
-                        <div className="h-px flex-1 bg-gradient-to-r from-border/60 to-transparent" />
-                        <Badge 
-                          variant="secondary" 
-                          className="text-xs bg-muted/60 text-muted-foreground px-2.5 py-1 shrink-0"
-                        >
-                          {categorySkills.length} skill{categorySkills.length !== 1 ? "s" : ""}
-                        </Badge>
+                        </h4>
+                        <div className="flex items-center gap-3">
+                          <div className="h-px flex-1 min-w-[40px] bg-gradient-to-r from-border/60 to-transparent" />
+                          <span className="text-xs font-medium text-muted-foreground bg-muted/50 px-2.5 py-1 rounded-md shrink-0">
+                            {categorySkills.length} skill{categorySkills.length !== 1 ? "s" : ""}
+                          </span>
+                        </div>
                       </div>
                     )}
 
-                    {/* Skills Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                    {/* Skills Grid - 2 columns on desktop, 1 on mobile, max-width per card */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                       {categorySkills.map((skill, index) => (
                         <SkillCard
                           key={skill.id}
