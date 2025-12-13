@@ -20,10 +20,12 @@ const DashboardStatCard = ({ label, value, icon: Icon, description }: DashboardS
   const desc = description || descriptions[label] || "";
 
   return (
-    <Card className="rounded-xl border-border/40 bg-card hover:bg-muted/10 transition-colors">
+    <Card className="rounded-xl border-border/40 bg-card hover:border-primary/30 transition-colors">
       <CardContent className="p-4">
         <div className="flex items-center gap-2 mb-3">
-          <Icon className="w-3.5 h-3.5 text-muted-foreground" />
+          <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
+            <Icon className="w-3.5 h-3.5 text-primary" />
+          </div>
           <span className="text-xs text-muted-foreground uppercase tracking-wide">
             {label}
           </span>
@@ -36,7 +38,7 @@ const DashboardStatCard = ({ label, value, icon: Icon, description }: DashboardS
         <p className="text-xs text-muted-foreground/70">
           {desc}
         </p>
-        <button className="text-xs text-muted-foreground hover:text-foreground mt-2 transition-colors">
+        <button className="text-xs text-primary hover:text-primary/80 mt-2 transition-colors">
           View details
         </button>
       </CardContent>

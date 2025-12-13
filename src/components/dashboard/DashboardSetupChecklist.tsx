@@ -36,18 +36,18 @@ const DashboardSetupChecklist = () => {
           {checklistItems.map((item) => (
             <button
               key={item.id}
-              className="w-full flex items-center justify-between py-2 px-2 -mx-2 rounded-lg hover:bg-muted/30 transition-colors group"
+              className="w-full flex items-center justify-between py-2 px-2 -mx-2 rounded-lg hover:bg-primary/5 transition-colors group"
             >
               <div className="flex items-center gap-3">
                 <div className={`w-6 h-6 rounded-md flex items-center justify-center ${
                   item.completed 
-                    ? "bg-muted-foreground/20" 
-                    : "bg-muted/40"
+                    ? "bg-status-success/20" 
+                    : "bg-primary/10"
                 }`}>
                   {item.completed ? (
-                    <Check className="w-3.5 h-3.5 text-muted-foreground" />
+                    <Check className="w-3.5 h-3.5 text-status-success" />
                   ) : (
-                    <item.icon className="w-3.5 h-3.5 text-muted-foreground" />
+                    <item.icon className="w-3.5 h-3.5 text-primary" />
                   )}
                 </div>
                 <span className={`text-sm ${
@@ -60,7 +60,7 @@ const DashboardSetupChecklist = () => {
               </div>
               <span className={`text-xs ${
                 item.completed 
-                  ? "text-muted-foreground" 
+                  ? "text-status-success" 
                   : "text-muted-foreground/60"
               }`}>
                 {item.completed ? "Complete" : "Not started"}
@@ -70,7 +70,7 @@ const DashboardSetupChecklist = () => {
         </div>
 
         <div className="pt-2">
-          <Progress value={progress} className="h-1.5 bg-muted/30" />
+          <Progress value={progress} className="h-1.5 bg-primary/10 [&>div]:bg-primary" />
         </div>
 
         <p className="text-xs text-muted-foreground/70">

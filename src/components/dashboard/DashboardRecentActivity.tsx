@@ -17,9 +17,9 @@ interface DashboardRecentActivityProps {
 }
 
 const statusStyles: Record<ExecutionStatus, string> = {
-  success: "bg-muted/40 text-muted-foreground border-transparent",
-  running: "bg-muted/40 text-muted-foreground border-transparent",
-  error: "bg-muted/40 text-muted-foreground border-transparent",
+  success: "bg-status-success/15 text-status-success border-status-success/30",
+  running: "bg-primary/15 text-primary border-primary/30",
+  error: "bg-status-error/15 text-status-error border-status-error/30",
 };
 
 const statusLabels: Record<ExecutionStatus, string> = {
@@ -81,7 +81,7 @@ const DashboardRecentActivity = ({
               <p className="text-xs text-muted-foreground">
                 Activity will appear here after your first execution.
               </p>
-              <button className="text-xs text-muted-foreground hover:text-foreground mt-2 transition-colors">
+              <button className="text-xs text-primary hover:text-primary/80 mt-2 transition-colors">
                 Run test workflow
               </button>
             </div>
@@ -105,7 +105,7 @@ const DashboardRecentActivity = ({
                   <span className="text-xs text-muted-foreground">
                     {activity.timestamp}
                   </span>
-                  <button className="text-xs text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button className="text-xs text-primary hover:text-primary/80 opacity-0 group-hover:opacity-100 transition-opacity">
                     View
                   </button>
                 </div>
