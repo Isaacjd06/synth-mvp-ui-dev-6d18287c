@@ -1,4 +1,4 @@
-import { Link2, Workflow, Play, Power, Check, Sparkles } from "lucide-react";
+import { Link2, Workflow, Play, Power, Check, Settings, ChevronRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface ChecklistItem {
@@ -17,79 +17,61 @@ const checklistItems: ChecklistItem[] = [
 
 const DashboardSetupChecklist = () => {
   const completedCount = checklistItems.filter(item => item.completed).length;
-  const progress = (completedCount / checklistItems.length) * 100;
+  const pendingItems = checklistItems.filter(item => !item.completed);
 
   return (
-    <Card className="rounded-xl border-border/50 bg-gradient-to-br from-card via-card to-primary/5 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
-      <CardHeader className="pb-3 pt-4 px-5">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-md bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
-            <Sparkles className="w-3.5 h-3.5 text-primary" />
+    <Card className="rounded-lg border-border/40 bg-card/80 hover:border-border/60 transition-all duration-200">
+      <CardHeader className="pb-2 pt-3 px-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-md bg-muted/50 flex items-center justify-center">
+              <Settings className="w-3.5 h-3.5 text-muted-foreground" />
+            </div>
+            <CardTitle className="text-sm font-medium text-foreground">
+              System setup
+            </CardTitle>
           </div>
-          <CardTitle className="text-sm font-medium text-foreground">
-            System setup
-          </CardTitle>
+          <div className="flex items-center gap-2">
+            <div className="flex gap-1">
+              {checklistItems.map((item) => (
+                <div
+                  key={item.id}
+                  className={`w-2 h-2 rounded-full transition-all ${
+                    item.completed 
+                      ? 'bg-status-success shadow-[0_0_4px_hsl(var(--status-success)/0.5)]' 
+                      : 'bg-muted/60'
+                  }`}
+                />
+              ))}
+            </div>
+            <span className="text-xs text-muted-foreground">
+              {completedCount}/{checklistItems.length}
+            </span>
+          </div>
         </div>
-        <p className="text-xs text-muted-foreground mt-2">
-          Complete these steps to activate your first automation.
-        </p>
       </CardHeader>
       
-      <CardContent className="px-5 pb-5 pt-0 space-y-4">
-        <div className="space-y-0.5">
-          {checklistItems.map((item, index) => (
-            <button
-              key={item.id}
-              className="w-full flex items-center justify-between py-2.5 px-3 -mx-1 rounded-lg hover:bg-primary/8 transition-all duration-200 group border border-transparent hover:border-primary/10"
-            >
-              <div className="flex items-center gap-3">
-                <div className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all duration-200 ${
-                  item.completed 
-                    ? "bg-gradient-to-br from-status-success/30 to-status-success/20 shadow-sm shadow-status-success/20" 
-                    : "bg-gradient-to-br from-primary/15 to-primary/10 group-hover:from-primary/25 group-hover:to-primary/15"
-                }`}>
-                  {item.completed ? (
-                    <Check className="w-3.5 h-3.5 text-status-success" />
-                  ) : (
-                    <item.icon className="w-3.5 h-3.5 text-primary" />
-                  )}
-                </div>
-                <span className={`text-sm transition-colors ${
-                  item.completed 
-                    ? "text-muted-foreground line-through" 
-                    : "text-foreground group-hover:text-primary"
-                }`}>
-                  {item.label}
-                </span>
-              </div>
-              <span className={`text-xs font-medium px-2 py-0.5 rounded-full transition-all ${
-                item.completed 
-                  ? "text-status-success bg-status-success/10" 
-                  : "text-muted-foreground/60 group-hover:text-muted-foreground"
-              }`}>
-                {item.completed ? "Complete" : `Step ${index + 1}`}
-              </span>
-            </button>
-          ))}
-        </div>
-
-        {/* Progress bar with gradient */}
-        <div className="pt-2 space-y-2">
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">Progress</span>
-            <span className="text-primary font-medium">{completedCount}/{checklistItems.length}</span>
+      <CardContent className="px-4 pb-3 pt-1">
+        {pendingItems.length > 0 ? (
+          <div className="flex items-center gap-3 flex-wrap">
+            <span className="text-xs text-muted-foreground">Next steps:</span>
+            {pendingItems.slice(0, 2).map((item) => (
+              <button
+                key={item.id}
+                className="group flex items-center gap-2 px-2.5 py-1.5 rounded-md bg-muted/30 hover:bg-muted/50 text-xs text-foreground transition-all border border-transparent hover:border-border/50"
+              >
+                <item.icon className="w-3 h-3 text-muted-foreground" />
+                {item.label}
+                <ChevronRight className="w-3 h-3 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+              </button>
+            ))}
           </div>
-          <div className="h-2 bg-muted/20 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-primary via-primary to-primary/80 rounded-full transition-all duration-500"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-        </div>
-
-        <p className="text-xs text-muted-foreground/70 pt-1">
-          Completing setup helps Synth learn your preferences and deliver better recommendations.
-        </p>
+        ) : (
+          <p className="text-xs text-status-success flex items-center gap-1.5">
+            <Check className="w-3.5 h-3.5" />
+            Setup complete
+          </p>
+        )}
       </CardContent>
     </Card>
   );
