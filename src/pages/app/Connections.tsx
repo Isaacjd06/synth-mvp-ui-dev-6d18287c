@@ -140,27 +140,6 @@ const Connections = () => {
             />
           )}
 
-          {/* Header */}
-          <div>
-            <motion.h1
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-3xl font-display font-bold text-foreground tracking-tight flex items-center gap-3"
-            >
-              <div className="p-2 rounded-xl bg-primary/10 border border-primary/20">
-                <Plug className="w-6 h-6 text-primary" />
-              </div>
-              Connections
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.1 }}
-              className="text-muted-foreground mt-2"
-            >
-              Connect the apps Synth can use inside your automations.
-            </motion.p>
-          </div>
 
           {/* Stats Row */}
           <motion.div

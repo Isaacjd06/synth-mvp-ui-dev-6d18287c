@@ -92,20 +92,6 @@ const Insights = () => {
   return (
     <AppShell>
       <div className="min-h-screen bg-gradient-to-b from-background via-background to-synth-navy-light/20">
-        {/* Page Header */}
-        <motion.div 
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="mb-10"
-        >
-          <h1 className="text-3xl font-display text-foreground mb-2">
-            Synth Insights
-          </h1>
-          <p className="text-muted-foreground font-light">
-            A complete view of your workflow recommendations and alerts.
-          </p>
-        </motion.div>
 
         {/* Main Content - Sidebar + List */}
         <div className="flex flex-col lg:flex-row gap-6">

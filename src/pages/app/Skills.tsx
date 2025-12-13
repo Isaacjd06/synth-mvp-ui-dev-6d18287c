@@ -211,35 +211,22 @@ const Skills = () => {
   return (
     <AppShell>
       <PageTransition className="px-4 lg:px-6 py-6 space-y-6">
-        {/* Header */}
-        <PageItem className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-display font-bold text-foreground flex items-center gap-3">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
-              </div>
-              Skills
-            </h1>
-            <p className="text-muted-foreground mt-1.5 text-sm sm:text-base font-light">
-              Reusable capabilities that power your automations.
-            </p>
-          </div>
-          <div className="flex items-center gap-3 self-start">
-            <Badge
-              variant="outline"
-              className="px-3 py-1.5 border-emerald-500/30 bg-emerald-500/5 text-emerald-400 text-sm"
-            >
-              {configuredCount} Configured
-            </Badge>
-            <Button
-              onClick={handleCreateNew}
-              className="bg-primary hover:bg-primary/90"
-              size="sm"
-            >
-              <Plus className="w-4 h-4 mr-1.5" />
-              Create Skill
-            </Button>
-          </div>
+        {/* Action Bar */}
+        <PageItem className="flex items-center justify-end gap-3">
+          <Badge
+            variant="outline"
+            className="px-3 py-1.5 border-emerald-500/30 bg-emerald-500/5 text-emerald-400 text-sm"
+          >
+            {configuredCount} Configured
+          </Badge>
+          <Button
+            onClick={handleCreateNew}
+            className="bg-primary hover:bg-primary/90"
+            size="sm"
+          >
+            <Plus className="w-4 h-4 mr-1.5" />
+            Create Skill
+          </Button>
         </PageItem>
 
         {/* Category Filter Bar */}

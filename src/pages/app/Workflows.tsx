@@ -108,20 +108,8 @@ const Workflows = () => {
           </PageItem>
         )}
 
-        {/* Header */}
-        <PageItem className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-display font-bold text-foreground flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                <Zap className="w-5 h-5 text-primary" />
-              </div>
-              Workflows
-            </h1>
-            <p className="text-muted-foreground mt-2 font-light">
-              Manage your automations. Synth will optimize them over time.
-            </p>
-          </div>
-          
+        {/* Action Button */}
+        <PageItem className="flex justify-end">
           <TooltipProvider>
             {isSubscribed && !isAtWorkflowLimit ? (
               <Button asChild className="bg-primary hover:bg-primary/90">
