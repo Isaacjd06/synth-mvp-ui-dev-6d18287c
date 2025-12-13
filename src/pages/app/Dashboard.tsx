@@ -9,6 +9,7 @@ import DashboardStatCard from "@/components/dashboard/DashboardStatCard";
 import DashboardSetupChecklist from "@/components/dashboard/DashboardSetupChecklist";
 import DashboardRecentActivity from "@/components/dashboard/DashboardRecentActivity";
 import DashboardAdvisory from "@/components/dashboard/DashboardAdvisory";
+import DashboardBusinessPulse from "@/components/dashboard/DashboardBusinessPulse";
 
 // Placeholder stat data
 const statCards = [
@@ -83,6 +84,11 @@ const Dashboard = () => {
                 </Button>
               </div>
             </div>
+          </PageItem>
+
+          {/* TIER 1: Business Pulse - Top Level Summary */}
+          <PageItem>
+            <DashboardBusinessPulse />
           </PageItem>
 
           {/* TIER 1: Primary Intelligence - Two Column, Large */}
