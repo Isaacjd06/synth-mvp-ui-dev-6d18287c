@@ -1,41 +1,44 @@
-import { LucideIcon, Info } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface DashboardStatCardProps {
   label: string;
   value: string | number;
   icon: LucideIcon;
+  description?: string;
 }
 
-const DashboardStatCard = ({ label, value, icon: Icon }: DashboardStatCardProps) => {
+const descriptions: Record<string, string> = {
+  "Active Automations": "Workflows currently enabled",
+  "Total Executions": "All-time workflow runs",
+  "Activity (24h)": "Executions in the last day",
+  "Execution Reliability": "Success rate of runs",
+};
+
+const DashboardStatCard = ({ label, value, icon: Icon, description }: DashboardStatCardProps) => {
+  const displayValue = value === 0 || value === "0" ? "—" : value;
+  const desc = description || descriptions[label] || "";
+
   return (
-    <Card className="group relative overflow-hidden rounded-2xl border-border/40 bg-gradient-to-b from-card to-synth-navy-light hover:border-primary/30 transition-all duration-300">
-      {/* Hover glow effect */}
-      <div className="absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 bg-primary/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      
-      <CardContent className="p-6 relative">
-        <div className="flex items-start justify-between mb-4">
-          <div className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-            <Icon className="w-5 h-5 text-primary" />
-          </div>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button className="text-muted-foreground/50 hover:text-muted-foreground transition-colors">
-                <Info className="w-4 h-4" />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{label} metric</p>
-            </TooltipContent>
-          </Tooltip>
+    <Card className="rounded-xl border-border/40 bg-card hover:bg-muted/10 transition-colors">
+      <CardContent className="p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <Icon className="w-3.5 h-3.5 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground uppercase tracking-wide">
+            {label}
+          </span>
         </div>
-        <p className="text-3xl font-display font-bold text-foreground mb-1.5">
-          {value}
+        <p className={`text-lg font-medium mb-1 ${
+          displayValue === "—" ? "text-muted-foreground" : "text-foreground"
+        }`}>
+          {displayValue}
         </p>
-        <p className="text-sm text-muted-foreground font-light">
-          {label}
+        <p className="text-xs text-muted-foreground/70">
+          {desc}
         </p>
+        <button className="text-xs text-muted-foreground hover:text-foreground mt-2 transition-colors">
+          View details
+        </button>
       </CardContent>
     </Card>
   );
