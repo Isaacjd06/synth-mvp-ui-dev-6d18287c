@@ -22,24 +22,16 @@ const statCards = [
   { label: "Active Automations", value: stats.activeAutomations, icon: Zap },
   { label: "Total Executions", value: stats.totalExecutions, icon: Activity },
   { label: "Activity (24h)", value: stats.activity24h, icon: Clock },
-  { label: "Execution Reliability", value: stats.executionReliability, icon: CheckCircle },
-];
-
-const recentActivity = [
-  { workflow: "Daily Report Generator", status: "success" as const, timestamp: "5 min ago" },
-  { workflow: "Lead Sync Automation", status: "running" as const, timestamp: "12 min ago" },
-  { workflow: "Invoice Processor", status: "success" as const, timestamp: "45 min ago" },
-  { workflow: "Email Campaign Trigger", status: "error" as const, timestamp: "2 hours ago" },
-  { workflow: "Data Backup Routine", status: "success" as const, timestamp: "3 hours ago" },
+  { label: "Reliability", value: stats.executionReliability, icon: CheckCircle },
 ];
 
 const Dashboard = () => {
   return (
     <AppShell>
       <TooltipProvider>
-        <PageTransition className="max-w-screen-xl mx-auto px-4 py-6 space-y-6">
+        <PageTransition className="max-w-screen-xl mx-auto px-4 py-6 space-y-5">
 
-          {/* Page Header */}
+          {/* Page Header - Compact */}
           <PageItem>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
@@ -76,14 +68,28 @@ const Dashboard = () => {
             </div>
           </PageItem>
 
-          {/* Setup Checklist */}
+          {/* TIER 1: Primary Intelligence - Two Column, Large */}
+          <PageItem>
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+              {/* Synth Advisory - Takes 3/5 of space */}
+              <div className="lg:col-span-3">
+                <DashboardAdvisory />
+              </div>
+              {/* Recent Business Activity - Takes 2/5 of space */}
+              <div className="lg:col-span-2">
+                <DashboardRecentActivity />
+              </div>
+            </div>
+          </PageItem>
+
+          {/* TIER 2: System State - Medium */}
           <PageItem>
             <DashboardSetupChecklist />
           </PageItem>
 
-          {/* Stats Grid */}
+          {/* TIER 3: Metrics - Compact */}
           <PageItem>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               {statCards.map((stat) => (
                 <DashboardStatCard
                   key={stat.label}
@@ -92,14 +98,6 @@ const Dashboard = () => {
                   icon={stat.icon}
                 />
               ))}
-            </div>
-          </PageItem>
-
-          {/* Two Column Layout for Activity and Advisory */}
-          <PageItem>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <DashboardAdvisory />
-              <DashboardRecentActivity activities={recentActivity} />
             </div>
           </PageItem>
 
