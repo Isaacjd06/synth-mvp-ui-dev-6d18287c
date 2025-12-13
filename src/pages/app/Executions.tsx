@@ -21,10 +21,10 @@ const mockExecutions = [
   { id: "4", workflowName: "Daily Report Generator", status: "running", timestamp: "Today, 9:00 AM", duration: "—", date: new Date("2025-12-13T09:00:00") },
   { id: "5", workflowName: "Lead Intake → CRM", status: "success", timestamp: "Yesterday, 4:15 PM", duration: "0.9s", date: new Date("2025-12-12T16:15:00") },
 ].sort((a, b) => {
-  // Running executions always at top
+  // Running executions at top, sorted by most recent start time
   if (a.status === "running" && b.status !== "running") return -1;
   if (b.status === "running" && a.status !== "running") return 1;
-  // Then sort by completion date (most recent first)
+  // Within same status group (running or completed), sort by most recent first
   return b.date.getTime() - a.date.getTime();
 });
 
