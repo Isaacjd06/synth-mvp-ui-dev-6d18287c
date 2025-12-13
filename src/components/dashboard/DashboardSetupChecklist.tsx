@@ -1,6 +1,5 @@
-import { Link2, Workflow, Play, Power, Check } from "lucide-react";
+import { Link2, Workflow, Play, Power, Check, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 
 interface ChecklistItem {
   id: string;
@@ -21,28 +20,33 @@ const DashboardSetupChecklist = () => {
   const progress = (completedCount / checklistItems.length) * 100;
 
   return (
-    <Card className="rounded-xl border-border/40 bg-card">
+    <Card className="rounded-xl border-border/50 bg-gradient-to-br from-card via-card to-primary/5 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
       <CardHeader className="pb-3 pt-4 px-5">
-        <CardTitle className="text-sm font-medium text-foreground">
-          Setup progress
-        </CardTitle>
-        <p className="text-xs text-muted-foreground mt-1">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded-md bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
+          </div>
+          <CardTitle className="text-sm font-medium text-foreground">
+            System setup
+          </CardTitle>
+        </div>
+        <p className="text-xs text-muted-foreground mt-2">
           Complete these steps to activate your first automation.
         </p>
       </CardHeader>
       
-      <CardContent className="px-5 pb-4 pt-0 space-y-4">
-        <div className="space-y-1">
-          {checklistItems.map((item) => (
+      <CardContent className="px-5 pb-5 pt-0 space-y-4">
+        <div className="space-y-0.5">
+          {checklistItems.map((item, index) => (
             <button
               key={item.id}
-              className="w-full flex items-center justify-between py-2 px-2 -mx-2 rounded-lg hover:bg-primary/5 transition-colors group"
+              className="w-full flex items-center justify-between py-2.5 px-3 -mx-1 rounded-lg hover:bg-primary/8 transition-all duration-200 group border border-transparent hover:border-primary/10"
             >
               <div className="flex items-center gap-3">
-                <div className={`w-6 h-6 rounded-md flex items-center justify-center ${
+                <div className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all duration-200 ${
                   item.completed 
-                    ? "bg-status-success/20" 
-                    : "bg-primary/10"
+                    ? "bg-gradient-to-br from-status-success/30 to-status-success/20 shadow-sm shadow-status-success/20" 
+                    : "bg-gradient-to-br from-primary/15 to-primary/10 group-hover:from-primary/25 group-hover:to-primary/15"
                 }`}>
                   {item.completed ? (
                     <Check className="w-3.5 h-3.5 text-status-success" />
@@ -50,30 +54,40 @@ const DashboardSetupChecklist = () => {
                     <item.icon className="w-3.5 h-3.5 text-primary" />
                   )}
                 </div>
-                <span className={`text-sm ${
+                <span className={`text-sm transition-colors ${
                   item.completed 
                     ? "text-muted-foreground line-through" 
-                    : "text-foreground"
+                    : "text-foreground group-hover:text-primary"
                 }`}>
                   {item.label}
                 </span>
               </div>
-              <span className={`text-xs ${
+              <span className={`text-xs font-medium px-2 py-0.5 rounded-full transition-all ${
                 item.completed 
-                  ? "text-status-success" 
-                  : "text-muted-foreground/60"
+                  ? "text-status-success bg-status-success/10" 
+                  : "text-muted-foreground/60 group-hover:text-muted-foreground"
               }`}>
-                {item.completed ? "Complete" : "Not started"}
+                {item.completed ? "Complete" : `Step ${index + 1}`}
               </span>
             </button>
           ))}
         </div>
 
-        <div className="pt-2">
-          <Progress value={progress} className="h-1.5 bg-primary/10 [&>div]:bg-primary" />
+        {/* Progress bar with gradient */}
+        <div className="pt-2 space-y-2">
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-muted-foreground">Progress</span>
+            <span className="text-primary font-medium">{completedCount}/{checklistItems.length}</span>
+          </div>
+          <div className="h-2 bg-muted/20 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-primary via-primary to-primary/80 rounded-full transition-all duration-500"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
         </div>
 
-        <p className="text-xs text-muted-foreground/70">
+        <p className="text-xs text-muted-foreground/70 pt-1">
           Completing setup helps Synth learn your preferences and deliver better recommendations.
         </p>
       </CardContent>
