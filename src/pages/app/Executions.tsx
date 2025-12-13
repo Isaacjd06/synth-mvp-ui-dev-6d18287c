@@ -13,14 +13,14 @@ import LockedButton from "@/components/subscription/LockedButton";
 import LogRetentionWarning from "@/components/subscription/LogRetentionWarning";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 
-// Mock data
+// Mock data with sortable timestamps
 const mockExecutions = [
-  { id: "1", workflowName: "Lead Intake → CRM", status: "success", timestamp: "Today, 2:45 PM", duration: "1.2s" },
-  { id: "2", workflowName: "Stripe Payment Notifier", status: "success", timestamp: "Today, 1:30 PM", duration: "0.5s" },
-  { id: "3", workflowName: "Slack Support Router", status: "error", timestamp: "Today, 11:20 AM", duration: "0.3s" },
-  { id: "4", workflowName: "Daily Report Generator", status: "running", timestamp: "Today, 9:00 AM", duration: "—" },
-  { id: "5", workflowName: "Lead Intake → CRM", status: "success", timestamp: "Yesterday, 4:15 PM", duration: "0.9s" },
-];
+  { id: "1", workflowName: "Lead Intake → CRM", status: "success", timestamp: "Today, 2:45 PM", duration: "1.2s", date: new Date("2025-12-13T14:45:00") },
+  { id: "2", workflowName: "Stripe Payment Notifier", status: "success", timestamp: "Today, 1:30 PM", duration: "0.5s", date: new Date("2025-12-13T13:30:00") },
+  { id: "3", workflowName: "Slack Support Router", status: "error", timestamp: "Today, 11:20 AM", duration: "0.3s", date: new Date("2025-12-13T11:20:00") },
+  { id: "4", workflowName: "Daily Report Generator", status: "running", timestamp: "Today, 9:00 AM", duration: "—", date: new Date("2025-12-13T09:00:00") },
+  { id: "5", workflowName: "Lead Intake → CRM", status: "success", timestamp: "Yesterday, 4:15 PM", duration: "0.9s", date: new Date("2025-12-12T16:15:00") },
+].sort((a, b) => b.date.getTime() - a.date.getTime());
 
 type StatusKey = "success" | "running" | "error" | "failure";
 const statusVariants: Record<StatusKey, "success" | "running" | "error"> = {
