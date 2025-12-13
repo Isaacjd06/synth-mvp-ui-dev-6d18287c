@@ -1,4 +1,4 @@
-import { Zap, Activity, Clock, CheckCircle, Plus, List } from "lucide-react";
+import { Zap, AlertTriangle, PlayCircle, Clock, Plus, List } from "lucide-react";
 import { Link } from "react-router-dom";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition, PageItem } from "@/components/app/PageTransition";
@@ -10,19 +10,36 @@ import DashboardSetupChecklist from "@/components/dashboard/DashboardSetupCheckl
 import DashboardRecentActivity from "@/components/dashboard/DashboardRecentActivity";
 import DashboardAdvisory from "@/components/dashboard/DashboardAdvisory";
 
-// Placeholder data
-const stats = {
-  activeAutomations: 0,
-  totalExecutions: 0,
-  activity24h: 0,
-  executionReliability: "—",
-};
-
+// Placeholder stat data
 const statCards = [
-  { label: "Active Automations", value: stats.activeAutomations, icon: Zap },
-  { label: "Total Executions", value: stats.totalExecutions, icon: Activity },
-  { label: "Activity (24h)", value: stats.activity24h, icon: Clock },
-  { label: "Reliability", value: stats.executionReliability, icon: CheckCircle },
+  { 
+    label: "Active automations", 
+    value: 0, 
+    icon: Zap,
+    helper: "Enabled workflows currently running.",
+    accent: false,
+  },
+  { 
+    label: "Needs attention", 
+    value: 0, 
+    icon: AlertTriangle,
+    helper: "Automations requiring review.",
+    accent: true,
+  },
+  { 
+    label: "Runs today", 
+    value: 0, 
+    icon: PlayCircle,
+    helper: "Automation activity in the past 24 hours.",
+    accent: false,
+  },
+  { 
+    label: "Time saved", 
+    value: "—", 
+    icon: Clock,
+    helper: "Estimated productivity gain.",
+    accent: false,
+  },
 ];
 
 const Dashboard = () => {
@@ -96,6 +113,8 @@ const Dashboard = () => {
                   label={stat.label}
                   value={stat.value}
                   icon={stat.icon}
+                  helper={stat.helper}
+                  accent={stat.accent}
                 />
               ))}
             </div>
