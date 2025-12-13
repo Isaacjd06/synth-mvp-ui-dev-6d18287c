@@ -1,13 +1,10 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
-import { Activity, MessageSquare, Zap, Lock, RefreshCw } from "lucide-react";
+import { Activity, MessageSquare, Zap } from "lucide-react";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition, PageItem } from "@/components/app/PageTransition";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import SubscriptionBanner from "@/components/subscription/SubscriptionBanner";
 import LockedButton from "@/components/subscription/LockedButton";
 import LogRetentionWarning from "@/components/subscription/LogRetentionWarning";
@@ -34,11 +31,7 @@ const statusVariants: Record<StatusKey, "success" | "running" | "error"> = {
 };
 
 const Executions = () => {
-  const { isSubscribed, requireSubscription } = useSubscription();
-
-  const handleRetryExecution = (executionId: string) => {
-    if (!requireSubscription("retry executions")) return;
-  };
+  const { isSubscribed } = useSubscription();
 
   return (
     <AppShell>
@@ -48,7 +41,6 @@ const Executions = () => {
             <SubscriptionBanner feature="access execution tools" />
           </PageItem>
         )}
-
 
         {mockExecutions.length === 0 ? (
           <PageItem>
@@ -75,48 +67,30 @@ const Executions = () => {
           </PageItem>
         ) : (
           <PageItem>
-            <TooltipProvider>
-              <Card>
-                <CardContent className="p-0">
-                  <div className="divide-y divide-border/40">
-                    {mockExecutions.map((execution) => (
-                      <div key={execution.id} className="flex items-center justify-between p-4 synth-row">
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-foreground truncate">{execution.workflowName}</p>
-                          <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1 font-light">
-                            <span>{execution.timestamp}</span>
-                            <span>•</span>
-                            <span className="font-mono">{execution.duration}</span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3 ml-4">
-                          <Badge variant={statusVariants[execution.status as StatusKey]}>{execution.status}</Badge>
-                          {execution.status === "error" && (
-                            isSubscribed ? (
-                              <Button variant="outline" size="sm" onClick={() => handleRetryExecution(execution.id)} className="gap-1.5">
-                                <RefreshCw className="w-3.5 h-3.5" />Retry
-                              </Button>
-                            ) : (
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button variant="outline" size="sm" className="opacity-40 cursor-not-allowed gap-1.5 locked-button" disabled>
-                                    <Lock className="w-3 h-3" />Retry
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent><p className="text-xs">Subscribe to retry executions</p></TooltipContent>
-                              </Tooltip>
-                            )
-                          )}
-                          <Button variant="ghost" size="sm" asChild>
-                            <Link to={`/app/executions/${execution.id}`}>View Details</Link>
-                          </Button>
+            <Card>
+              <CardContent className="p-0">
+                <div className="divide-y divide-border/40">
+                  {mockExecutions.map((execution) => (
+                    <div key={execution.id} className="flex items-center justify-between p-4 synth-row">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-foreground truncate">{execution.workflowName}</p>
+                        <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1 font-light">
+                          <span>{execution.timestamp}</span>
+                          <span>•</span>
+                          <span className="font-mono">{execution.duration}</span>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </TooltipProvider>
+                      <div className="flex items-center gap-3 ml-4">
+                        <Badge variant={statusVariants[execution.status as StatusKey]}>{execution.status}</Badge>
+                        <Button variant="ghost" size="sm" asChild>
+                          <Link to={`/app/executions/${execution.id}`}>View Details</Link>
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </PageItem>
         )}
 
