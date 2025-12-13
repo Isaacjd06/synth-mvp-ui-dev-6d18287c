@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-import DashboardWarningBanner from "@/components/dashboard/DashboardWarningBanner";
 import DashboardSuggestionCard from "@/components/dashboard/DashboardSuggestionCard";
 import DashboardStatCard from "@/components/dashboard/DashboardStatCard";
 import DashboardActivityRow from "@/components/dashboard/DashboardActivityRow";
@@ -39,14 +38,8 @@ const Dashboard = () => {
     <AppShell>
       <TooltipProvider>
         <PageTransition className="max-w-screen-xl mx-auto px-4 py-8 space-y-10">
-          
-          {/* 1. Subscription Warning Banner */}
-          <PageItem>
-            <DashboardWarningBanner />
-          </PageItem>
 
-
-          {/* 3. Synth Suggestion Section */}
+          {/* Synth Suggestion Section */}
           <PageItem>
             <DashboardSuggestionCard />
           </PageItem>
@@ -61,7 +54,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* 4. Metrics Row - 4 Stat Cards */}
+          {/* Metrics Row - 4 Stat Cards */}
           <PageItem>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
               {statCards.map((stat) => (
@@ -75,7 +68,7 @@ const Dashboard = () => {
             </div>
           </PageItem>
 
-          {/* 5. Recent Activity Section */}
+          {/* Recent Activity Section */}
           <PageItem>
             <Card className="overflow-hidden rounded-2xl border-border/40 bg-gradient-to-b from-card to-synth-navy-light">
               <CardHeader className="border-b border-border/30 bg-muted/10 px-5 py-4">
@@ -112,7 +105,7 @@ const Dashboard = () => {
             </Card>
           </PageItem>
 
-          {/* 6. Synth Advisory Section */}
+          {/* Synth Advisory Section */}
           <PageItem>
             <DashboardAdvisoryCard />
           </PageItem>
