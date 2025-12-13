@@ -1,13 +1,10 @@
 import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Sparkles,
-  MessageSquare,
   Mail,
   FileText,
   Bell,
   Users,
-  ToggleLeft,
   Plus,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,14 +14,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import SubscriptionBanner from "@/components/subscription/SubscriptionBanner";
-import { useSubscription } from "@/contexts/SubscriptionContext";
 import { synthToast } from "@/lib/synth-toast";
 import { SkillCard, type PrebuiltSkill } from "@/components/skills/SkillCard";
-import { SkillCustomizeModal } from "@/components/skills/SkillCustomizeModal";
-import { CreateSkillModal, type CreateSkillFormValues } from "@/components/skills/CreateSkillModal";
+import { SkillCustomizeModal, type SkillData } from "@/components/skills/SkillCustomizeModal";
+import { SkillsEmptyState } from "@/components/skills/SkillsEmptyState";
 import { SkillsLoadingState } from "@/components/skills/SkillsLoadingState";
-import { Card, CardContent } from "@/components/ui/card";
 
 const initialSkills: PrebuiltSkill[] = [
   {
@@ -34,9 +28,14 @@ const initialSkills: PrebuiltSkill[] = [
     preview: "When form submitted → Enrich data → Add to CRM → Notify sales",
     icon: Users,
     category: "Sales",
-    isEnabled: true,
-    runsCount: 142,
-    requiredPlan: "starter",
+    status: "configured",
+    intents: ["When a new lead comes in", "Process form submissions"],
+    inputs: [
+      { id: "i1", name: "Lead Email", type: "email", required: true },
+      { id: "i2", name: "Company Name", type: "text", required: false },
+    ],
+    connectedApps: ["Salesforce", "Gmail"],
+    outputDescription: "Qualified lead record in CRM with priority score",
   },
   {
     id: "2",
@@ -45,9 +44,13 @@ const initialSkills: PrebuiltSkill[] = [
     preview: "Daily at 8am → Scan inbox → Summarize key emails → Send digest",
     icon: Mail,
     category: "Productivity",
-    isEnabled: false,
-    runsCount: 0,
-    requiredPlan: "starter",
+    status: "draft",
+    intents: ["Summarize my emails", "Send me an email digest"],
+    inputs: [
+      { id: "i1", name: "Frequency", type: "select", required: true },
+    ],
+    connectedApps: ["Gmail"],
+    outputDescription: "Daily email digest sent to inbox",
   },
   {
     id: "3",
@@ -56,9 +59,14 @@ const initialSkills: PrebuiltSkill[] = [
     preview: "When file uploaded → Extract text → Parse fields → Update sheet",
     icon: FileText,
     category: "Operations",
-    isEnabled: true,
-    runsCount: 89,
-    requiredPlan: "pro",
+    status: "configured",
+    intents: ["Process uploaded documents", "Extract data from files"],
+    inputs: [
+      { id: "i1", name: "Document Type", type: "select", required: true },
+      { id: "i2", name: "Output Sheet", type: "text", required: true },
+    ],
+    connectedApps: ["Google Drive", "Google Sheets"],
+    outputDescription: "Parsed data rows in target spreadsheet",
   },
   {
     id: "4",
@@ -67,9 +75,14 @@ const initialSkills: PrebuiltSkill[] = [
     preview: "When alert received → Classify urgency → Route to channel → Tag team",
     icon: Bell,
     category: "Communication",
-    isEnabled: false,
-    runsCount: 0,
-    requiredPlan: "starter",
+    status: "draft",
+    intents: ["Route alerts to Slack", "Notify the team"],
+    inputs: [
+      { id: "i1", name: "Alert Source", type: "text", required: true },
+      { id: "i2", name: "Default Channel", type: "text", required: false },
+    ],
+    connectedApps: ["Slack"],
+    outputDescription: "Alert posted to appropriate Slack channel",
   },
   {
     id: "5",
@@ -78,9 +91,13 @@ const initialSkills: PrebuiltSkill[] = [
     preview: "When meeting ends → Transcribe → Summarize → Send to attendees",
     icon: FileText,
     category: "Productivity",
-    isEnabled: true,
-    runsCount: 34,
-    requiredPlan: "pro",
+    status: "configured",
+    intents: ["Generate meeting notes", "Summarize the meeting"],
+    inputs: [
+      { id: "i1", name: "Meeting Recording URL", type: "url", required: true },
+    ],
+    connectedApps: ["Google Meet", "Notion"],
+    outputDescription: "Meeting summary sent to all attendees",
   },
   {
     id: "6",
@@ -89,25 +106,24 @@ const initialSkills: PrebuiltSkill[] = [
     preview: "When ticket created → Analyze content → Set priority → Assign agent",
     icon: Users,
     category: "Support",
-    isEnabled: false,
-    runsCount: 0,
-    requiredPlan: "agency",
+    status: "configured",
+    intents: ["Classify support tickets", "Prioritize incoming tickets"],
+    inputs: [
+      { id: "i1", name: "Ticket ID", type: "text", required: true },
+    ],
+    connectedApps: ["Zendesk"],
+    outputDescription: "Ticket classified with priority and assigned agent",
   },
 ];
 
 const CATEGORIES = ["All", "Sales", "Productivity", "Operations", "Communication", "Support"];
 
 const Skills = () => {
-  const [skills, setSkills] = useState(initialSkills);
+  const [skills, setSkills] = useState<PrebuiltSkill[]>(initialSkills);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [isLoading] = useState(false);
-  const [togglingId, setTogglingId] = useState<string | null>(null);
-  const [customizeSkill, setCustomizeSkill] = useState<PrebuiltSkill | null>(null);
+  const [editingSkill, setEditingSkill] = useState<PrebuiltSkill | null>(null);
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-
-  const navigate = useNavigate();
-  const { isSubscribed, planTier, requireSubscription } = useSubscription();
 
   // Filter and group skills
   const { filteredSkills, groupedSkills } = useMemo(() => {
@@ -128,89 +144,73 @@ const Skills = () => {
     return { filteredSkills: filtered, groupedSkills: groups };
   }, [skills, selectedCategory]);
 
-  const handleToggle = async (id: string) => {
-    if (!requireSubscription("activate automations")) return;
-
-    const skill = skills.find((s) => s.id === id);
-    if (!skill) return;
-
-    setTogglingId(id);
-    await new Promise((resolve) => setTimeout(resolve, 400));
-
-    const willBeEnabled = !skill.isEnabled;
-
-    setSkills((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, isEnabled: willBeEnabled } : s))
-    );
-
-    if (willBeEnabled) {
-      synthToast.skillEnabled(skill.name);
-    } else {
-      synthToast.skillDisabled(skill.name);
-    }
-
-    setTogglingId(null);
-  };
-
-  const handleCustomize = (skill: PrebuiltSkill) => {
-    if (!requireSubscription("customize skills")) return;
-    setCustomizeSkill(skill);
+  const handleEdit = (skill: PrebuiltSkill) => {
+    setEditingSkill(skill);
     setIsCustomizeOpen(true);
   };
 
-  const handleSaveCustomization = (skill: PrebuiltSkill, updates: Partial<PrebuiltSkill>) => {
+  const handleCreateNew = () => {
+    setEditingSkill(null);
+    setIsCustomizeOpen(true);
+  };
+
+  const handleSaveSkill = (skillData: SkillData, asDraft?: boolean) => {
+    if (editingSkill) {
+      // Update existing
+      setSkills((prev) =>
+        prev.map((s) =>
+          s.id === skillData.id
+            ? { ...s, ...skillData, status: asDraft ? "draft" : "configured" }
+            : s
+        )
+      );
+    } else {
+      // Create new
+      const newSkill: PrebuiltSkill = {
+        ...skillData,
+        id: `skill-${Date.now()}`,
+        icon: Sparkles,
+        preview: `Custom skill: ${skillData.name}`,
+        status: asDraft ? "draft" : "configured",
+      };
+      setSkills((prev) => [...prev, newSkill]);
+    }
+  };
+
+  const handleDuplicate = (skill: PrebuiltSkill) => {
+    const duplicated: PrebuiltSkill = {
+      ...skill,
+      id: `skill-${Date.now()}`,
+      name: `${skill.name} (Copy)`,
+      status: "draft",
+    };
+    setSkills((prev) => [...prev, duplicated]);
+    synthToast.success("Skill Duplicated", `"${duplicated.name}" created.`);
+  };
+
+  const handleToggle = (skill: PrebuiltSkill) => {
+    const newStatus = skill.status === "configured" ? "draft" : "configured";
     setSkills((prev) =>
-      prev.map((s) => (s.id === skill.id ? { ...s, ...updates } : s))
+      prev.map((s) =>
+        s.id === skill.id ? { ...s, status: newStatus } : s
+      )
+    );
+    synthToast.success(
+      newStatus === "configured" ? "Skill Enabled" : "Skill Disabled",
+      `"${skill.name}" is now ${newStatus === "configured" ? "active" : "a draft"}.`
     );
   };
 
-  const handleOpenChatForSkill = (skill: PrebuiltSkill) => {
-    navigate("/app/chat", {
-      state: {
-        preloadedMessage: `I want to customize the "${skill.name}" skill. ${skill.description}`,
-        fromSkills: true,
-        skillName: skill.name,
-      },
-    });
+  const handleDelete = (skill: PrebuiltSkill) => {
+    setSkills((prev) => prev.filter((s) => s.id !== skill.id));
+    synthToast.success("Skill Deleted", `"${skill.name}" has been removed.`);
   };
 
-  const handleViewRuns = (skill: PrebuiltSkill) => {
-    navigate("/app/executions", {
-      state: {
-        filterWorkflow: skill.name,
-      },
-    });
-  };
-
-  const handleCreateSkill = (values: CreateSkillFormValues) => {
-    // Placeholder function for backend integration
-    const newSkill: PrebuiltSkill = {
-      id: `custom-${Date.now()}`,
-      name: values.name,
-      description: values.shortDescription,
-      preview: values.actions || "Custom automation workflow",
-      icon: Sparkles,
-      category: values.category as PrebuiltSkill["category"],
-      isEnabled: false,
-      runsCount: 0,
-      requiredPlan: "starter",
-    };
-    setSkills((prev) => [...prev, newSkill]);
-    synthToast.success("Skill Created", `"${values.name}" has been created successfully.`);
-  };
-
-  const enabledCount = skills.filter((s) => s.isEnabled).length;
+  const configuredCount = skills.filter((s) => s.status === "configured").length;
 
   return (
     <AppShell>
       <PageTransition className="px-4 lg:px-6 py-6 space-y-6">
-        {/* Subscription Banner */}
-        {!isSubscribed && (
-          <PageItem>
-            <SubscriptionBanner feature="enable skills and automations" />
-          </PageItem>
-        )}
-
         {/* Header */}
         <PageItem className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
@@ -218,22 +218,21 @@ const Skills = () => {
               <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
                 <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
               </div>
-              Prebuilt Skills
+              Skills
             </h1>
             <p className="text-muted-foreground mt-1.5 text-sm sm:text-base font-light">
-              Turn on ready-made automations for your business.
+              Reusable capabilities that power your automations.
             </p>
           </div>
           <div className="flex items-center gap-3 self-start">
             <Badge
               variant="outline"
-              className="px-3 py-1.5 border-primary/30 bg-primary/5 text-primary text-sm"
+              className="px-3 py-1.5 border-emerald-500/30 bg-emerald-500/5 text-emerald-400 text-sm"
             >
-              <ToggleLeft className="w-3.5 h-3.5 mr-1.5" />
-              {enabledCount} Active
+              {configuredCount} Configured
             </Badge>
             <Button
-              onClick={() => setIsCreateOpen(true)}
+              onClick={handleCreateNew}
               className="bg-primary hover:bg-primary/90"
               size="sm"
             >
@@ -247,11 +246,12 @@ const Skills = () => {
         <PageItem>
           <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
             {CATEGORIES.map((category) => {
-              const count = category === "All" 
-                ? skills.length 
-                : skills.filter(s => s.category === category).length;
+              const count =
+                category === "All"
+                  ? skills.length
+                  : skills.filter((s) => s.category === category).length;
               const isActive = selectedCategory === category;
-              
+
               return (
                 <motion.button
                   key={category}
@@ -266,12 +266,14 @@ const Skills = () => {
                   )}
                 >
                   {category}
-                  <span className={cn(
-                    "text-xs px-1.5 py-0.5 rounded-full min-w-[20px] text-center",
-                    isActive 
-                      ? "bg-primary-foreground/20 text-primary-foreground" 
-                      : "bg-background/50 text-muted-foreground"
-                  )}>
+                  <span
+                    className={cn(
+                      "text-xs px-1.5 py-0.5 rounded-full min-w-[20px] text-center",
+                      isActive
+                        ? "bg-primary-foreground/20 text-primary-foreground"
+                        : "bg-background/50 text-muted-foreground"
+                    )}
+                  >
                     {count}
                   </span>
                 </motion.button>
@@ -285,45 +287,26 @@ const Skills = () => {
           <PageItem>
             <SkillsLoadingState />
           </PageItem>
-        ) : filteredSkills.length === 0 ? (
+        ) : skills.length === 0 ? (
           /* Empty State */
           <PageItem>
-            <Card className="border-dashed border-2 border-border/50 bg-card/50">
-              <CardContent className="py-12 sm:py-16 text-center">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-5 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                  <Sparkles className="w-7 h-7 sm:w-8 sm:h-8 text-primary" />
-                </div>
-                <h3 className="text-lg font-medium text-foreground mb-2">
-                  {selectedCategory === "All" 
-                    ? "No Prebuilt Skills Available" 
-                    : `No ${selectedCategory} Skills`}
-                </h3>
-                <p className="text-muted-foreground mb-6 font-light max-w-md mx-auto text-sm">
-                  {selectedCategory === "All"
-                    ? "Your Synth account has no prebuilt skills yet. Create your first skill to get started."
-                    : `No skills found in the ${selectedCategory} category. Try selecting a different filter.`}
-                </p>
-                {selectedCategory === "All" && (
-                  <div className="flex items-center justify-center gap-3 flex-wrap">
-                    <Button
-                      onClick={() => setIsCreateOpen(true)}
-                      className="bg-primary hover:bg-primary/90"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Create Skill
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => navigate("/app/chat")}
-                      className="border-border/60 hover:border-primary/40"
-                    >
-                      <MessageSquare className="w-4 h-4 mr-2" />
-                      Create in Chat
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <SkillsEmptyState onCreateSkill={handleCreateNew} />
+          </PageItem>
+        ) : filteredSkills.length === 0 ? (
+          /* No results for filter */
+          <PageItem>
+            <div className="py-12 text-center">
+              <p className="text-muted-foreground">
+                No skills found in the {selectedCategory} category.
+              </p>
+              <Button
+                variant="link"
+                onClick={() => setSelectedCategory("All")}
+                className="text-primary mt-2"
+              >
+                View all skills
+              </Button>
+            </div>
           </PageItem>
         ) : (
           /* Skills by Category */
@@ -337,7 +320,7 @@ const Skills = () => {
                 transition={{ duration: 0.15 }}
                 className="space-y-8 pb-8"
               >
-                {Object.entries(groupedSkills).map(([category, categorySkills], catIndex) => (
+                {Object.entries(groupedSkills).map(([category, categorySkills]) => (
                   <PageItem key={category}>
                     {/* Category Header */}
                     {selectedCategory === "All" && (
@@ -348,24 +331,23 @@ const Skills = () => {
                         <div className="flex items-center gap-3">
                           <div className="h-px flex-1 min-w-[40px] bg-gradient-to-r from-border/60 to-transparent" />
                           <span className="text-xs font-medium text-muted-foreground bg-muted/50 px-2.5 py-1 rounded-md shrink-0">
-                            {categorySkills.length} skill{categorySkills.length !== 1 ? "s" : ""}
+                            {categorySkills.length} skill
+                            {categorySkills.length !== 1 ? "s" : ""}
                           </span>
                         </div>
                       </div>
                     )}
 
-                    {/* Skills Grid - 2 columns on desktop, 1 on mobile, max-width per card */}
+                    {/* Skills Grid */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                       {categorySkills.map((skill, index) => (
                         <SkillCard
                           key={skill.id}
                           skill={skill}
-                          isSubscribed={isSubscribed}
-                          userPlan={planTier}
+                          onEdit={handleEdit}
+                          onDuplicate={handleDuplicate}
                           onToggle={handleToggle}
-                          onCustomize={handleCustomize}
-                          onViewRuns={handleViewRuns}
-                          isToggling={togglingId === skill.id}
+                          onDelete={handleDelete}
                           index={index}
                         />
                       ))}
@@ -380,18 +362,10 @@ const Skills = () => {
 
       {/* Customize Modal */}
       <SkillCustomizeModal
-        skill={customizeSkill}
+        skill={editingSkill}
         open={isCustomizeOpen}
         onOpenChange={setIsCustomizeOpen}
-        onSave={handleSaveCustomization}
-        onOpenChat={handleOpenChatForSkill}
-      />
-
-      {/* Create Skill Modal */}
-      <CreateSkillModal
-        open={isCreateOpen}
-        onOpenChange={setIsCreateOpen}
-        onCreateSkill={handleCreateSkill}
+        onSave={handleSaveSkill}
       />
     </AppShell>
   );
