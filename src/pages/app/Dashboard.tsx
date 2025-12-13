@@ -45,20 +45,6 @@ const Dashboard = () => {
             <DashboardWarningBanner />
           </PageItem>
 
-          {/* 2. Page Header */}
-          <PageItem>
-            <div className="space-y-3">
-              <h1 className="text-3xl font-display font-bold text-foreground flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-primary" />
-                </div>
-                Dashboard
-              </h1>
-              <p className="text-muted-foreground font-light text-base pl-14">
-                Synth is monitoring your operations. Here's your system overview.
-              </p>
-            </div>
-          </PageItem>
 
           {/* 3. Synth Suggestion Section */}
           <PageItem>

@@ -458,15 +458,6 @@ const Billing = () => {
   return (
     <AppShell>
       <PageTransition className="px-4 lg:px-6 py-8 max-w-5xl mx-auto pb-32">
-        {/* Header */}
-        <PageItem className="text-center mb-10">
-          <h1 className="font-display text-3xl md:text-4xl text-foreground mb-3 synth-header">
-            Billing Settings
-          </h1>
-          <p className="text-muted-foreground text-lg font-light">
-            Manage your subscription, billing, and add-ons
-          </p>
-        </PageItem>
 
         {/* Success/Error Messages */}
         <AnimatePresence>
