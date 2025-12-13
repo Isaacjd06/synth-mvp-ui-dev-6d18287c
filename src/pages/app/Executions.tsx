@@ -5,10 +5,6 @@ import { PageTransition, PageItem } from "@/components/app/PageTransition";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import SubscriptionBanner from "@/components/subscription/SubscriptionBanner";
-import LockedButton from "@/components/subscription/LockedButton";
-import LogRetentionWarning from "@/components/subscription/LogRetentionWarning";
-import { useSubscription } from "@/contexts/SubscriptionContext";
 
 // Mock data with sortable timestamps
 const mockExecutions = [
@@ -31,17 +27,9 @@ const statusVariants: Record<StatusKey, "success" | "running" | "error"> = {
 };
 
 const Executions = () => {
-  const { isSubscribed } = useSubscription();
-
   return (
     <AppShell>
       <PageTransition className="px-4 lg:px-6 py-8 space-y-8">
-        {!isSubscribed && (
-          <PageItem>
-            <SubscriptionBanner feature="access execution tools" />
-          </PageItem>
-        )}
-
         {mockExecutions.length === 0 ? (
           <PageItem>
             <Card className="border-dashed border-2 border-border/50 bg-card/50">
@@ -54,10 +42,12 @@ const Executions = () => {
                   Your automations will appear here when they run.
                 </p>
                 <div className="flex justify-center gap-3">
-                  <LockedButton className="bg-primary hover:bg-primary/90" feature="create workflows">
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Create Workflow
-                  </LockedButton>
+                  <Button asChild className="bg-primary hover:bg-primary/90">
+                    <Link to="/app/chat">
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      Create Workflow
+                    </Link>
+                  </Button>
                   <Button variant="outline" asChild>
                     <Link to="/app/workflows"><Zap className="w-4 h-4 mr-2" />View Workflows</Link>
                   </Button>
@@ -91,12 +81,6 @@ const Executions = () => {
                 </div>
               </CardContent>
             </Card>
-          </PageItem>
-        )}
-
-        {isSubscribed && (
-          <PageItem>
-            <LogRetentionWarning />
           </PageItem>
         )}
       </PageTransition>
