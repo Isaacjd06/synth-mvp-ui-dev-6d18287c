@@ -102,15 +102,8 @@ const fetchStripePrices = async (): Promise<StripePricesData> => {
         id: "rapid_booster",
         name: "Rapid Automation Booster Pack",
         description: "Unlock 25,000 additional automation runs instantly.",
-        price: 49,
-        priceId: "price_rapid_booster",
-      },
-      {
-        id: "knowledge_injection",
-        name: "Unlimited Knowledge Injection",
-        description: "Unlimited document uploads + unlimited knowledge-base entries.",
         price: 99,
-        priceId: "price_knowledge_injection",
+        priceId: "price_rapid_booster",
       },
     ],
   };
