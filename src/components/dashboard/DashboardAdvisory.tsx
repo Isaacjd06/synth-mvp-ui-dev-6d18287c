@@ -17,15 +17,15 @@ interface DashboardAdvisoryProps {
 }
 
 const severityStyles: Record<AdvisorySeverity, string> = {
-  info: "bg-muted/40",
-  suggested: "bg-muted/40",
-  important: "bg-muted/40",
+  info: "bg-primary",
+  suggested: "bg-status-warning",
+  important: "bg-status-error",
 };
 
-const severityLabels: Record<AdvisorySeverity, string> = {
-  info: "Info",
-  suggested: "Suggested",
-  important: "Important",
+const severityLabels: Record<AdvisorySeverity, { text: string; class: string }> = {
+  info: { text: "Info", class: "text-primary" },
+  suggested: { text: "Suggested", class: "text-status-warning" },
+  important: { text: "Important", class: "text-status-error" },
 };
 
 const placeholderItems: AdvisoryItem[] = [
@@ -102,11 +102,11 @@ const DashboardAdvisory = ({
               Run a workflow to unlock insights.
             </p>
             <div className="flex items-center justify-center gap-4 mt-3">
-              <button className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+              <button className="text-xs text-primary hover:text-primary/80 transition-colors">
                 Connect apps
               </button>
               <span className="text-muted-foreground/30">·</span>
-              <button className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+              <button className="text-xs text-primary hover:text-primary/80 transition-colors">
                 Create workflow
               </button>
             </div>
@@ -125,15 +125,15 @@ const DashboardAdvisory = ({
                       <span className="text-sm text-foreground truncate">
                         {item.title}
                       </span>
-                      <span className="text-xs text-muted-foreground/60 shrink-0">
-                        {severityLabels[item.severity]}
+                      <span className={`text-xs shrink-0 ${severityLabels[item.severity].class}`}>
+                        {severityLabels[item.severity].text}
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5 truncate">
                       {item.description}
                     </p>
                   </div>
-                  <button className="text-xs text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                  <button className="text-xs text-primary hover:text-primary/80 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                     Review
                   </button>
                 </div>
