@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Plug } from "lucide-react";
+import { Plug, MessageSquare, FileText, Users, CreditCard, ShoppingCart, Megaphone, CheckSquare, Database, Brain, Code } from "lucide-react";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition } from "@/components/app/PageTransition";
 import ConnectionIntegrationCard from "@/components/connections/ConnectionIntegrationCard";
@@ -15,6 +15,32 @@ export interface Integration {
   connected: boolean;
   comingSoon?: boolean;
 }
+
+const categoryConfig: Record<string, { label: string; icon: React.ReactNode }> = {
+  "Communication": { label: "Core Communication", icon: <MessageSquare className="w-5 h-5" /> },
+  "Documents & Knowledge": { label: "Documents & Knowledge", icon: <FileText className="w-5 h-5" /> },
+  "CRM & Sales": { label: "CRM & Sales Pipelines", icon: <Users className="w-5 h-5" /> },
+  "Payments & Billing": { label: "Payments & Billing", icon: <CreditCard className="w-5 h-5" /> },
+  "E-Commerce": { label: "E-Commerce & Orders", icon: <ShoppingCart className="w-5 h-5" /> },
+  "Marketing & Outreach": { label: "Marketing & Outreach", icon: <Megaphone className="w-5 h-5" /> },
+  "Task Management": { label: "Internal Ops & Task Management", icon: <CheckSquare className="w-5 h-5" /> },
+  "Forms & Data": { label: "Data, Forms & Input Sources", icon: <Database className="w-5 h-5" /> },
+  "AI & Intelligence": { label: "AI / System-Level", icon: <Brain className="w-5 h-5" /> },
+  "Developer": { label: "Dev / System Integration", icon: <Code className="w-5 h-5" /> },
+};
+
+const categoryOrder = [
+  "Communication",
+  "Documents & Knowledge",
+  "CRM & Sales",
+  "Payments & Billing",
+  "E-Commerce",
+  "Marketing & Outreach",
+  "Task Management",
+  "Forms & Data",
+  "AI & Intelligence",
+  "Developer",
+];
 
 const initialIntegrations: Integration[] = [
   // 🧠 CORE COMMUNICATION
@@ -105,10 +131,16 @@ const Connections = () => {
   const connectedCount = integrations.filter(i => i.connected).length;
   const totalCount = integrations.length;
 
+  // Group integrations by category
+  const groupedIntegrations = categoryOrder.reduce((acc, category) => {
+    acc[category] = integrations.filter(i => i.category === category);
+    return acc;
+  }, {} as Record<string, Integration[]>);
+
   return (
     <AppShell>
       <PageTransition>
-        <div className="space-y-6">
+        <div className="space-y-8">
           {/* Stats Row */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -123,23 +155,46 @@ const Connections = () => {
             <span>connected</span>
           </motion.div>
 
-          {/* Integrations Grid */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
-          >
-            {integrations.map((integration, index) => (
-              <ConnectionIntegrationCard
-                key={integration.id}
-                integration={integration}
-                onConnect={() => handleConnect(integration)}
-                onDisconnect={() => handleDisconnect(integration.id)}
-                index={index}
-              />
-            ))}
-          </motion.div>
+          {/* Category Sections */}
+          {categoryOrder.map((category, categoryIndex) => {
+            const categoryIntegrations = groupedIntegrations[category];
+            if (!categoryIntegrations || categoryIntegrations.length === 0) return null;
+            const config = categoryConfig[category];
+
+            return (
+              <motion.section
+                key={category}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + categoryIndex * 0.05 }}
+                className="space-y-4"
+              >
+                {/* Category Header */}
+                <div className="flex items-center gap-3 pb-2 border-b border-border/60">
+                  <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-primary/15 text-primary border border-primary/30">
+                    {config.icon}
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-semibold text-foreground">{config.label}</h2>
+                    <p className="text-xs text-muted-foreground">{categoryIntegrations.length} integration{categoryIntegrations.length !== 1 ? 's' : ''}</p>
+                  </div>
+                </div>
+
+                {/* Category Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {categoryIntegrations.map((integration, index) => (
+                    <ConnectionIntegrationCard
+                      key={integration.id}
+                      integration={integration}
+                      onConnect={() => handleConnect(integration)}
+                      onDisconnect={() => handleDisconnect(integration.id)}
+                      index={index}
+                    />
+                  ))}
+                </div>
+              </motion.section>
+            );
+          })}
 
           {/* Empty State */}
           {integrations.length === 0 && (
