@@ -74,9 +74,9 @@ interface SubscriptionContextType {
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
 
 export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
-  // Default to subscribed state - subscription logic disabled for now
-  const [isSubscribed, setIsSubscribed] = useState(true);
-  const [planTier, setPlanTier] = useState<PlanTier>("pro");
+  // Set to false for testing unsubscribed state, or set to a plan tier for subscribed
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [planTier, setPlanTier] = useState<PlanTier>(null);
   const [usageStats, setUsageStats] = useState<UsageStats>({ workflowsUsed: 2, executionsUsed: 1500 });
   const [modalOpen, setModalOpen] = useState(false);
   const [modalFeature, setModalFeature] = useState<string | undefined>();
