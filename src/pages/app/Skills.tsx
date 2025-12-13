@@ -8,6 +8,7 @@ import {
   Bell,
   Users,
   ToggleLeft,
+  Plus,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import AppShell from "@/components/app/AppShell";
@@ -21,6 +22,7 @@ import { useSubscription } from "@/contexts/SubscriptionContext";
 import { synthToast } from "@/lib/synth-toast";
 import { SkillCard, type PrebuiltSkill } from "@/components/skills/SkillCard";
 import { SkillCustomizeModal } from "@/components/skills/SkillCustomizeModal";
+import { CreateSkillModal, type CreateSkillFormValues } from "@/components/skills/CreateSkillModal";
 import { SkillsLoadingState } from "@/components/skills/SkillsLoadingState";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -102,6 +104,7 @@ const Skills = () => {
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [customizeSkill, setCustomizeSkill] = useState<PrebuiltSkill | null>(null);
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   const navigate = useNavigate();
   const { isSubscribed, planTier, requireSubscription } = useSubscription();
@@ -179,6 +182,23 @@ const Skills = () => {
     });
   };
 
+  const handleCreateSkill = (values: CreateSkillFormValues) => {
+    // Placeholder function for backend integration
+    const newSkill: PrebuiltSkill = {
+      id: `custom-${Date.now()}`,
+      name: values.name,
+      description: values.shortDescription,
+      preview: values.actions || "Custom automation workflow",
+      icon: Sparkles,
+      category: values.category as PrebuiltSkill["category"],
+      isEnabled: false,
+      runsCount: 0,
+      requiredPlan: "starter",
+    };
+    setSkills((prev) => [...prev, newSkill]);
+    synthToast.success("Skill Created", `"${values.name}" has been created successfully.`);
+  };
+
   const enabledCount = skills.filter((s) => s.isEnabled).length;
 
   return (
@@ -204,13 +224,23 @@ const Skills = () => {
               Turn on ready-made automations for your business.
             </p>
           </div>
-          <Badge
-            variant="outline"
-            className="self-start px-3 py-1.5 border-primary/30 bg-primary/5 text-primary text-sm"
-          >
-            <ToggleLeft className="w-3.5 h-3.5 mr-1.5" />
-            {enabledCount} Active
-          </Badge>
+          <div className="flex items-center gap-3 self-start">
+            <Badge
+              variant="outline"
+              className="px-3 py-1.5 border-primary/30 bg-primary/5 text-primary text-sm"
+            >
+              <ToggleLeft className="w-3.5 h-3.5 mr-1.5" />
+              {enabledCount} Active
+            </Badge>
+            <Button
+              onClick={() => setIsCreateOpen(true)}
+              className="bg-primary hover:bg-primary/90"
+              size="sm"
+            >
+              <Plus className="w-4 h-4 mr-1.5" />
+              Create Skill
+            </Button>
+          </div>
         </PageItem>
 
         {/* Category Filter Bar */}
@@ -270,17 +300,27 @@ const Skills = () => {
                 </h3>
                 <p className="text-muted-foreground mb-6 font-light max-w-md mx-auto text-sm">
                   {selectedCategory === "All"
-                    ? "Your Synth account has no prebuilt skills yet. Create custom workflows in Chat."
+                    ? "Your Synth account has no prebuilt skills yet. Create your first skill to get started."
                     : `No skills found in the ${selectedCategory} category. Try selecting a different filter.`}
                 </p>
                 {selectedCategory === "All" && (
-                  <Button
-                    onClick={() => navigate("/app/chat")}
-                    className="bg-primary hover:bg-primary/90"
-                  >
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Create Custom Workflow
-                  </Button>
+                  <div className="flex items-center justify-center gap-3 flex-wrap">
+                    <Button
+                      onClick={() => setIsCreateOpen(true)}
+                      className="bg-primary hover:bg-primary/90"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Create Skill
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => navigate("/app/chat")}
+                      className="border-border/60 hover:border-primary/40"
+                    >
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      Create in Chat
+                    </Button>
+                  </div>
                 )}
               </CardContent>
             </Card>
@@ -345,6 +385,13 @@ const Skills = () => {
         onOpenChange={setIsCustomizeOpen}
         onSave={handleSaveCustomization}
         onOpenChat={handleOpenChatForSkill}
+      />
+
+      {/* Create Skill Modal */}
+      <CreateSkillModal
+        open={isCreateOpen}
+        onOpenChange={setIsCreateOpen}
+        onCreateSkill={handleCreateSkill}
       />
     </AppShell>
   );
