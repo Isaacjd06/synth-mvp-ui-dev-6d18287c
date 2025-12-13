@@ -112,27 +112,6 @@ const fetchStripePrices = async (): Promise<StripePricesData> => {
         price: 99,
         priceId: "price_knowledge_injection",
       },
-      {
-        id: "performance_turbo",
-        name: "Workflow Performance Turbo",
-        description: "Priority workflow execution queue for significantly faster processing.",
-        price: 147,
-        priceId: "price_performance_turbo",
-      },
-      {
-        id: "jumpstart",
-        name: "Business Systems Jumpstart Kit",
-        description: "Done-for-you workflow setup + optimization to build your foundational systems.",
-        price: 199,
-        priceId: "price_jumpstart",
-      },
-      {
-        id: "ai_training",
-        name: "AI Persona Training Upgrade",
-        description: "Custom AI fine-tuning for the user's business context to improve instruction-following.",
-        price: 249,
-        priceId: "price_ai_training",
-      },
     ],
   };
 };

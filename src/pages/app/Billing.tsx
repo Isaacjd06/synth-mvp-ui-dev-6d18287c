@@ -232,6 +232,28 @@ const Billing = () => {
     }
   };
 
+  const handleRemovePaymentMethod = async () => {
+    setLoading(true);
+    try {
+      await new Promise(r => setTimeout(r, 1000));
+      setSubscription({
+        ...subscription,
+        paymentMethod: {
+          type: "",
+          last4: "",
+          brand: "",
+          expiryMonth: 0,
+          expiryYear: 0,
+        },
+      });
+      synthToast.success("Payment Method Removed", "Your payment method has been removed.");
+    } catch (error) {
+      synthToast.error("Failed to Remove", "Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleConfirmPlanChange = async () => {
     if (!selectedPlan || selectedPlan === subscription?.planId) return;
     
@@ -664,24 +686,52 @@ const Billing = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-muted/30 border border-border/50">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-8 rounded bg-background flex items-center justify-center border border-border">
-                        <CreditCard className="w-5 h-5 text-foreground" />
+                  {subscription.paymentMethod.last4 ? (
+                    <div className="flex items-center justify-between p-4 rounded-lg bg-muted/30 border border-border/50">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-8 rounded bg-background flex items-center justify-center border border-border">
+                          <CreditCard className="w-5 h-5 text-foreground" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-foreground">
+                            {subscription.paymentMethod.brand} •••• {subscription.paymentMethod.last4}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Expires {subscription.paymentMethod.expiryMonth}/{subscription.paymentMethod.expiryYear}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-foreground">
-                          {subscription.paymentMethod.brand} •••• {subscription.paymentMethod.last4}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Expires {subscription.paymentMethod.expiryMonth}/{subscription.paymentMethod.expiryYear}
-                        </p>
+                      <div className="flex items-center gap-2">
+                        <Button variant="ghost" size="sm" onClick={handleOpenPaymentModal}>
+                          Update
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={handleRemovePaymentMethod}
+                          disabled={loading}
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        >
+                          Remove
+                        </Button>
                       </div>
                     </div>
-                    <Button variant="ghost" size="sm" onClick={handleOpenPaymentModal}>
-                      Update
-                    </Button>
-                  </div>
+                  ) : (
+                    <div className="flex items-center justify-between p-4 rounded-lg bg-muted/30 border border-dashed border-border/50">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-8 rounded bg-background flex items-center justify-center border border-border">
+                          <CreditCard className="w-5 h-5 text-muted-foreground" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-muted-foreground">No payment method on file</p>
+                          <p className="text-sm text-muted-foreground">Add a card to start your subscription</p>
+                        </div>
+                      </div>
+                      <Button variant="outline" size="sm" onClick={handleOpenPaymentModal}>
+                        Add Card
+                      </Button>
+                    </div>
+                  )}
                   <div className="flex items-center gap-2 mt-3 text-xs text-muted-foreground">
                     <Shield className="w-3.5 h-3.5" />
                     <span>Payments are securely processed by Stripe</span>
