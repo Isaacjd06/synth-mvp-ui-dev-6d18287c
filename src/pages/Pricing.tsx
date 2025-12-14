@@ -5,7 +5,6 @@ import { ArrowLeft, Sparkles } from "lucide-react";
 import PricingHero from "@/components/pricing/PricingHero";
 import PricingToggle from "@/components/pricing/PricingToggle";
 import PricingCards from "@/components/pricing/PricingCards";
-import AddOnsSection from "@/components/pricing/AddOnsSection";
 import ComparisonTable from "@/components/pricing/ComparisonTable";
 import PricingFAQ from "@/components/pricing/PricingFAQ";
 import PricingCTA from "@/components/pricing/PricingCTA";
@@ -50,7 +49,6 @@ const Pricing = () => {
         <PricingHero />
         <PricingToggle isYearly={isYearly} onToggle={setIsYearly} />
         <PricingCards isYearly={isYearly} />
-        <AddOnsSection />
         <ComparisonTable />
         <PricingFAQ />
         <PricingCTA />
