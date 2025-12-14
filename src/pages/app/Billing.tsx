@@ -53,6 +53,31 @@ interface SubscriptionData {
   };
 }
 
+// Plan feature definitions
+const planFeatures: Record<string, string[]> = {
+  starter: [
+    "Up to 5 workflows",
+    "Up to 2,000 executions per month",
+    "Core automation monitoring",
+    "Execution history (basic)",
+    "Community support",
+  ],
+  pro: [
+    "Up to 25 workflows",
+    "Up to 10,000 executions per month",
+    "Full execution history & diagnostics",
+    "Workflow insights & reliability tracking",
+    "Priority execution queue",
+  ],
+  agency: [
+    "Up to 100 workflows",
+    "Up to 50,000 executions per month",
+    "Advanced execution analytics",
+    "Higher concurrency limits",
+    "Agency-grade reliability & priority",
+  ],
+};
+
 // Default subscription data - always have an active subscription
 const defaultSubscription: SubscriptionData = {
   planId: "pro",
@@ -382,10 +407,21 @@ const Billing = () => {
                     MOST POPULAR
                   </Badge>
                 )}
-                <div className={`text-center ${compact ? "mb-4" : "mb-6"}`}>
+                <div className={`text-center ${compact ? "mb-3" : "mb-6"}`}>
                   <h3 className="font-accent text-xl text-foreground mb-1">{plan.name}</h3>
                   <p className="text-sm text-muted-foreground">{plan.description}</p>
                 </div>
+                {/* Plan features list in modal */}
+                {compact && planFeatures[plan.id] && (
+                  <ul className="space-y-1.5 mb-4 text-left">
+                    {planFeatures[plan.id].map((feature, i) => (
+                      <li key={i} className="flex items-start gap-2 text-xs">
+                        <span className="text-primary/70 mt-0.5">•</span>
+                        <span className="text-muted-foreground/80">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
                 <div className={`text-center ${compact ? "mb-4" : "mb-6"}`}>
                   {billingInterval === "yearly" ? (
                     <>
@@ -526,32 +562,16 @@ const Billing = () => {
 
                   <Separator className="bg-border/40" />
 
-                  {/* What's Included - Read-only plan details */}
+                  {/* What's Included - Dynamic based on current plan */}
                   <div>
                     <p className="text-xs text-muted-foreground mb-3 uppercase tracking-wide">What's Included in {subscription.planName}</p>
                     <ul className="space-y-2 text-sm text-foreground/80">
-                      <li className="flex items-start gap-2">
-                        <span className="text-primary/80 mt-0.5">•</span>
-                        <span>Up to {subscription.usageLimits.workflowsLimit} workflows</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-primary/80 mt-0.5">•</span>
-                        <span>Up to {subscription.usageLimits.executionsLimit.toLocaleString()} executions per month</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-primary/80 mt-0.5">•</span>
-                        <span>Workflow monitoring & insights</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-primary/80 mt-0.5">•</span>
-                        <span>Error diagnostics & execution history</span>
-                      </li>
-                      {subscription.planId !== "starter" && (
-                        <li className="flex items-start gap-2">
+                      {(planFeatures[subscription.planId] || planFeatures.pro).map((feature, i) => (
+                        <li key={i} className="flex items-start gap-2">
                           <span className="text-primary/80 mt-0.5">•</span>
-                          <span>Priority execution queue</span>
+                          <span>{feature}</span>
                         </li>
-                      )}
+                      ))}
                     </ul>
                   </div>
 
