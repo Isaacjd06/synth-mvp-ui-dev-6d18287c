@@ -68,27 +68,44 @@ const Workflows = () => {
 
   return (
     <AppShell>
-      <PageTransition className="px-4 lg:px-6 py-8 space-y-8">
-        {/* Action Button */}
-        <PageItem className="flex justify-end">
-          <Button asChild className="bg-primary hover:bg-primary/90">
-            <Link to="/app/chat">Create Workflow</Link>
-          </Button>
+      <PageTransition className="px-4 lg:px-6 py-8 space-y-6">
+        {/* Page Header */}
+        <PageItem className="space-y-1">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground font-light">
+                Automations Synth has created and manages on your behalf.
+              </p>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              asChild 
+              className="text-xs text-muted-foreground hover:text-foreground"
+            >
+              <Link to="/app/chat">New via Chat</Link>
+            </Button>
+          </div>
         </PageItem>
 
         {/* Empty State */}
         {workflows.length === 0 ? (
           <PageItem>
-            <Card className="border-dashed border-2 border-border/50 bg-card/50">
+            <Card className="border border-border/40 bg-card/50">
               <CardContent className="py-16 text-center">
-                <h3 className="text-lg font-medium text-foreground mb-2">
+                <h3 className="text-base font-medium text-foreground mb-2">
                   No Workflows Yet
                 </h3>
-                <p className="text-muted-foreground mb-6 font-light max-w-md mx-auto">
-                  Synth is ready. Create your first automation to begin optimizing your operations.
+                <p className="text-sm text-muted-foreground mb-6 font-light max-w-md mx-auto">
+                  Synth will create automations as you describe what you need in Chat.
                 </p>
-                <Button asChild className="bg-primary hover:bg-primary/90">
-                  <Link to="/app/chat">Create Workflow</Link>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  asChild 
+                  className="border-border/50"
+                >
+                  <Link to="/app/chat">Open Chat</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -96,51 +113,54 @@ const Workflows = () => {
         ) : (
           /* Workflows List */
           <PageItem>
-            <Card className="overflow-hidden">
-              <CardContent className="p-0">
-                <div className="divide-y divide-border/40">
-                  {workflows.map((workflow) => (
-                    <div
-                      key={workflow.id}
-                      className="flex items-center justify-between p-4 transition-colors hover:bg-muted/40"
+            <div className="space-y-2">
+              {workflows.map((workflow) => (
+                <div
+                  key={workflow.id}
+                  className="flex items-center justify-between p-4 rounded-lg border border-border/40 bg-card/40 transition-colors hover:bg-card/60"
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">
+                      {workflow.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground font-light mt-0.5">
+                      Last run: {workflow.lastRunTime}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-3 ml-4">
+                    <span 
+                      className={cn(
+                        "text-xs px-2 py-0.5 rounded",
+                        workflow.status === "active" 
+                          ? "text-green-400 bg-green-500/10" 
+                          : "text-muted-foreground bg-muted/30"
+                      )}
                     >
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-foreground truncate">
-                          {workflow.name}
-                        </p>
-                        <p className="text-sm text-muted-foreground font-light">
-                          Last run: {workflow.lastRunTime}
-                        </p>
-                      </div>
+                      {workflow.status === "active" ? "Active" : "Inactive"}
+                    </span>
 
-                      <div className="flex items-center gap-3 ml-4">
-                        <Badge
-                          className={workflow.status === "active" 
-                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" 
-                            : "bg-muted/50 text-muted-foreground border-border/50"
-                          }
-                        >
-                          {workflow.status === "active" ? "Active" : "Inactive"}
-                        </Badge>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleToggleStatus(workflow.id)}
+                      className="text-xs text-muted-foreground hover:text-foreground h-7"
+                    >
+                      {workflow.status === "active" ? "Pause" : "Activate"}
+                    </Button>
 
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleToggleStatus(workflow.id)}
-                          className="border-border/50 hover:border-primary/30"
-                        >
-                          {workflow.status === "active" ? "Deactivate" : "Activate"}
-                        </Button>
-
-                        <Button variant="ghost" size="sm" asChild>
-                          <Link to={`/app/workflows/${workflow.id}`}>View</Link>
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      asChild 
+                      className="text-xs h-7"
+                    >
+                      <Link to={`/app/workflows/${workflow.id}`}>View</Link>
+                    </Button>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+              ))}
+            </div>
           </PageItem>
         )}
       </PageTransition>
