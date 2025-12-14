@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { AlertTriangle, ArrowRight, Lock, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { cn } from "@/lib/utils";
@@ -31,10 +30,7 @@ const SubscriptionBanner = ({
           className
         )}
       >
-        <div className="flex items-center gap-2">
-          <Lock className="w-3.5 h-3.5 text-amber-400" />
-          <span className="text-xs text-amber-300">Subscription required</span>
-        </div>
+        <span className="text-xs text-amber-300">Subscription required</span>
         <Button 
           onClick={() => openSubscriptionModal(feature)}
           size="sm"
@@ -42,7 +38,6 @@ const SubscriptionBanner = ({
           className="h-6 text-xs text-amber-300 hover:text-amber-200 hover:bg-amber-500/20 px-2"
         >
           Upgrade
-          <ArrowRight className="w-3 h-3 ml-1" />
         </Button>
       </motion.div>
     );
@@ -67,37 +62,25 @@ const SubscriptionBanner = ({
       )} />
 
       <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex items-start sm:items-center gap-3">
-          <div className={cn(
-            "w-10 h-10 rounded-lg flex items-center justify-center shrink-0",
-            variant === "warning" ? "bg-amber-500/20" : "bg-primary/20"
-          )}>
-            <AlertTriangle className={cn(
-              "w-5 h-5",
-              variant === "warning" ? "text-amber-400" : "text-primary"
-            )} />
-          </div>
-          <div>
-            <h4 className="font-medium text-foreground">
-              You are not subscribed
-            </h4>
-            <p className="text-sm text-muted-foreground font-light">
-              {feature
-                ? `Subscribe to ${feature}`
-                : "Subscribe to activate workflows, runs, integrations, and more."}
-            </p>
-          </div>
+        <div>
+          <h4 className="font-medium text-foreground">
+            You are not subscribed
+          </h4>
+          <p className="text-sm text-muted-foreground font-light">
+            {feature
+              ? `Subscribe to ${feature}`
+              : "Subscribe to activate workflows, runs, integrations, and more."}
+          </p>
         </div>
         <Button 
           onClick={() => openSubscriptionModal(feature)}
           className={cn(
-            "gap-2 shrink-0",
+            "shrink-0",
             variant === "warning" 
               ? "bg-amber-500 hover:bg-amber-600 text-black" 
               : "bg-primary hover:bg-primary/90"
           )}
         >
-          <Sparkles className="w-4 h-4" />
           Upgrade Now
         </Button>
       </div>

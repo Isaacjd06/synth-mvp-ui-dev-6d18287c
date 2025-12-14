@@ -1,11 +1,9 @@
 import { motion } from "framer-motion";
-import { Check, Plug } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Integration } from "@/pages/app/Connections";
-import IntegrationIcon from "./IntegrationIcon";
 
 interface ConnectionIntegrationCardProps {
   integration: Integration;
@@ -53,8 +51,7 @@ const ConnectionIntegrationCard = ({
         {/* Connected Badge */}
         {integration.connected && (
           <div className="absolute top-3 right-3 z-20">
-            <Badge className="bg-green-500/20 text-green-400 border-green-500/40 text-xs gap-1 px-2 py-0.5">
-              <Check className="w-3 h-3" />
+            <Badge className="bg-green-500/20 text-green-400 border-green-500/40 text-xs px-2 py-0.5">
               Connected
             </Badge>
           </div>
@@ -65,27 +62,20 @@ const ConnectionIntegrationCard = ({
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-green-500/30 via-green-400 to-green-500/30" />
         )}
 
-        <CardContent className="p-5 flex flex-col h-full min-h-[200px]">
-          <div className="flex items-start gap-3 mb-3">
-            <IntegrationIcon 
-              app={integration.name} 
-              size="md"
-              className="transition-all duration-300 flex-shrink-0 group-hover:border-primary/30 group-hover:shadow-[0_0_15px_-3px_hsl(var(--primary)/0.3)]"
-            />
-            <div className="min-w-0 flex-1">
-              <h3 className="font-semibold truncate text-base transition-colors text-foreground group-hover:text-primary">
-                {integration.name}
-              </h3>
-              <Badge 
-                variant="outline" 
-                className={cn(
-                  "text-[10px] px-1.5 py-0 mt-1 border",
-                  categoryColors[integration.category] || "bg-muted/20 text-muted-foreground border-muted/30"
-                )}
-              >
-                {integration.category}
-              </Badge>
-            </div>
+        <CardContent className="p-5 flex flex-col h-full min-h-[180px]">
+          <div className="mb-3">
+            <h3 className="font-semibold text-base transition-colors text-foreground group-hover:text-primary mb-1">
+              {integration.name}
+            </h3>
+            <Badge 
+              variant="outline" 
+              className={cn(
+                "text-[10px] px-1.5 py-0 border",
+                categoryColors[integration.category] || "bg-muted/20 text-muted-foreground border-muted/30"
+              )}
+            >
+              {integration.category}
+            </Badge>
           </div>
 
           <p className="text-sm line-clamp-2 flex-grow leading-relaxed text-muted-foreground">
@@ -118,7 +108,6 @@ const ConnectionIntegrationCard = ({
                   onConnect();
                 }}
               >
-                <Plug className="w-4 h-4 mr-2" />
                 Connect
               </Button>
             )}
