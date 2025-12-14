@@ -37,7 +37,7 @@ const Dashboard = () => {
   return (
     <AppShell>
       <TooltipProvider>
-        <PageTransition className="max-w-screen-xl mx-auto px-4 py-8 space-y-10">
+        <PageTransition className="max-w-screen-xl mx-auto px-4 py-10 space-y-12">
 
           {/* Synth Suggestion Section */}
           <PageItem>
@@ -45,12 +45,9 @@ const Dashboard = () => {
           </PageItem>
 
           {/* Section Divider */}
-          <div className="relative py-2">
+          <div className="relative py-1">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-primary/10" />
-            </div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-32 h-1 bg-gradient-to-r from-transparent via-primary/20 to-transparent blur-sm" />
+              <div className="w-full border-t border-border/20" />
             </div>
           </div>
 
@@ -70,21 +67,21 @@ const Dashboard = () => {
 
           {/* 5. Recent Activity Section */}
           <PageItem>
-            <Card className="overflow-hidden rounded-2xl border-border/40 bg-gradient-to-b from-card to-synth-navy-light">
-              <CardHeader className="border-b border-border/30 bg-muted/10 px-5 py-4">
+            <Card className="overflow-hidden rounded-2xl border-border/30 bg-card">
+              <CardHeader className="border-b border-border/20 px-5 py-4">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2.5">
-                    <Activity className="w-4.5 h-4.5 text-primary" />
+                  <CardTitle className="text-base font-medium text-foreground flex items-center gap-2.5">
+                    <Activity className="w-4 h-4 text-muted-foreground" />
                     Recent Activity
                   </CardTitle>
-                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary h-8 px-3">
+                  <Button variant="ghost" size="sm" className="text-muted-foreground/60 hover:text-foreground h-7 px-2 text-xs">
                     View All
-                    <ChevronRight className="w-3.5 h-3.5 ml-1" />
+                    <ChevronRight className="w-3 h-3 ml-1" />
                   </Button>
                 </div>
               </CardHeader>
               <CardContent className="p-0">
-                <div className="divide-y divide-border/20">
+                <div className="divide-y divide-border/10">
                   {recentActivity.map((activity, index) => (
                     <DashboardActivityRow
                       key={index}

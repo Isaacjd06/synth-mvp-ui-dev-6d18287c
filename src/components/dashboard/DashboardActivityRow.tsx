@@ -12,33 +12,33 @@ interface DashboardActivityRowProps {
 }
 
 const statusStyles: Record<ExecutionStatus, string> = {
-  success: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-[0_0_10px_hsl(142_70%_45%/0.2)]",
+  success: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
   running: "bg-amber-500/10 text-amber-400 border-amber-500/20 animate-pulse",
-  error: "bg-red-500/10 text-red-400 border-red-500/20 shadow-[0_0_10px_hsl(0_65%_50%/0.2)]",
+  error: "bg-red-500/10 text-red-400 border-red-500/20",
 };
 
 const DashboardActivityRow = ({ workflow, status, duration, timestamp }: DashboardActivityRowProps) => {
   return (
-    <div className="flex items-center justify-between py-4 px-5 hover:bg-muted/30 transition-colors synth-row">
+    <div className="flex items-center justify-between py-3.5 px-5 hover:bg-muted/20 transition-colors">
       <div className="flex items-center gap-4 min-w-0 flex-1">
-        <span className="text-sm font-medium text-foreground truncate max-w-[200px] sm:max-w-none">
+        <span className="text-sm text-foreground truncate max-w-[200px] sm:max-w-none">
           {workflow}
         </span>
-        <Badge className={`${statusStyles[status]} text-xs px-2.5 py-0.5 capitalize`}>
+        <Badge className={`${statusStyles[status]} text-[10px] px-2 py-0 capitalize font-normal`}>
           {status}
         </Badge>
       </div>
       
       <div className="flex items-center gap-5 shrink-0">
-        <span className="text-xs text-muted-foreground font-mono hidden md:block w-12 text-right">
+        <span className="text-xs text-muted-foreground/70 font-mono hidden md:block w-12 text-right">
           {duration}
         </span>
-        <span className="text-xs text-muted-foreground font-light w-24 text-right hidden sm:block">
+        <span className="text-xs text-muted-foreground/60 font-light w-24 text-right hidden sm:block">
           {timestamp}
         </span>
-        <Button variant="ghost" size="sm" className="h-7 px-2 text-muted-foreground hover:text-primary">
+        <Button variant="ghost" size="sm" className="h-7 px-2 text-muted-foreground/60 hover:text-foreground text-xs">
           View Details
-          <ChevronRight className="w-3.5 h-3.5 ml-1" />
+          <ChevronRight className="w-3 h-3 ml-1" />
         </Button>
       </div>
     </div>

@@ -24,23 +24,23 @@ const DashboardSuggestionCard = ({ isEmpty = false }: DashboardSuggestionCardPro
   }
 
   return (
-    <Card className="relative overflow-hidden rounded-2xl border-primary/20 bg-gradient-to-br from-card via-card to-primary/5">
-      {/* Decorative glow */}
-      <div className="absolute top-0 right-0 w-48 h-48 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+    <Card className="relative overflow-hidden rounded-2xl border-primary/15 bg-gradient-to-br from-card via-card to-primary/3">
+      {/* Decorative glow - reduced intensity */}
+      <div className="absolute top-0 right-0 w-40 h-40 bg-primary/6 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
       
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <CardHeader className="relative pb-4">
+        <CardHeader className="relative pb-4 pt-6 px-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/30 flex items-center justify-center">
-                <Lightbulb className="w-5 h-5 text-primary" />
+              <div className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+                <Lightbulb className="w-4 h-4 text-primary" />
               </div>
-              <CardTitle className="text-lg font-semibold text-foreground">
+              <CardTitle className="text-base font-medium text-foreground">
                 Synth Suggestion
               </CardTitle>
             </div>
             <CollapsibleTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground/60 hover:text-foreground">
                 {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
               </Button>
             </CollapsibleTrigger>
@@ -48,13 +48,13 @@ const DashboardSuggestionCard = ({ isEmpty = false }: DashboardSuggestionCardPro
         </CardHeader>
         
         <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-          <CardContent className="pt-0 pb-6 relative space-y-5">
-            <p className="text-sm text-muted-foreground font-light">
+          <CardContent className="pt-0 pb-6 px-6 relative space-y-5">
+            <p className="text-sm text-muted-foreground font-light leading-relaxed">
               Based on your recent activity, Synth has identified a workflow improvement opportunity.
             </p>
             
-            <div className="p-5 rounded-xl bg-synth-surface-light/50 border border-border/40">
-              <h4 className="text-base font-semibold text-foreground mb-2">
+            <div className="p-5 rounded-xl bg-muted/30 border border-border/30">
+              <h4 className="text-sm font-medium text-foreground mb-1.5">
                 Optimize Lead Response Time
               </h4>
               <p className="text-sm text-muted-foreground font-light leading-relaxed">
@@ -63,12 +63,12 @@ const DashboardSuggestionCard = ({ isEmpty = false }: DashboardSuggestionCardPro
             </div>
             
             <div className="flex items-center gap-3">
-              <Button className="bg-primary hover:bg-primary/90 btn-synth">
+              <Button size="sm" className="bg-primary hover:bg-primary/90">
                 Apply
-                <ArrowRight className="w-4 h-4 ml-1.5" />
+                <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
               </Button>
-              <Button variant="ghost" className="text-muted-foreground hover:text-foreground">
-                <MessageSquare className="w-4 h-4 mr-1.5" />
+              <Button variant="ghost" size="sm" className="text-muted-foreground/70 hover:text-foreground">
+                <MessageSquare className="w-3.5 h-3.5 mr-1.5" />
                 Ask Synth
               </Button>
             </div>
