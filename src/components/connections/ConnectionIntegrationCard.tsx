@@ -12,6 +12,76 @@ interface ConnectionIntegrationCardProps {
   index: number;
 }
 
+// Category color mapping - subtle, classification-focused
+const categoryColors: Record<string, { text: string; border: string; bg: string }> = {
+  Communication: { 
+    text: "text-blue-400/70", 
+    border: "border-blue-500/15", 
+    bg: "bg-blue-500/[0.03]" 
+  },
+  Productivity: { 
+    text: "text-violet-400/70", 
+    border: "border-violet-500/15", 
+    bg: "bg-violet-500/[0.03]" 
+  },
+  Finance: { 
+    text: "text-emerald-400/70", 
+    border: "border-emerald-500/15", 
+    bg: "bg-emerald-500/[0.03]" 
+  },
+  Developer: { 
+    text: "text-orange-400/70", 
+    border: "border-orange-500/15", 
+    bg: "bg-orange-500/[0.03]" 
+  },
+  Storage: { 
+    text: "text-cyan-400/70", 
+    border: "border-cyan-500/15", 
+    bg: "bg-cyan-500/[0.03]" 
+  },
+  Design: { 
+    text: "text-pink-400/70", 
+    border: "border-pink-500/15", 
+    bg: "bg-pink-500/[0.03]" 
+  },
+  "Social Media": { 
+    text: "text-rose-400/70", 
+    border: "border-rose-500/15", 
+    bg: "bg-rose-500/[0.03]" 
+  },
+  CRM: { 
+    text: "text-amber-400/70", 
+    border: "border-amber-500/15", 
+    bg: "bg-amber-500/[0.03]" 
+  },
+  AI: { 
+    text: "text-purple-400/70", 
+    border: "border-purple-500/15", 
+    bg: "bg-purple-500/[0.03]" 
+  },
+  Marketing: { 
+    text: "text-teal-400/70", 
+    border: "border-teal-500/15", 
+    bg: "bg-teal-500/[0.03]" 
+  },
+  "E-commerce": { 
+    text: "text-green-400/70", 
+    border: "border-green-500/15", 
+    bg: "bg-green-500/[0.03]" 
+  },
+  Enterprise: { 
+    text: "text-slate-400/70", 
+    border: "border-slate-500/15", 
+    bg: "bg-slate-500/[0.03]" 
+  },
+};
+
+const defaultColors = { 
+  text: "text-muted-foreground/60", 
+  border: "border-border/20", 
+  bg: "bg-muted/[0.02]" 
+};
+
 const ConnectionIntegrationCard = ({ 
   integration, 
   onConnect, 
@@ -19,6 +89,7 @@ const ConnectionIntegrationCard = ({
   index
 }: ConnectionIntegrationCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  const colors = categoryColors[integration.category] || defaultColors;
 
   return (
     <motion.div
@@ -31,51 +102,47 @@ const ConnectionIntegrationCard = ({
       <Card
         className={cn(
           "relative overflow-hidden transition-all duration-200 h-full",
+          colors.border,
           integration.connected 
             ? [
-                "bg-card/40 border-green-500/20",
-                "hover:border-green-500/30 hover:bg-card/50"
+                "bg-card/50",
+                "hover:bg-card/60"
               ]
             : [
-                "bg-card/20 border-border/20",
-                "hover:bg-card/30 hover:border-border/30",
-                "hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/20"
+                colors.bg,
+                "hover:bg-card/30",
+                "hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/10"
               ]
         )}
       >
-        {/* Subtle top accent for connected cards */}
-        {integration.connected && (
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-green-500/40 to-transparent" />
-        )}
-
         <CardContent className="p-5 flex flex-col h-full min-h-[150px]">
           {/* Header */}
-          <div className="space-y-1.5 mb-3">
-            <div className="flex items-start justify-between gap-2">
-              <h3 className={cn(
-                "font-medium text-sm leading-tight transition-colors",
-                integration.connected ? "text-foreground" : "text-foreground/90"
-              )}>
-                {integration.name}
-              </h3>
+          <div className="space-y-2 mb-4">
+            <h3 className={cn(
+              "font-medium text-sm leading-tight",
+              integration.connected ? "text-foreground" : "text-foreground/85"
+            )}>
+              {integration.name}
+            </h3>
+            <div className="flex items-center justify-between">
+              <span className={cn("text-[10px] uppercase tracking-widest", colors.text)}>
+                {integration.category}
+              </span>
               {integration.connected && (
-                <span className="text-[10px] text-green-500/60 font-normal shrink-0 tracking-wide">
+                <span className="text-[10px] text-foreground/40 tracking-wide">
                   Connected
                 </span>
               )}
             </div>
-            <span className="text-[10px] text-muted-foreground/40 uppercase tracking-widest">
-              {integration.category}
-            </span>
           </div>
 
           {/* Description */}
-          <p className="text-xs text-muted-foreground/50 line-clamp-2 flex-grow leading-relaxed">
+          <p className="text-xs text-muted-foreground/45 line-clamp-2 flex-grow leading-relaxed">
             {integration.description}
           </p>
 
           {/* Action */}
-          <div className="mt-4 pt-3 border-t border-border/10">
+          <div className="mt-5">
             {integration.connected ? (
               <Button 
                 variant="ghost" 
@@ -83,8 +150,8 @@ const ConnectionIntegrationCard = ({
                 className={cn(
                   "w-full text-xs h-8 transition-all duration-200",
                   isHovered 
-                    ? "text-red-400/70 hover:text-red-400 hover:bg-red-500/5" 
-                    : "text-muted-foreground/30 hover:text-muted-foreground/50"
+                    ? "text-red-400/60 hover:text-red-400/80 hover:bg-transparent" 
+                    : "text-muted-foreground/25 hover:text-muted-foreground/40 hover:bg-transparent"
                 )}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -97,7 +164,7 @@ const ConnectionIntegrationCard = ({
               <Button 
                 variant="ghost"
                 size="sm"
-                className="w-full text-xs h-8 text-muted-foreground/50 hover:text-foreground/70 hover:bg-muted/20"
+                className="w-full text-xs h-8 text-muted-foreground/40 hover:text-foreground/60 hover:bg-muted/10"
                 onClick={(e) => {
                   e.stopPropagation();
                   onConnect();
