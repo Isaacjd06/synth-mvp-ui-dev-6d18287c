@@ -11,13 +11,6 @@ import { SkillCard, type PrebuiltSkill } from "@/components/skills/SkillCard";
 import { SkillCustomizeModal, type SkillData } from "@/components/skills/SkillCustomizeModal";
 import { SkillsEmptyState } from "@/components/skills/SkillsEmptyState";
 import { SkillsLoadingState } from "@/components/skills/SkillsLoadingState";
-import {
-  Mail,
-  FileText,
-  Bell,
-  Users,
-  Sparkles,
-} from "lucide-react";
 
 const initialSkills: PrebuiltSkill[] = [
   {
@@ -25,7 +18,6 @@ const initialSkills: PrebuiltSkill[] = [
     name: "Lead Capture & CRM Sync",
     description: "Automatically capture leads from forms and sync to your CRM with enriched data.",
     preview: "When form submitted → Enrich data → Add to CRM → Notify sales",
-    icon: Users,
     category: "Sales",
     status: "configured",
     intents: ["When a new lead comes in", "Process form submissions"],
@@ -41,7 +33,6 @@ const initialSkills: PrebuiltSkill[] = [
     name: "Email Summary Digest",
     description: "Summarize important emails and send daily/weekly digest notifications.",
     preview: "Daily at 8am → Scan inbox → Summarize key emails → Send digest",
-    icon: Mail,
     category: "Productivity",
     status: "draft",
     intents: ["Summarize my emails", "Send me an email digest"],
@@ -56,7 +47,6 @@ const initialSkills: PrebuiltSkill[] = [
     name: "Document Processing",
     description: "Extract data from uploaded documents and organize in spreadsheets.",
     preview: "When file uploaded → Extract text → Parse fields → Update sheet",
-    icon: FileText,
     category: "Operations",
     status: "configured",
     intents: ["Process uploaded documents", "Extract data from files"],
@@ -72,7 +62,6 @@ const initialSkills: PrebuiltSkill[] = [
     name: "Slack Alert Router",
     description: "Route alerts and notifications to appropriate Slack channels based on content.",
     preview: "When alert received → Classify urgency → Route to channel → Tag team",
-    icon: Bell,
     category: "Communication",
     status: "draft",
     intents: ["Route alerts to Slack", "Notify the team"],
@@ -88,7 +77,6 @@ const initialSkills: PrebuiltSkill[] = [
     name: "Meeting Notes Generator",
     description: "Automatically generate and distribute meeting notes from recordings.",
     preview: "When meeting ends → Transcribe → Summarize → Send to attendees",
-    icon: FileText,
     category: "Productivity",
     status: "configured",
     intents: ["Generate meeting notes", "Summarize the meeting"],
@@ -103,7 +91,6 @@ const initialSkills: PrebuiltSkill[] = [
     name: "Support Ticket Classifier",
     description: "Classify and route support tickets based on urgency and category.",
     preview: "When ticket created → Analyze content → Set priority → Assign agent",
-    icon: Users,
     category: "Support",
     status: "configured",
     intents: ["Classify support tickets", "Prioritize incoming tickets"],
@@ -124,14 +111,12 @@ const Skills = () => {
   const [editingSkill, setEditingSkill] = useState<PrebuiltSkill | null>(null);
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
 
-  // Filter and group skills
   const { filteredSkills, groupedSkills } = useMemo(() => {
     const filtered =
       selectedCategory === "All"
         ? skills
         : skills.filter((s) => s.category === selectedCategory);
 
-    // Group by category
     const groups: Record<string, PrebuiltSkill[]> = {};
     filtered.forEach((skill) => {
       if (!groups[skill.category]) {
@@ -155,7 +140,6 @@ const Skills = () => {
 
   const handleSaveSkill = (skillData: SkillData, asDraft?: boolean) => {
     if (editingSkill) {
-      // Update existing
       setSkills((prev) =>
         prev.map((s) =>
           s.id === skillData.id
@@ -164,11 +148,9 @@ const Skills = () => {
         )
       );
     } else {
-      // Create new
       const newSkill: PrebuiltSkill = {
         ...skillData,
         id: `skill-${Date.now()}`,
-        icon: Sparkles,
         preview: `Custom skill: ${skillData.name}`,
         status: asDraft ? "draft" : "configured",
       };
@@ -210,7 +192,6 @@ const Skills = () => {
   return (
     <AppShell>
       <PageTransition className="px-4 lg:px-6 py-6 space-y-6">
-        {/* Action Bar */}
         <PageItem className="flex items-center justify-end gap-3">
           <Badge
             variant="outline"
@@ -227,7 +208,6 @@ const Skills = () => {
           </Button>
         </PageItem>
 
-        {/* Category Filter Bar */}
         <PageItem>
           <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
             {CATEGORIES.map((category) => {
@@ -267,18 +247,15 @@ const Skills = () => {
           </div>
         </PageItem>
 
-        {/* Loading State */}
         {isLoading ? (
           <PageItem>
             <SkillsLoadingState />
           </PageItem>
         ) : skills.length === 0 ? (
-          /* Empty State */
           <PageItem>
             <SkillsEmptyState onCreateSkill={handleCreateNew} />
           </PageItem>
         ) : filteredSkills.length === 0 ? (
-          /* No results for filter */
           <PageItem>
             <div className="py-12 text-center">
               <p className="text-muted-foreground">
@@ -294,7 +271,6 @@ const Skills = () => {
             </div>
           </PageItem>
         ) : (
-          /* Skills by Category */
           <TooltipProvider delayDuration={200}>
             <AnimatePresence mode="wait">
               <motion.div
@@ -307,7 +283,6 @@ const Skills = () => {
               >
                 {Object.entries(groupedSkills).map(([category, categorySkills]) => (
                   <PageItem key={category}>
-                    {/* Category Header */}
                     {selectedCategory === "All" && (
                       <div className="flex items-center justify-between gap-4 mb-4 mt-6 first:mt-0">
                         <h4 className="text-base font-semibold text-foreground">
@@ -316,14 +291,12 @@ const Skills = () => {
                         <div className="flex items-center gap-3">
                           <div className="h-px flex-1 min-w-[40px] bg-gradient-to-r from-border/60 to-transparent" />
                           <span className="text-xs font-medium text-muted-foreground bg-muted/50 px-2.5 py-1 rounded-md shrink-0">
-                            {categorySkills.length} skill
-                            {categorySkills.length !== 1 ? "s" : ""}
+                            {categorySkills.length} skill{categorySkills.length !== 1 ? "s" : ""}
                           </span>
                         </div>
                       </div>
                     )}
 
-                    {/* Skills Grid */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                       {categorySkills.map((skill, index) => (
                         <SkillCard
@@ -345,7 +318,6 @@ const Skills = () => {
         )}
       </PageTransition>
 
-      {/* Customize Modal */}
       <SkillCustomizeModal
         skill={editingSkill}
         open={isCustomizeOpen}

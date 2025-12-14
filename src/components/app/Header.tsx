@@ -1,4 +1,3 @@
-import { Sparkles, LogOut } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import SubscriptionPill from "@/components/subscription/SubscriptionPill";
@@ -17,9 +16,6 @@ const Header = () => {
       
       <div className="h-full flex items-center justify-between px-4 lg:px-6 relative">
         <Link to="/app/dashboard" className="group flex items-center gap-2.5 transition-all duration-300">
-          <div className="w-9 h-9 rounded-xl bg-primary/20 flex items-center justify-center shadow-[0_0_20px_-5px_hsl(217_100%_60%/0.4)] group-hover:shadow-[0_0_30px_-5px_hsl(217_100%_60%/0.5)] transition-all duration-300 group-hover:scale-105">
-            <Sparkles className="w-5 h-5 text-primary drop-shadow-[0_0_8px_hsl(217_100%_60%/0.5)]" />
-          </div>
           <span className="font-accent text-xl font-semibold text-gradient-header">
             Synth
           </span>
@@ -33,9 +29,8 @@ const Header = () => {
             variant="ghost"
             size="sm"
             onClick={handleLogout}
-            className="text-muted-foreground hover:text-foreground group"
+            className="text-muted-foreground hover:text-foreground"
           >
-            <LogOut className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:-translate-x-0.5" />
             Logout
           </Button>
         </div>

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, Zap, ArrowRight } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -49,14 +48,6 @@ const AutomationCreatedModal = ({
             
             <DialogHeader className="relative">
               <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
-                className="mx-auto mb-4 w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center shadow-[0_0_40px_-5px_hsl(217_100%_60%/0.5)]"
-              >
-                <CheckCircle2 className="w-8 h-8 text-primary" />
-              </motion.div>
-              <motion.div
                 initial={{ y: 10, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2 }}
@@ -85,8 +76,7 @@ const AutomationCreatedModal = ({
 
               {/* Trigger Preview */}
               <div className="p-3 rounded-lg bg-muted/30 border border-border/50 space-y-2">
-                <div className="flex items-center gap-2 text-xs text-muted-foreground uppercase tracking-wider">
-                  <Zap className="w-3 h-3 text-primary" />
+                <div className="text-xs text-muted-foreground uppercase tracking-wider">
                   Trigger
                 </div>
                 <p className="text-sm text-foreground">{workflow.trigger}</p>
@@ -134,10 +124,9 @@ const AutomationCreatedModal = ({
               {/* Action Button */}
               <Button
                 onClick={handleViewWorkflow}
-                className="w-full btn-synth gap-2"
+                className="w-full btn-synth"
               >
                 View Workflow
-                <ArrowRight className="w-4 h-4" />
               </Button>
             </motion.div>
           </DialogContent>

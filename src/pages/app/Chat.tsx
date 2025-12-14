@@ -1,13 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Sparkles, AlertTriangle, X, Clock, Lock } from "lucide-react";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition, PageItem } from "@/components/app/PageTransition";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import QuickActionsBar from "@/components/chat/QuickActionsBar";
 import AutomationCreatedModal from "@/components/workflows/AutomationCreatedModal";
@@ -209,26 +207,23 @@ const Chat = () => {
               className="px-4 border-b border-amber-500/30 bg-amber-500/10"
             >
               <div className="py-3 flex items-center justify-between max-w-2xl mx-auto">
-                <div className="flex items-center gap-3">
-                  <AlertTriangle className="w-5 h-5 text-amber-400" />
-                  <div>
-                    <p className="text-sm font-medium text-amber-200">Fix Requested</p>
-                    <p className="text-xs text-amber-300/70">
-                      {fixContext.executionId
-                        ? `Execution #${fixContext.executionId}`
-                        : fixContext.workflowId
-                        ? `Workflow #${fixContext.workflowId}`
-                        : "Error analysis loaded"}
-                    </p>
-                  </div>
+                <div>
+                  <p className="text-sm font-medium text-amber-200">Fix Requested</p>
+                  <p className="text-xs text-amber-300/70">
+                    {fixContext.executionId
+                      ? `Execution #${fixContext.executionId}`
+                      : fixContext.workflowId
+                      ? `Workflow #${fixContext.workflowId}`
+                      : "Error analysis loaded"}
+                  </p>
                 </div>
                 <Button
                   variant="ghost"
-                  size="icon"
+                  size="sm"
                   onClick={dismissFixContext}
-                  className="h-8 w-8 text-amber-300 hover:text-amber-100 hover:bg-amber-500/20"
+                  className="text-amber-300 hover:text-amber-100 hover:bg-amber-500/20"
                 >
-                  <X className="w-4 h-4" />
+                  Dismiss
                 </Button>
               </div>
             </motion.div>
@@ -251,9 +246,9 @@ const Chat = () => {
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.4 }}
                 >
-                  <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 shadow-[0_0_30px_-5px_hsl(217_100%_60%/0.2)]">
-                    <Sparkles className="w-8 h-8 text-primary/60" />
-                  </div>
+                  <p className="text-lg font-medium text-foreground mb-2">
+                    Start a conversation
+                  </p>
                   <p className="text-muted-foreground font-light mb-2">
                     Describe your workflow, and Synth will build it for you.
                   </p>
@@ -282,12 +277,11 @@ const Chat = () => {
                       <p className="text-sm leading-relaxed">{message.content}</p>
                       {/* Timestamp */}
                       <div className={cn(
-                        "flex items-center gap-1 mt-2 text-[10px]",
+                        "mt-2 text-[10px]",
                         message.role === "user" 
-                          ? "text-primary-foreground/60 justify-end" 
+                          ? "text-primary-foreground/60 text-right" 
                           : "text-muted-foreground/60"
                       )}>
-                        <Clock className="w-3 h-3" />
                         {formatTime(message.timestamp)}
                       </div>
                     </div>
@@ -304,9 +298,8 @@ const Chat = () => {
                           <Button 
                             size="sm" 
                             onClick={handleCreateWorkflow}
-                            className="gap-1.5 btn-synth"
+                            className="btn-synth"
                           >
-                            <Sparkles className="w-3.5 h-3.5" />
                             Create This Workflow
                           </Button>
                         )}
@@ -333,39 +326,28 @@ const Chat = () => {
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <div className="flex items-center gap-3">
-                    {/* Animated Icon */}
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                      className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center"
-                    >
-                      <Sparkles className="w-3.5 h-3.5 text-primary" />
-                    </motion.div>
-                    
-                    <div className="flex-1">
-                      <p className="text-sm text-foreground font-medium">
-                        {processingState ? processingMessages[processingState] : "Processing..."}
-                      </p>
-                      {/* Progress Steps */}
-                      <div className="flex items-center gap-1.5 mt-2">
-                        {["thinking", "analyzing", "generating", "finalizing"].map((step, index) => (
-                          <motion.div
-                            key={step}
-                            className={cn(
-                              "h-1 rounded-full transition-all duration-300",
-                              step === processingState
-                                ? "w-6 bg-primary"
-                                : processingState && 
-                                  ["thinking", "analyzing", "generating", "finalizing"].indexOf(processingState) > index
-                                ? "w-4 bg-primary/50"
-                                : "w-4 bg-muted"
-                            )}
-                            animate={step === processingState ? { scale: [1, 1.1, 1] } : {}}
-                            transition={{ duration: 0.5, repeat: Infinity }}
-                          />
-                        ))}
-                      </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-foreground font-medium">
+                      {processingState ? processingMessages[processingState] : "Processing..."}
+                    </p>
+                    {/* Progress Steps */}
+                    <div className="flex items-center gap-1.5 mt-2">
+                      {["thinking", "analyzing", "generating", "finalizing"].map((step, index) => (
+                        <motion.div
+                          key={step}
+                          className={cn(
+                            "h-1 rounded-full transition-all duration-300",
+                            step === processingState
+                              ? "w-6 bg-primary"
+                              : processingState && 
+                                ["thinking", "analyzing", "generating", "finalizing"].indexOf(processingState) > index
+                              ? "w-4 bg-primary/50"
+                              : "w-4 bg-muted"
+                          )}
+                          animate={step === processingState ? { scale: [1, 1.1, 1] } : {}}
+                          transition={{ duration: 0.5, repeat: Infinity }}
+                        />
+                      ))}
                     </div>
                   </div>
                 </motion.div>
@@ -391,9 +373,8 @@ const Chat = () => {
             <Button 
               onClick={handleSend} 
               disabled={isLoading || !input.trim()}
-              className="btn-synth h-11 px-5 gap-2"
+              className="btn-synth h-11 px-5"
             >
-              <Send className="w-4 h-4" />
               Send
             </Button>
           </div>

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { ChevronDown, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -90,12 +89,12 @@ const InsightCard = ({ insight }: InsightCardProps) => {
             <span className="text-xs text-muted-foreground/70">
               {insight.timestamp}
             </span>
-            <ChevronDown 
-              className={cn(
-                "w-4 h-4 text-muted-foreground transition-transform duration-300",
-                isExpanded && "rotate-180"
-              )} 
-            />
+            <span className={cn(
+              "text-xs text-muted-foreground transition-transform duration-300",
+              isExpanded && "rotate-180"
+            )}>
+              ▼
+            </span>
           </div>
         </div>
       </button>
@@ -119,8 +118,7 @@ const InsightCard = ({ insight }: InsightCardProps) => {
                   <Button size="sm" className="h-8 text-xs">
                     Resolve Issue
                   </Button>
-                  <Button variant="ghost" size="sm" className="h-8 text-xs gap-1.5">
-                    <ExternalLink className="w-3 h-3" />
+                  <Button variant="ghost" size="sm" className="h-8 text-xs">
                     View Workflow
                   </Button>
                 </div>

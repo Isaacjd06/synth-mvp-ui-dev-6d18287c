@@ -1,12 +1,3 @@
-import {
-  Settings2,
-  MoreHorizontal,
-  Copy,
-  ToggleLeft,
-  ToggleRight,
-  Trash2,
-  type LucideIcon,
-} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -43,7 +34,6 @@ export const SkillCard = ({
   onDelete,
   index = 0,
 }: SkillCardProps) => {
-  const IconComponent = skill.icon || Settings2;
   const isConfigured = skill.status === "configured";
 
   return (
@@ -67,34 +57,28 @@ export const SkillCard = ({
         </div>
 
         <CardContent className="p-5 space-y-3 relative">
-          {/* Header row - icon, badges, menu */}
+          {/* Header row - badges and menu */}
           <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
-                <IconComponent className="w-5 h-5 text-primary" />
-              </div>
-
-              <div className="flex items-center gap-2">
-                {skill.category && (
-                  <Badge
-                    variant="secondary"
-                    className="text-[11px] bg-secondary/50 text-secondary-foreground/80 px-2 py-0.5 font-medium"
-                  >
-                    {skill.category}
-                  </Badge>
-                )}
+            <div className="flex items-center gap-2">
+              {skill.category && (
                 <Badge
-                  variant="outline"
-                  className={cn(
-                    "text-[11px] px-2 py-0.5 font-medium",
-                    isConfigured
-                      ? "border-emerald-500/30 text-emerald-400 bg-emerald-500/8"
-                      : "border-amber-500/30 text-amber-400 bg-amber-500/8"
-                  )}
+                  variant="secondary"
+                  className="text-[11px] bg-secondary/50 text-secondary-foreground/80 px-2 py-0.5 font-medium"
                 >
-                  {isConfigured ? "Configured" : "Draft"}
+                  {skill.category}
                 </Badge>
-              </div>
+              )}
+              <Badge
+                variant="outline"
+                className={cn(
+                  "text-[11px] px-2 py-0.5 font-medium",
+                  isConfigured
+                    ? "border-emerald-500/30 text-emerald-400 bg-emerald-500/8"
+                    : "border-amber-500/30 text-amber-400 bg-amber-500/8"
+                )}
+              >
+                {isConfigured ? "Configured" : "Draft"}
+              </Badge>
             </div>
 
             {/* Overflow Menu */}
@@ -102,36 +86,24 @@ export const SkillCard = ({
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground"
+                  size="sm"
+                  className="h-7 px-2 shrink-0 text-muted-foreground hover:text-foreground text-xs"
                 >
-                  <MoreHorizontal className="w-4 h-4" />
+                  Options
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-44 bg-card border-border/60">
                 <DropdownMenuItem onClick={() => onDuplicate(skill)}>
-                  <Copy className="w-4 h-4 mr-2" />
                   Duplicate
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onToggle(skill)}>
-                  {isConfigured ? (
-                    <>
-                      <ToggleLeft className="w-4 h-4 mr-2" />
-                      Disable
-                    </>
-                  ) : (
-                    <>
-                      <ToggleRight className="w-4 h-4 mr-2" />
-                      Enable
-                    </>
-                  )}
+                  {isConfigured ? "Disable" : "Enable"}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-border/40" />
                 <DropdownMenuItem
                   onClick={() => onDelete(skill)}
                   className="text-destructive focus:text-destructive"
                 >
-                  <Trash2 className="w-4 h-4 mr-2" />
                   Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -163,7 +135,6 @@ export const SkillCard = ({
             className="w-full bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 hover:border-primary/40 transition-all"
             variant="ghost"
           >
-            <Settings2 className="w-4 h-4 mr-2" />
             Edit Skill
           </Button>
         </CardContent>
