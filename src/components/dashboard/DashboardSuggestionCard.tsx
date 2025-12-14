@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -30,12 +29,14 @@ const DashboardSuggestionCard = ({ isEmpty = false }: DashboardSuggestionCardPro
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CardHeader className="relative pb-4 pt-6 px-6">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base font-medium text-foreground">
-              Synth Suggestion
-            </CardTitle>
+            <div>
+              <CardTitle className="text-sm font-semibold uppercase tracking-wide text-foreground/90">
+                Synth Suggestion
+              </CardTitle>
+            </div>
             <CollapsibleTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground/60 hover:text-foreground">
-                {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              <Button variant="ghost" size="sm" className="h-7 px-3 text-xs text-muted-foreground/60 hover:text-foreground">
+                {isOpen ? "Hide" : "Show"}
               </Button>
             </CollapsibleTrigger>
           </div>
