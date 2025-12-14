@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Plug } from "lucide-react";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition } from "@/components/app/PageTransition";
 import ConnectionIntegrationCard from "@/components/connections/ConnectionIntegrationCard";
@@ -129,9 +128,6 @@ const Connections = () => {
               animate={{ opacity: 1 }}
               className="text-center py-16"
             >
-              <div className="w-16 h-16 mx-auto rounded-2xl bg-muted/50 flex items-center justify-center mb-4">
-                <Plug className="w-8 h-8 text-muted-foreground" />
-              </div>
               <h3 className="text-lg font-medium text-foreground mb-2">No integrations available</h3>
               <p className="text-muted-foreground">Check back later for new integrations</p>
             </motion.div>

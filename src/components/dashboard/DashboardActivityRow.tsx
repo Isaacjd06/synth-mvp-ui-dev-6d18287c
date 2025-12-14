@@ -1,4 +1,3 @@
-import { ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -37,8 +36,7 @@ const DashboardActivityRow = ({ workflow, status, duration, timestamp }: Dashboa
           {timestamp}
         </span>
         <Button variant="ghost" size="sm" className="h-7 px-2 text-muted-foreground/60 hover:text-foreground text-xs">
-          View Details
-          <ChevronRight className="w-3 h-3 ml-1" />
+          View
         </Button>
       </div>
     </div>

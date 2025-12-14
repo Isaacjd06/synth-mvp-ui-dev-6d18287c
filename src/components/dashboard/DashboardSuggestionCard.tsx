@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Lightbulb, ChevronDown, ChevronUp, ArrowRight, MessageSquare } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -16,7 +16,6 @@ const DashboardSuggestionCard = ({ isEmpty = false }: DashboardSuggestionCardPro
     return (
       <Card className="hidden relative overflow-hidden rounded-2xl border-border/40 bg-gradient-to-br from-card via-card to-primary/5">
         <CardContent className="py-12 text-center">
-          <Lightbulb className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
           <p className="text-muted-foreground font-light">Synth has no suggestions right now.</p>
         </CardContent>
       </Card>
@@ -31,14 +30,9 @@ const DashboardSuggestionCard = ({ isEmpty = false }: DashboardSuggestionCardPro
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CardHeader className="relative pb-4 pt-6 px-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
-                <Lightbulb className="w-4 h-4 text-primary" />
-              </div>
-              <CardTitle className="text-base font-medium text-foreground">
-                Synth Suggestion
-              </CardTitle>
-            </div>
+            <CardTitle className="text-base font-medium text-foreground">
+              Synth Suggestion
+            </CardTitle>
             <CollapsibleTrigger asChild>
               <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground/60 hover:text-foreground">
                 {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -65,10 +59,8 @@ const DashboardSuggestionCard = ({ isEmpty = false }: DashboardSuggestionCardPro
             <div className="flex items-center gap-3">
               <Button size="sm" className="bg-primary hover:bg-primary/90">
                 Apply
-                <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
               </Button>
               <Button variant="ghost" size="sm" className="text-muted-foreground/70 hover:text-foreground">
-                <MessageSquare className="w-3.5 h-3.5 mr-1.5" />
                 Ask Synth
               </Button>
             </div>

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { Activity, MessageSquare, Zap, Lock, RefreshCw } from "lucide-react";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition, PageItem } from "@/components/app/PageTransition";
 import { Card, CardContent } from "@/components/ui/card";
@@ -48,20 +47,16 @@ const Executions = () => {
           <PageItem>
             <Card className="border-dashed border-2 border-border/50 bg-card/50">
               <CardContent className="py-16 text-center">
-                <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                  <Activity className="w-8 h-8 text-primary/60" />
-                </div>
                 <h3 className="text-lg font-medium text-foreground mb-2">No Executions Found</h3>
                 <p className="text-muted-foreground mb-6 font-light max-w-md mx-auto">
                   Your automations will appear here when they run.
                 </p>
                 <div className="flex justify-center gap-3">
                   <LockedButton className="bg-primary hover:bg-primary/90" feature="create workflows">
-                    <MessageSquare className="w-4 h-4 mr-2" />
                     Create Workflow
                   </LockedButton>
                   <Button variant="outline" asChild>
-                    <Link to="/app/workflows"><Zap className="w-4 h-4 mr-2" />View Workflows</Link>
+                    <Link to="/app/workflows">View Workflows</Link>
                   </Button>
                 </div>
               </CardContent>
@@ -87,14 +82,14 @@ const Executions = () => {
                           <Badge variant={statusVariants[execution.status as StatusKey]}>{execution.status}</Badge>
                           {execution.status === "error" && (
                             isSubscribed ? (
-                              <Button variant="outline" size="sm" onClick={() => handleRetryExecution(execution.id)} className="gap-1.5">
-                                <RefreshCw className="w-3.5 h-3.5" />Retry
+                              <Button variant="outline" size="sm" onClick={() => handleRetryExecution(execution.id)}>
+                                Retry
                               </Button>
                             ) : (
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <Button variant="outline" size="sm" className="opacity-40 cursor-not-allowed gap-1.5 locked-button" disabled>
-                                    <Lock className="w-3 h-3" />Retry
+                                  <Button variant="outline" size="sm" className="opacity-40 cursor-not-allowed locked-button" disabled>
+                                    Retry
                                   </Button>
                                 </TooltipTrigger>
                                 <TooltipContent><p className="text-xs">Subscribe to retry executions</p></TooltipContent>

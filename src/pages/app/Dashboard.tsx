@@ -1,9 +1,8 @@
-import { Zap, Activity, Clock, CheckCircle, ChevronRight, Sparkles, AlertCircle } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition, PageItem } from "@/components/app/PageTransition";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TooltipProvider } from "@/components/ui/tooltip";
 
 import DashboardSuggestionCard from "@/components/dashboard/DashboardSuggestionCard";
 import DashboardStatCard from "@/components/dashboard/DashboardStatCard";
@@ -19,10 +18,10 @@ const stats = {
 };
 
 const statCards = [
-  { label: "Active Automations", value: stats.activeAutomations, icon: Zap },
-  { label: "Total Executions", value: stats.totalExecutions.toLocaleString(), icon: Activity },
-  { label: "Activity (24h)", value: stats.activity24h, icon: Clock },
-  { label: "Execution Reliability", value: stats.executionReliability, icon: CheckCircle },
+  { label: "Active Automations", value: stats.activeAutomations },
+  { label: "Total Executions", value: stats.totalExecutions.toLocaleString() },
+  { label: "Activity (24h)", value: stats.activity24h },
+  { label: "Execution Reliability", value: stats.executionReliability },
 ];
 
 const recentActivity = [
@@ -36,8 +35,7 @@ const recentActivity = [
 const Dashboard = () => {
   return (
     <AppShell>
-      <TooltipProvider>
-        <PageTransition className="max-w-screen-xl mx-auto px-4 py-10 space-y-12">
+      <PageTransition className="max-w-screen-xl mx-auto px-4 py-10 space-y-12">
 
           {/* Synth Suggestion Section */}
           <PageItem>
@@ -59,7 +57,6 @@ const Dashboard = () => {
                   key={stat.label}
                   label={stat.label}
                   value={stat.value}
-                  icon={stat.icon}
                 />
               ))}
             </div>
@@ -70,8 +67,7 @@ const Dashboard = () => {
             <Card className="overflow-hidden rounded-2xl border-border/30 bg-card">
               <CardHeader className="border-b border-border/20 px-5 py-4">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-base font-medium text-foreground flex items-center gap-2.5">
-                    <Activity className="w-4 h-4 text-muted-foreground" />
+                  <CardTitle className="text-base font-medium text-foreground">
                     Recent Activity
                   </CardTitle>
                   <Button variant="ghost" size="sm" className="text-muted-foreground/60 hover:text-foreground h-7 px-2 text-xs">
@@ -95,7 +91,6 @@ const Dashboard = () => {
                 
                 {/* Hidden empty state - will be shown when no activity exists */}
                 <div className="hidden py-12 text-center">
-                  <Activity className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
                   <p className="text-muted-foreground font-light">No workflow activity found.</p>
                 </div>
               </CardContent>
@@ -108,7 +103,6 @@ const Dashboard = () => {
           </PageItem>
 
         </PageTransition>
-      </TooltipProvider>
     </AppShell>
   );
 };

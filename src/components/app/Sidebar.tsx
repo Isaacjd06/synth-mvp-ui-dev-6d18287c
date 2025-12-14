@@ -1,29 +1,18 @@
 import { useState, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  LayoutDashboard,
-  MessageSquare,
-  Workflow,
-  PlaySquare,
-  CreditCard,
-  Sparkles,
-  Plug,
-  Brain,
-  Menu,
-  X,
-} from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { title: "Dashboard", href: "/app/dashboard", icon: LayoutDashboard },
-  { title: "Chat", href: "/app/chat", icon: MessageSquare },
-  { title: "Skills", href: "/app/skills", icon: Sparkles },
-  { title: "Workflows", href: "/app/workflows", icon: Workflow },
-  { title: "Executions", href: "/app/executions", icon: PlaySquare },
-  { title: "Insights", href: "/app/insights", icon: Brain },
-  { title: "Connections", href: "/app/connections", icon: Plug },
-  { title: "Billing", href: "/app/billing", icon: CreditCard },
+  { title: "Dashboard", href: "/app/dashboard" },
+  { title: "Chat", href: "/app/chat" },
+  { title: "Skills", href: "/app/skills" },
+  { title: "Workflows", href: "/app/workflows" },
+  { title: "Executions", href: "/app/executions" },
+  { title: "Insights", href: "/app/insights" },
+  { title: "Connections", href: "/app/connections" },
+  { title: "Billing", href: "/app/billing" },
 ];
 
 // Track if sidebar has ever animated - global singleton
@@ -50,7 +39,7 @@ const Sidebar = () => {
   };
 
   const NavContent = () => (
-    <nav className="flex flex-col gap-1.5 p-4">
+    <nav className="flex flex-col gap-1 p-4">
       {navItems.map((item, index) => (
         <motion.div
           key={item.href}
@@ -62,10 +51,10 @@ const Sidebar = () => {
             to={item.href}
             onClick={() => setIsOpen(false)}
             className={cn(
-              "group flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 relative overflow-hidden",
+              "group flex items-center px-4 py-2.5 rounded-lg text-sm transition-all duration-200 relative overflow-hidden",
               isActive(item.href)
-                ? "bg-primary/15 text-primary shadow-[0_0_20px_-5px_hsl(217_100%_60%/0.3),inset_0_0_20px_hsl(217_100%_60%/0.05)] border border-primary/30"
-                : "text-muted-foreground/90 hover:text-foreground hover:bg-muted/60 border border-transparent hover:border-border/60"
+                ? "bg-primary/10 text-foreground font-medium border border-primary/20"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/40 border border-transparent"
             )}
           >
             {/* Glow effect on hover */}
@@ -75,15 +64,11 @@ const Sidebar = () => {
               "group-hover:opacity-100"
             )} />
             
-            <item.icon className={cn(
-              "w-4 h-4 transition-all duration-300 relative z-10",
-              isActive(item.href) && "drop-shadow-[0_0_8px_hsl(217_100%_60%/0.5)]"
-            )} />
             <span className="relative z-10">{item.title}</span>
             
             {/* Active indicator line */}
             {isActive(item.href) && (
-              <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 bg-primary rounded-full shadow-[0_0_10px_hsl(217_100%_60%/0.5)]" />
+              <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-primary rounded-full" />
             )}
           </Link>
         </motion.div>
