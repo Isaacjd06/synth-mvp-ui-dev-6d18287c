@@ -78,7 +78,7 @@ const features = [
 
 const FeatureTourSection = () => {
   return (
-    <section className="py-20 relative overflow-hidden">
+    <section id="product-tour" className="py-20 relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#080808] via-[#0a0a0a] to-[#080808]" />
 

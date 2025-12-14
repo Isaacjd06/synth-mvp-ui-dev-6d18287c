@@ -1,12 +1,11 @@
 import { motion } from "framer-motion";
-import { Shield, DollarSign, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const PricingHero = () => {
   const trustIndicators = [
-    { icon: Shield, text: "Enterprise-grade automation engine" },
-    { icon: DollarSign, text: "Predictable, fair usage pricing" },
-    { icon: X, text: "Cancel anytime" },
+    { text: "Enterprise-grade automation engine" },
+    { text: "Predictable, fair usage pricing" },
+    { text: "Cancel anytime" },
   ];
 
   return (
@@ -78,7 +77,7 @@ const PricingHero = () => {
                 key={index}
                 className="flex items-center gap-2 text-sm text-foreground/40"
               >
-                <item.icon className="w-4 h-4" />
+                <span className="w-1.5 h-1.5 rounded-full bg-primary/60" />
                 <span>{item.text}</span>
               </div>
             ))}
