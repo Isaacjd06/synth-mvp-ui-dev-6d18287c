@@ -230,31 +230,49 @@ const Chat = () => {
           )}
         </AnimatePresence>
 
+        {/* Page Header */}
+        <div className="px-4 pt-6 pb-4">
+          <div className="max-w-2xl mx-auto">
+            <h1 className="text-lg font-semibold text-foreground tracking-tight">Synth Chat</h1>
+            <p className="text-sm text-muted-foreground/70 mt-1">
+              Describe what you want to automate. Synth will handle the rest.
+            </p>
+          </div>
+        </div>
+
         {/* Quick Actions Bar */}
-        <div className="px-4 border-b border-border/40">
+        <div className="px-4 border-b border-border/30">
           <QuickActionsBar onAction={handleQuickAction} />
         </div>
 
         {/* Chat Messages Area */}
         <ScrollArea className="flex-1 px-4">
-          <div className="max-w-2xl mx-auto py-6 space-y-6">
+          <div className="max-w-2xl mx-auto py-8 space-y-6">
             <AnimatePresence mode="popLayout">
               {messages.length === 0 ? (
                 <motion.div 
-                  className="flex flex-col items-center justify-center h-64 text-center"
+                  className="flex flex-col items-center justify-center h-72 text-center px-4"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.4 }}
                 >
-                  <p className="text-lg font-medium text-foreground mb-2">
+                  <p className="text-xl font-medium text-foreground mb-3 tracking-tight">
                     Start a conversation
                   </p>
-                  <p className="text-muted-foreground font-light mb-2">
-                    Describe your workflow, and Synth will build it for you.
+                  <p className="text-sm text-muted-foreground max-w-md leading-relaxed">
+                    Describe the automation you need, and Synth will design and build it for you.
                   </p>
-                  <p className="text-xs text-muted-foreground/60">
-                    Try: "Create a workflow to capture leads and sync to CRM"
-                  </p>
+                  
+                  {/* Example prompts */}
+                  <div className="mt-8 space-y-3 text-left max-w-md w-full">
+                    <p className="text-xs uppercase tracking-wider text-muted-foreground/50 font-medium">Try something like</p>
+                    <p className="text-sm text-muted-foreground/80 leading-relaxed">
+                      "Create a workflow to capture leads and send them to my CRM"
+                    </p>
+                    <p className="text-sm text-muted-foreground/80 leading-relaxed">
+                      "Automate daily reports and send them to Slack"
+                    </p>
+                  </div>
                 </motion.div>
               ) : (
                 messages.map((message) => (
@@ -359,21 +377,21 @@ const Chat = () => {
         </ScrollArea>
 
         {/* Message Input Area */}
-        <div className="px-4 py-4 border-t border-border/60 bg-background/90 backdrop-blur-sm">
+        <div className="px-4 py-5 border-t border-border/40 bg-background/95">
           <div className="max-w-2xl mx-auto flex gap-3">
             <Input
               ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={fixContext ? "Describe how to fix this issue..." : "Describe your automation..."}
+              placeholder={fixContext ? "Describe how to fix this issue..." : "Describe the automation you want Synth to build…"}
               disabled={isLoading}
-              className="flex-1 bg-muted/30 border-border/50 focus:border-primary/50 focus:ring-primary/20 transition-all duration-300 h-11"
+              className="flex-1 bg-muted/20 border-border/40 focus:border-primary/40 focus:ring-0 transition-colors h-12 text-sm"
             />
             <Button 
               onClick={handleSend} 
               disabled={isLoading || !input.trim()}
-              className="btn-synth h-11 px-5"
+              className="h-12 px-6 bg-primary/90 hover:bg-primary text-primary-foreground font-medium"
             >
               Send
             </Button>
