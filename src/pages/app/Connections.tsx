@@ -102,49 +102,67 @@ const Connections = () => {
   return (
     <AppShell>
       <PageTransition>
-        <div className="space-y-8">
-          {/* Header with stats and filter */}
+        <div className="space-y-10">
+          {/* Page Header */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+            className="space-y-1"
           >
-            {/* Stats - de-emphasized */}
-            <div className="text-xs text-muted-foreground/70">
-              <span>{totalCount} available</span>
-              <span className="mx-2">·</span>
-              <span>{connectedCount} connected</span>
-            </div>
-
-            {/* Text-based filter */}
-            <div className="flex items-center gap-4 text-sm">
-              {(["all", "connected", "available"] as FilterType[]).map((filterType) => (
-                <button
-                  key={filterType}
-                  onClick={() => setFilter(filterType)}
-                  className={cn(
-                    "transition-all duration-200 capitalize",
-                    filter === filterType
-                      ? "text-foreground font-medium border-b border-foreground"
-                      : "text-muted-foreground hover:text-foreground/80"
-                  )}
-                >
-                  {filterType}
-                </button>
-              ))}
+            <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
+              <div>
+                <h1 className="text-xl font-semibold text-foreground">Connections</h1>
+                <p className="text-sm text-muted-foreground/70 mt-1">
+                  Manage the tools Synth can securely connect to on your behalf.
+                </p>
+              </div>
+              {/* Stats - muted, inline */}
+              <span className="text-xs text-muted-foreground/50">
+                {totalCount} available · {connectedCount} connected
+              </span>
             </div>
           </motion.div>
 
-          {/* Connected Section - only show when filter is "all" and there are connected integrations */}
-          {filter === "all" && connectedIntegrations.length > 0 && (
-            <motion.div
+          {/* Filter Controls */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.15 }}
+            className="flex items-center gap-6 text-sm border-b border-border/30 pb-3"
+          >
+            {(["all", "connected", "available"] as FilterType[]).map((filterType) => (
+              <button
+                key={filterType}
+                onClick={() => setFilter(filterType)}
+                className={cn(
+                  "transition-all duration-200 capitalize pb-1 -mb-3.5",
+                  filter === filterType
+                    ? "text-foreground font-medium border-b-2 border-foreground"
+                    : "text-muted-foreground/60 hover:text-muted-foreground"
+                )}
+              >
+                {filterType}
+              </button>
+            ))}
+          </motion.div>
+
+          {/* Connected Section */}
+          {(filter === "all" || filter === "connected") && connectedIntegrations.length > 0 && (
+            <motion.section
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.15 }}
-              className="space-y-4"
+              transition={{ delay: 0.2 }}
+              className="space-y-5"
             >
-              <h2 className="text-sm font-medium text-muted-foreground">Connected</h2>
+              <div className="flex items-baseline justify-between">
+                <h2 className="text-sm font-medium text-foreground/80 uppercase tracking-wider">
+                  Connected
+                </h2>
+                <span className="text-xs text-muted-foreground/50">
+                  {connectedCount} active
+                </span>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {connectedIntegrations.map((integration, index) => (
                   <ConnectionIntegrationCard
@@ -153,47 +171,53 @@ const Connections = () => {
                     onConnect={() => handleConnect(integration)}
                     onDisconnect={() => handleDisconnect(integration.id)}
                     index={index}
-                    compact
                   />
                 ))}
               </div>
-            </motion.div>
+            </motion.section>
           )}
 
-          {/* Available Section or filtered list */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="space-y-4"
-          >
-            {filter === "all" && availableIntegrations.length > 0 && (
-              <h2 className="text-sm font-medium text-muted-foreground">Available</h2>
-            )}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-              {(filter === "all" ? availableIntegrations : filteredIntegrations).map((integration, index) => (
-                <ConnectionIntegrationCard
-                  key={integration.id}
-                  integration={integration}
-                  onConnect={() => handleConnect(integration)}
-                  onDisconnect={() => handleDisconnect(integration.id)}
-                  index={index}
-                />
-              ))}
-            </div>
-          </motion.div>
+          {/* Available Section */}
+          {(filter === "all" || filter === "available") && availableIntegrations.length > 0 && (
+            <motion.section
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.25 }}
+              className="space-y-5"
+            >
+              <div className="flex items-baseline justify-between">
+                <h2 className="text-sm font-medium text-foreground/80 uppercase tracking-wider">
+                  Available
+                </h2>
+                <span className="text-xs text-muted-foreground/50">
+                  {availableIntegrations.length} apps
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                {availableIntegrations.map((integration, index) => (
+                  <ConnectionIntegrationCard
+                    key={integration.id}
+                    integration={integration}
+                    onConnect={() => handleConnect(integration)}
+                    onDisconnect={() => handleDisconnect(integration.id)}
+                    index={index}
+                  />
+                ))}
+              </div>
+            </motion.section>
+          )}
 
           {/* Empty State */}
           {filteredIntegrations.length === 0 && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-center py-16"
+              className="text-center py-20"
             >
               <h3 className="text-base font-medium text-foreground mb-2">
                 {filter === "connected" ? "No connections yet" : "No integrations available"}
               </h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground/60">
                 {filter === "connected" 
                   ? "Connect an app to get started" 
                   : "Check back later for new integrations"}
@@ -203,7 +227,6 @@ const Connections = () => {
         </div>
       </PageTransition>
 
-      {/* Connect Integration Modal */}
       <ConnectIntegrationModal
         open={connectModalOpen}
         onOpenChange={setConnectModalOpen}
