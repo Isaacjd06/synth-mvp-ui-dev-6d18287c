@@ -23,19 +23,19 @@ interface InsightCardProps {
 
 const severityStyles: Record<InsightSeverity, { badge: string; border: string; glow: string }> = {
   error: {
-    badge: "bg-destructive/20 text-red-400 border-destructive/40",
-    border: "border-destructive/30",
-    glow: "shadow-[0_0_20px_-5px_hsl(0_70%_50%/0.2)]",
+    badge: "bg-destructive/10 text-red-400/80 border-destructive/25 text-[9px]",
+    border: "border-destructive/20",
+    glow: "shadow-[0_0_12px_-6px_hsl(0_70%_50%/0.15)]",
   },
   warning: {
-    badge: "bg-yellow-500/20 text-yellow-400 border-yellow-500/40",
-    border: "border-yellow-500/30",
-    glow: "shadow-[0_0_20px_-5px_hsl(45_90%_50%/0.2)]",
+    badge: "bg-yellow-500/10 text-yellow-400/80 border-yellow-500/25 text-[9px]",
+    border: "border-yellow-500/20",
+    glow: "shadow-[0_0_12px_-6px_hsl(45_90%_50%/0.15)]",
   },
   info: {
-    badge: "bg-primary/20 text-primary border-primary/40",
-    border: "border-primary/30",
-    glow: "shadow-[0_0_20px_-5px_hsl(217_91%_60%/0.2)]",
+    badge: "bg-primary/10 text-primary/80 border-primary/25 text-[9px]",
+    border: "border-primary/20",
+    glow: "shadow-[0_0_12px_-6px_hsl(217_91%_60%/0.15)]",
   },
 };
 
@@ -47,7 +47,7 @@ const InsightCard = ({ insight }: InsightCardProps) => {
     <motion.div
       layout
       className={cn(
-        "rounded-xl border bg-card/80 backdrop-blur-md transition-all duration-300 overflow-hidden",
+        "rounded-lg border bg-card/60 backdrop-blur-sm transition-all duration-300 overflow-hidden",
         styles.border,
         isExpanded && styles.glow
       )}
@@ -55,42 +55,42 @@ const InsightCard = ({ insight }: InsightCardProps) => {
       {/* Header - Always visible */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full p-5 text-left hover:bg-muted/30 transition-colors"
+        className="w-full px-5 py-4 text-left hover:bg-muted/20 transition-colors"
       >
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2.5 mb-2 flex-wrap">
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
               <Badge 
                 variant="outline" 
-                className={cn("text-[10px] uppercase tracking-wider font-medium", styles.badge)}
+                className={cn("uppercase tracking-wider font-medium px-1.5 py-0", styles.badge)}
               >
                 {insight.severity}
               </Badge>
               <Badge 
                 variant="outline" 
-                className="text-[10px] uppercase tracking-wider font-medium bg-muted/50 text-muted-foreground border-border/50"
+                className="text-[9px] uppercase tracking-wider font-medium bg-muted/30 text-muted-foreground/70 border-border/30 px-1.5 py-0"
               >
                 {insight.category}
               </Badge>
               {insight.isNew && (
-                <Badge className="bg-primary/25 text-primary border-primary/40 text-[10px] px-1.5 py-0">
+                <Badge className="bg-primary/15 text-primary/70 border-primary/25 text-[9px] px-1.5 py-0">
                   New
                 </Badge>
               )}
             </div>
-            <h3 className="text-sm font-medium text-foreground mb-1 line-clamp-1">
+            <h3 className="text-sm font-semibold text-foreground/95 mb-1 line-clamp-1">
               {insight.title}
             </h3>
-            <p className="text-xs text-muted-foreground font-light line-clamp-1">
+            <p className="text-xs text-muted-foreground/60 font-light line-clamp-1">
               {insight.summary}
             </p>
           </div>
           <div className="flex items-center gap-3 shrink-0">
-            <span className="text-xs text-muted-foreground/70">
+            <span className="text-[11px] text-muted-foreground/50">
               {insight.timestamp}
             </span>
             <span className={cn(
-              "text-xs text-muted-foreground transition-transform duration-300",
+              "text-[10px] text-muted-foreground/40 transition-transform duration-300",
               isExpanded && "rotate-180"
             )}>
               ▼
@@ -106,19 +106,19 @@ const InsightCard = ({ insight }: InsightCardProps) => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
             className="overflow-hidden"
           >
-            <div className="px-5 pb-5 pt-0 border-t border-border/30">
+            <div className="px-5 pb-4 pt-0 border-t border-border/20">
               <div className="pt-4">
-                <p className="text-sm text-muted-foreground font-light leading-relaxed mb-4">
+                <p className="text-[13px] text-muted-foreground/70 font-light leading-relaxed mb-4">
                   {insight.description}
                 </p>
-                <div className="flex items-center gap-3">
-                  <Button size="sm" className="h-8 text-xs">
+                <div className="flex items-center gap-2">
+                  <Button size="sm" className="h-7 text-xs px-3 bg-primary/80 hover:bg-primary/90">
                     Resolve Issue
                   </Button>
-                  <Button variant="ghost" size="sm" className="h-8 text-xs">
+                  <Button variant="ghost" size="sm" className="h-7 text-xs px-3 text-muted-foreground/60 hover:text-muted-foreground/80">
                     View Workflow
                   </Button>
                 </div>
