@@ -1,11 +1,15 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import AppShell from "@/components/app/AppShell";
+import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
 import InsightFilterSidebar, { InsightFilter } from "@/components/insights/InsightFilterSidebar";
 import InsightsList from "@/components/insights/InsightsList";
 import InsightsEmptyState from "@/components/insights/InsightsEmptyState";
 import InsightsLoadingState from "@/components/insights/InsightsLoadingState";
 import { InsightData } from "@/components/insights/InsightCard";
+import { cn } from "@/lib/utils";
 
 // Mock data for UI display
 const mockInsights: InsightData[] = [
@@ -82,16 +86,46 @@ const filterLabels: Record<InsightFilter, string> = {
 };
 
 const Insights = () => {
+  const navigate = useNavigate();
+  
+  // UI-ONLY: Temporary preview toggle (will be replaced by backend logic)
+  const [isSubscribedPreview, setIsSubscribedPreview] = useState(true);
+  
   const [activeFilter, setActiveFilter] = useState<InsightFilter>("all");
   const [isLoading] = useState(false); // UI only - set to true to see loading state
   const [showEmpty] = useState(false); // UI only - set to true to see empty state
 
   // Simple filter display logic (no real filtering - backend will handle this)
   const displayedInsights = showEmpty ? [] : mockInsights;
+  
+  // For gated state, show first 2 insights as readable, rest as locked
+  const visibleInsights = displayedInsights.slice(0, 2);
+  const lockedInsights = displayedInsights.slice(2);
 
   return (
     <AppShell>
       <div className="min-h-screen bg-gradient-to-b from-background via-background to-synth-navy-light/20">
+        {/* DEV-ONLY Toggle */}
+        <div className="px-4 lg:px-6 py-4 relative z-[60]">
+          <div className="flex items-center justify-between rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 px-4 py-2.5">
+            <span className="text-xs font-medium text-amber-400/80 uppercase tracking-wide">
+              DEV: isSubscribedPreview
+            </span>
+            <div className="flex items-center gap-3">
+              <span className={cn("text-xs", isSubscribedPreview ? "text-muted-foreground/50" : "text-foreground/80")}>
+                False
+              </span>
+              <Switch 
+                checked={isSubscribedPreview} 
+                onCheckedChange={setIsSubscribedPreview}
+                className="data-[state=checked]:bg-primary"
+              />
+              <span className={cn("text-xs", isSubscribedPreview ? "text-foreground/80" : "text-muted-foreground/50")}>
+                True
+              </span>
+            </div>
+          </div>
+        </div>
 
         {/* Main Content - Sidebar + List */}
         <div className="flex flex-col lg:flex-row gap-6">
@@ -100,6 +134,7 @@ const Insights = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
+            className={cn(!isSubscribedPreview && "opacity-50 pointer-events-none")}
           >
             <InsightFilterSidebar 
               activeFilter={activeFilter} 
@@ -134,8 +169,50 @@ const Insights = () => {
                     type={activeFilter === "all" ? "general" : "filtered"} 
                     filterName={filterLabels[activeFilter]}
                   />
-                ) : (
+                ) : isSubscribedPreview ? (
+                  /* SUBSCRIBED STATE - Full insights */
                   <InsightsList insights={displayedInsights} />
+                ) : (
+                  /* GATED STATE - Partial access */
+                  <div className="space-y-3">
+                    {/* Visible insights (first 2) */}
+                    <InsightsList insights={visibleInsights} />
+                    
+                    {/* Locked insights preview */}
+                    <div className="space-y-2 pt-2">
+                      {lockedInsights.map((insight) => (
+                        <div 
+                          key={insight.id}
+                          className="p-4 rounded-lg border border-border/20 bg-muted/10"
+                        >
+                          <p className="text-sm font-medium text-foreground/60 mb-1">
+                            {insight.title}
+                          </p>
+                          <p className="text-xs text-muted-foreground/40 line-clamp-1">
+                            {insight.summary}
+                          </p>
+                          <p className="text-[10px] text-primary/70 mt-2 uppercase tracking-wide">
+                            Available on Pro
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {/* Upgrade CTA */}
+                    <div className="pt-4 pb-2 text-center border-t border-border/20 mt-4">
+                      <p className="text-sm text-muted-foreground/80 mb-3">
+                        Upgrade to unlock full insights and recommendations
+                      </p>
+                      <Button 
+                        variant="outline"
+                        size="sm"
+                        onClick={() => navigate("/app/billing")}
+                        className="border-primary/30 text-primary hover:bg-primary/10"
+                      >
+                        Upgrade to Pro
+                      </Button>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
