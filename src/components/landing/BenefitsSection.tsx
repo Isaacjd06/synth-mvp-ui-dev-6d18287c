@@ -1,48 +1,41 @@
 import { motion } from "framer-motion";
-import { Sparkles, Brain, Rocket, Zap, Settings, Shield } from "lucide-react";
 
 const benefits = [
   {
-    icon: Sparkles,
     title: "Build workflows automatically",
-    description: "Tell Synth what needs to happen — it creates the entire workflow for you.",
+    description: "Tell Synth what needs to happen — it creates the entire workflow for you. No drag-and-drop, no manual configuration.",
     size: "large",
   },
   {
-    icon: Brain,
     title: "Understands your business context",
-    description: "Synth remembers your tasks, patterns, and preferences.",
+    description: "Synth remembers your tasks, patterns, and preferences. Automations get smarter over time.",
     size: "medium",
   },
   {
-    icon: Rocket,
-    title: "Extremely scalable",
-    description: "Runs thousands of automations with almost zero delay.",
+    title: "Monitor everything in one place",
+    description: "See executions, errors, and performance across all your automations from a single dashboard.",
     size: "medium",
   },
   {
-    icon: Settings,
     title: "No setup. Ever.",
-    description: "Unlike Zapier/n8n, Synth does the thinking and building.",
+    description: "Unlike traditional tools, Synth does the thinking and building for you.",
     size: "small",
   },
   {
-    icon: Zap,
-    title: "Lightning fast execution",
-    description: "Your automations run in milliseconds, not minutes.",
+    title: "Fast, reliable execution",
+    description: "Your automations run in milliseconds with enterprise-grade reliability.",
     size: "small",
   },
   {
-    icon: Shield,
-    title: "Enterprise-grade security",
-    description: "SOC 2 compliant with end-to-end encryption.",
+    title: "Insights that matter",
+    description: "Synth surfaces issues and opportunities — so you improve, not just automate.",
     size: "small",
   },
 ];
 
 const BenefitsSection = () => {
   return (
-    <section id="features" className="py-16 md:py-20 relative overflow-hidden">
+    <section id="features" className="py-20 relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-[#080808] to-[#0a0a0a]" />
       
@@ -63,11 +56,11 @@ const BenefitsSection = () => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-display-bold text-foreground mb-4">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-display-bold text-foreground mb-4">
             Why businesses choose Synth
           </h2>
           <p className="text-lg text-foreground/50 max-w-2xl mx-auto">
-            The automation platform that thinks, builds, and scales for you.
+            The automation platform that thinks, builds, monitors, and improves — so you can focus on what matters.
           </p>
         </motion.div>
 
@@ -80,8 +73,8 @@ const BenefitsSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              whileHover={{ y: -8, transition: { duration: 0.3 } }}
-              className={`group relative rounded-2xl bg-[#111]/80 border border-white/5 p-8 overflow-hidden ${
+              whileHover={{ y: -4, transition: { duration: 0.3 } }}
+              className={`group relative rounded-2xl bg-[#111]/80 border border-white/5 p-8 overflow-hidden hover:border-primary/20 transition-colors ${
                 benefit.size === "large" ? "md:col-span-2 lg:row-span-2" : ""
               }`}
             >
@@ -90,19 +83,8 @@ const BenefitsSection = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
               </div>
 
-              {/* Glowing border on hover */}
-              <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                style={{
-                  background: "linear-gradient(135deg, hsl(217 100% 60% / 0.1), transparent 50%)",
-                }}
-              />
-
               <div className="relative z-10">
-                <div className="w-14 h-14 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-6 group-hover:shadow-glow transition-all duration-300">
-                  <benefit.icon className="w-7 h-7 text-primary" />
-                </div>
-
-                <h3 className={`font-display text-foreground mb-3 ${
+                <h3 className={`font-display text-foreground mb-3 group-hover:text-primary/90 transition-colors ${
                   benefit.size === "large" ? "text-2xl md:text-3xl" : "text-xl"
                 }`}>
                   {benefit.title}

@@ -1,20 +1,19 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Check } from "lucide-react";
-
 
 const plans = [
   {
     name: "Starter",
     monthlyPrice: 49,
     yearlyPrice: 470,
-    description: "Perfect for individuals and small projects",
+    description: "For individuals getting started with automation",
+    audience: "Best for solo operators and small projects",
     features: [
-      "3 active workflows",
-      "5,000 runs per month",
-      "Basic integrations",
-      "Email support",
-      "7-day execution history",
+      "Up to 5 workflows",
+      "Up to 2,000 executions per month",
+      "Core automation monitoring",
+      "Basic execution history",
+      "Community support",
     ],
     popular: false,
   },
@@ -22,15 +21,14 @@ const plans = [
     name: "Pro",
     monthlyPrice: 149,
     yearlyPrice: 1430,
-    description: "For growing teams and businesses",
+    description: "For growing teams that need visibility and reliability",
+    audience: "Best for growing businesses",
     features: [
-      "10 active workflows",
-      "25,000 runs per month",
-      "All integrations",
-      "Priority support",
-      "30-day execution history",
-      "Custom webhooks",
-      "Team collaboration",
+      "Up to 25 workflows",
+      "Up to 10,000 executions per month",
+      "Full execution history & diagnostics",
+      "Workflow insights & reliability tracking",
+      "Priority execution queue",
     ],
     popular: true,
   },
@@ -38,16 +36,14 @@ const plans = [
     name: "Agency",
     monthlyPrice: 399,
     yearlyPrice: 3830,
-    description: "For agencies and enterprises",
+    description: "For agencies and enterprises at scale",
+    audience: "Best for agencies and enterprises",
     features: [
-      "40 active workflows",
-      "100,000 runs per month",
-      "All Pro features",
-      "Dedicated support",
-      "90-day execution history",
-      "White-label options",
-      "API access",
-      "Custom integrations",
+      "Up to 100 workflows",
+      "Up to 50,000 executions per month",
+      "Advanced execution analytics",
+      "Higher concurrency limits",
+      "Agency-grade reliability & priority",
     ],
     popular: false,
   },
@@ -57,7 +53,7 @@ const PricingSection = () => {
   const [isYearly, setIsYearly] = useState(false);
 
   return (
-    <section id="pricing" className="py-16 md:py-20 relative overflow-hidden">
+    <section id="pricing" className="py-20 relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#080808] to-[#0a0a0a]" />
 
@@ -78,11 +74,14 @@ const PricingSection = () => {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <h2 className="text-4xl md:text-5xl font-display-bold text-foreground mb-4">
-            Choose Your Plan
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-display-bold text-foreground mb-4">
+            Simple, transparent pricing
           </h2>
-          <p className="text-lg text-foreground/50 max-w-xl mx-auto">
-            Start free, scale as you grow. No hidden fees.
+          <p className="text-lg text-foreground/50 max-w-xl mx-auto mb-2">
+            Plans differ by usage limits and capabilities — not by available connections.
+          </p>
+          <p className="text-sm text-primary/70">
+            All integrations available on all plans.
           </p>
         </motion.div>
 
@@ -152,7 +151,7 @@ const PricingSection = () => {
                 )}
 
                 <div className="mb-6">
-                  <h3 className="text-xl font-display text-foreground mb-2">{plan.name}</h3>
+                  <h3 className="text-xl font-display text-foreground mb-1">{plan.name}</h3>
                   <p className="text-sm text-foreground/50">{plan.description}</p>
                 </div>
 
@@ -173,18 +172,19 @@ const PricingSection = () => {
                 <ul className="space-y-3 mb-8">
                   {plan.features.map((feature, j) => (
                     <li key={j} className="flex items-start gap-3 text-sm text-foreground/70">
-                      <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="text-primary/70 mt-0.5">•</span>
                       {feature}
                     </li>
                   ))}
                 </ul>
 
+                <p className="text-xs text-foreground/40 text-center">
+                  {plan.audience}
+                </p>
               </motion.div>
             );
           })}
         </div>
-
-        {/* Google Sign In */}
       </div>
     </section>
   );
