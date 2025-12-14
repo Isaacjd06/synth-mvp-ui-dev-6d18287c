@@ -43,12 +43,12 @@ const DashboardAdvisoryCard = ({ isEmpty = false }: DashboardAdvisoryCardProps) 
 
   return (
     <Card className="relative overflow-hidden rounded-2xl border-border/30 bg-card">
-      <CardHeader className="relative pb-3 pt-5 px-5">
+      <CardHeader className="relative pb-4 pt-5 px-5 border-b border-border/20">
         <div>
-          <CardTitle className="text-base font-medium text-foreground">
+          <CardTitle className="text-sm font-semibold uppercase tracking-wide text-foreground/90">
             Synth Advisory
           </CardTitle>
-          <p className="text-xs text-muted-foreground/70 font-light mt-0.5">
+          <p className="text-xs text-muted-foreground/60 font-light mt-1">
             Insights from your workflows
           </p>
         </div>

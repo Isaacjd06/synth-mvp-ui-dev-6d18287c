@@ -1,4 +1,3 @@
-import { ChevronRight } from "lucide-react";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition, PageItem } from "@/components/app/PageTransition";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -67,12 +66,11 @@ const Dashboard = () => {
             <Card className="overflow-hidden rounded-2xl border-border/30 bg-card">
               <CardHeader className="border-b border-border/20 px-5 py-4">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-base font-medium text-foreground">
+                  <CardTitle className="text-sm font-semibold uppercase tracking-wide text-foreground/90">
                     Recent Activity
                   </CardTitle>
-                  <Button variant="ghost" size="sm" className="text-muted-foreground/60 hover:text-foreground h-7 px-2 text-xs">
+                  <Button variant="ghost" size="sm" className="text-muted-foreground/60 hover:text-foreground h-7 px-3 text-xs">
                     View All
-                    <ChevronRight className="w-3 h-3 ml-1" />
                   </Button>
                 </div>
               </CardHeader>
