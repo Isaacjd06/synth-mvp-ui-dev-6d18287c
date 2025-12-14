@@ -1,9 +1,11 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition, PageItem } from "@/components/app/PageTransition";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { synthToast } from "@/lib/synth-toast";
@@ -105,6 +107,11 @@ const initialSkills: PrebuiltSkill[] = [
 const CATEGORIES = ["All", "Sales", "Productivity", "Operations", "Communication", "Support"];
 
 const Skills = () => {
+  const navigate = useNavigate();
+  
+  // UI-ONLY: Temporary preview toggle (will be replaced by backend logic)
+  const [isSubscribedPreview, setIsSubscribedPreview] = useState(true);
+  
   const [skills, setSkills] = useState<PrebuiltSkill[]>(initialSkills);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [isLoading] = useState(false);
@@ -192,8 +199,50 @@ const Skills = () => {
   return (
     <AppShell>
       <PageTransition className="px-4 lg:px-6 py-6 space-y-8">
+        {/* DEV-ONLY Toggle - z-index above any overlay */}
+        <PageItem className="relative z-[60]">
+          <div className="flex items-center justify-between rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 px-4 py-2.5">
+            <span className="text-xs font-medium text-amber-400/80 uppercase tracking-wide">
+              DEV: isSubscribedPreview
+            </span>
+            <div className="flex items-center gap-3">
+              <span className={cn("text-xs", isSubscribedPreview ? "text-muted-foreground/50" : "text-foreground/80")}>
+                False
+              </span>
+              <Switch 
+                checked={isSubscribedPreview} 
+                onCheckedChange={setIsSubscribedPreview}
+                className="data-[state=checked]:bg-primary"
+              />
+              <span className={cn("text-xs", isSubscribedPreview ? "text-foreground/80" : "text-muted-foreground/50")}>
+                True
+              </span>
+            </div>
+          </div>
+        </PageItem>
+
+        {/* GATED MESSAGE - When not subscribed */}
+        {!isSubscribedPreview && (
+          <PageItem>
+            <div className="text-center py-6 space-y-4">
+              <p className="text-sm text-muted-foreground/80">
+                Unlock Skills to enable AI-powered automation for your business.
+              </p>
+              <Button 
+                onClick={() => navigate("/app/billing")}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
+              >
+                Upgrade to Unlock Skills
+              </Button>
+            </div>
+          </PageItem>
+        )}
+
         {/* Header row */}
-        <PageItem className="flex items-center justify-between gap-4">
+        <PageItem className={cn(
+          "flex items-center justify-between gap-4",
+          !isSubscribedPreview && "opacity-50 pointer-events-none"
+        )}>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground/70">
               {configuredCount} of {skills.length} configured
@@ -204,13 +253,14 @@ const Skills = () => {
             variant="outline"
             size="sm"
             className="border-border/50 hover:border-border/70"
+            disabled={!isSubscribedPreview}
           >
             Create Skill
           </Button>
         </PageItem>
 
         {/* Category filters */}
-        <PageItem>
+        <PageItem className={cn(!isSubscribedPreview && "opacity-50 pointer-events-none")}>
           <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {CATEGORIES.map((category) => {
               const count =
@@ -223,6 +273,7 @@ const Skills = () => {
                 <button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
+                  disabled={!isSubscribedPreview}
                   className={cn(
                     "shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm transition-colors",
                     isActive
@@ -240,72 +291,76 @@ const Skills = () => {
           </div>
         </PageItem>
 
-        {isLoading ? (
-          <PageItem>
-            <SkillsLoadingState />
-          </PageItem>
-        ) : skills.length === 0 ? (
-          <PageItem>
-            <SkillsEmptyState onCreateSkill={handleCreateNew} />
-          </PageItem>
-        ) : filteredSkills.length === 0 ? (
-          <PageItem>
-            <div className="py-12 text-center">
-              <p className="text-muted-foreground">
-                No skills found in the {selectedCategory} category.
-              </p>
-              <Button
-                variant="link"
-                onClick={() => setSelectedCategory("All")}
-                className="text-primary mt-2"
-              >
-                View all skills
-              </Button>
-            </div>
-          </PageItem>
-        ) : (
-          <TooltipProvider delayDuration={200}>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={selectedCategory}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15 }}
-                className="space-y-8 pb-8"
-              >
-                {Object.entries(groupedSkills).map(([category, categorySkills]) => (
-                  <PageItem key={category}>
-                    {selectedCategory === "All" && (
-                      <div className="flex items-baseline gap-3 mb-5 mt-8 first:mt-0">
-                        <h4 className="text-sm font-semibold text-foreground uppercase tracking-wide">
-                          {category}
-                        </h4>
-                        <span className="text-xs text-muted-foreground/50">
-                          {categorySkills.length}
-                        </span>
-                      </div>
-                    )}
+        {/* Skills Content - with gated state styling */}
+        <div className={cn(!isSubscribedPreview && "opacity-50 pointer-events-none")}>
+          {isLoading ? (
+            <PageItem>
+              <SkillsLoadingState />
+            </PageItem>
+          ) : skills.length === 0 ? (
+            <PageItem>
+              <SkillsEmptyState onCreateSkill={handleCreateNew} />
+            </PageItem>
+          ) : filteredSkills.length === 0 ? (
+            <PageItem>
+              <div className="py-12 text-center">
+                <p className="text-muted-foreground">
+                  No skills found in the {selectedCategory} category.
+                </p>
+                <Button
+                  variant="link"
+                  onClick={() => setSelectedCategory("All")}
+                  className="text-primary mt-2"
+                  disabled={!isSubscribedPreview}
+                >
+                  View all skills
+                </Button>
+              </div>
+            </PageItem>
+          ) : (
+            <TooltipProvider delayDuration={200}>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={selectedCategory}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="space-y-8 pb-8"
+                >
+                  {Object.entries(groupedSkills).map(([category, categorySkills]) => (
+                    <PageItem key={category}>
+                      {selectedCategory === "All" && (
+                        <div className="flex items-baseline gap-3 mb-5 mt-8 first:mt-0">
+                          <h4 className="text-sm font-semibold text-foreground uppercase tracking-wide">
+                            {category}
+                          </h4>
+                          <span className="text-xs text-muted-foreground/50">
+                            {categorySkills.length}
+                          </span>
+                        </div>
+                      )}
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                      {categorySkills.map((skill, index) => (
-                        <SkillCard
-                          key={skill.id}
-                          skill={skill}
-                          onEdit={handleEdit}
-                          onDuplicate={handleDuplicate}
-                          onToggle={handleToggle}
-                          onDelete={handleDelete}
-                          index={index}
-                        />
-                      ))}
-                    </div>
-                  </PageItem>
-                ))}
-              </motion.div>
-            </AnimatePresence>
-          </TooltipProvider>
-        )}
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        {categorySkills.map((skill, index) => (
+                          <SkillCard
+                            key={skill.id}
+                            skill={skill}
+                            onEdit={isSubscribedPreview ? handleEdit : () => {}}
+                            onDuplicate={isSubscribedPreview ? handleDuplicate : () => {}}
+                            onToggle={isSubscribedPreview ? handleToggle : () => {}}
+                            onDelete={isSubscribedPreview ? handleDelete : () => {}}
+                            index={index}
+                          />
+                        ))}
+                      </div>
+                    </PageItem>
+                  ))}
+                </motion.div>
+              </AnimatePresence>
+            </TooltipProvider>
+          )}
+        </div>
       </PageTransition>
 
       <SkillCustomizeModal
