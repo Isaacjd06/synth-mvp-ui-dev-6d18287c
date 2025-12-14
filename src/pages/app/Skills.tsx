@@ -191,25 +191,27 @@ const Skills = () => {
 
   return (
     <AppShell>
-      <PageTransition className="px-4 lg:px-6 py-6 space-y-6">
-        <PageItem className="flex items-center justify-end gap-3">
-          <Badge
-            variant="outline"
-            className="px-3 py-1.5 border-emerald-500/30 bg-emerald-500/5 text-emerald-400 text-sm"
-          >
-            {configuredCount} Configured
-          </Badge>
+      <PageTransition className="px-4 lg:px-6 py-6 space-y-8">
+        {/* Header row */}
+        <PageItem className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-muted-foreground/70">
+              {configuredCount} of {skills.length} configured
+            </span>
+          </div>
           <Button
             onClick={handleCreateNew}
-            className="bg-primary hover:bg-primary/90"
+            variant="outline"
             size="sm"
+            className="border-border/50 hover:border-border/70"
           >
             Create Skill
           </Button>
         </PageItem>
 
+        {/* Category filters */}
         <PageItem>
-          <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {CATEGORIES.map((category) => {
               const count =
                 category === "All"
@@ -218,30 +220,21 @@ const Skills = () => {
               const isActive = selectedCategory === category;
 
               return (
-                <motion.button
+                <button
                   key={category}
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
                   onClick={() => setSelectedCategory(category)}
                   className={cn(
-                    "shrink-0 snap-start flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                    "shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm transition-colors",
                     isActive
-                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-                      : "bg-muted/40 text-muted-foreground border border-border/50 hover:border-primary/40 hover:bg-primary/10 hover:text-foreground"
+                      ? "bg-muted/60 text-foreground font-medium"
+                      : "text-muted-foreground/70 hover:text-foreground hover:bg-muted/30"
                   )}
                 >
                   {category}
-                  <span
-                    className={cn(
-                      "text-xs px-1.5 py-0.5 rounded-full min-w-[20px] text-center",
-                      isActive
-                        ? "bg-primary-foreground/20 text-primary-foreground"
-                        : "bg-background/50 text-muted-foreground"
-                    )}
-                  >
+                  <span className="text-xs text-muted-foreground/50">
                     {count}
                   </span>
-                </motion.button>
+                </button>
               );
             })}
           </div>
@@ -284,16 +277,13 @@ const Skills = () => {
                 {Object.entries(groupedSkills).map(([category, categorySkills]) => (
                   <PageItem key={category}>
                     {selectedCategory === "All" && (
-                      <div className="flex items-center justify-between gap-4 mb-4 mt-6 first:mt-0">
-                        <h4 className="text-base font-semibold text-foreground">
+                      <div className="flex items-baseline gap-3 mb-5 mt-8 first:mt-0">
+                        <h4 className="text-sm font-semibold text-foreground uppercase tracking-wide">
                           {category}
                         </h4>
-                        <div className="flex items-center gap-3">
-                          <div className="h-px flex-1 min-w-[40px] bg-gradient-to-r from-border/60 to-transparent" />
-                          <span className="text-xs font-medium text-muted-foreground bg-muted/50 px-2.5 py-1 rounded-md shrink-0">
-                            {categorySkills.length} skill{categorySkills.length !== 1 ? "s" : ""}
-                          </span>
-                        </div>
+                        <span className="text-xs text-muted-foreground/50">
+                          {categorySkills.length}
+                        </span>
                       </div>
                     )}
 
