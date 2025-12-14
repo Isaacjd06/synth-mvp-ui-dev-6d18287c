@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Zap, Eye } from "lucide-react";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition, PageItem } from "@/components/app/PageTransition";
 import { Button } from "@/components/ui/button";
@@ -82,9 +81,6 @@ const Workflows = () => {
           <PageItem>
             <Card className="border-dashed border-2 border-border/50 bg-card/50">
               <CardContent className="py-16 text-center">
-                <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                  <Zap className="w-8 h-8 text-primary" />
-                </div>
                 <h3 className="text-lg font-medium text-foreground mb-2">
                   No Workflows Yet
                 </h3>

@@ -1,12 +1,4 @@
 import { useState, useMemo } from "react";
-import {
-  Sparkles,
-  Mail,
-  FileText,
-  Bell,
-  Users,
-  Plus,
-} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition, PageItem } from "@/components/app/PageTransition";
@@ -19,6 +11,13 @@ import { SkillCard, type PrebuiltSkill } from "@/components/skills/SkillCard";
 import { SkillCustomizeModal, type SkillData } from "@/components/skills/SkillCustomizeModal";
 import { SkillsEmptyState } from "@/components/skills/SkillsEmptyState";
 import { SkillsLoadingState } from "@/components/skills/SkillsLoadingState";
+import {
+  Mail,
+  FileText,
+  Bell,
+  Users,
+  Sparkles,
+} from "lucide-react";
 
 const initialSkills: PrebuiltSkill[] = [
   {
@@ -224,7 +223,6 @@ const Skills = () => {
             className="bg-primary hover:bg-primary/90"
             size="sm"
           >
-            <Plus className="w-4 h-4 mr-1.5" />
             Create Skill
           </Button>
         </PageItem>

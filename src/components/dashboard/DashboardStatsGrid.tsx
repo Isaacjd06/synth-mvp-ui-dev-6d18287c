@@ -1,4 +1,3 @@
-import { Zap, Activity, Clock, CheckCircle } from "lucide-react";
 import DashboardStatCard from "./DashboardStatCard";
 
 // Placeholder data - will be replaced with API data
@@ -15,22 +14,18 @@ const DashboardStatsGrid = () => {
       <DashboardStatCard
         label="Active Automations"
         value={placeholderStats.activeWorkflows}
-        icon={Zap}
       />
       <DashboardStatCard
         label="Total Executions"
         value={placeholderStats.totalExecutions.toLocaleString()}
-        icon={Activity}
       />
       <DashboardStatCard
         label="Activity (24h)"
         value={placeholderStats.executionsLast24h}
-        icon={Clock}
       />
       <DashboardStatCard
         label="Execution Reliability"
         value={`${placeholderStats.successRate}%`}
-        icon={CheckCircle}
       />
     </div>
   );
