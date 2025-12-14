@@ -211,15 +211,14 @@ const NewHeroSection = () => {
                   Start Free Trial
                 </motion.button>
               </Link>
-              <Link to="#how-it-works">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+              <button
+                  onClick={() => {
+                    document.getElementById('product-tour')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
                   className="px-8 py-4 border border-white/10 text-foreground/80 font-accent text-lg rounded-xl hover:bg-white/5 transition-colors"
                 >
                   See How It Works
-                </motion.button>
-              </Link>
+                </button>
             </motion.div>
 
             <motion.p

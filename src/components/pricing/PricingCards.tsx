@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { Check, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface PricingCardsProps {
@@ -95,8 +94,7 @@ const PricingCards = ({ isYearly }: PricingCardsProps) => {
         >
           {plan.popular && (
             <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-              <div className="flex items-center gap-1.5 px-4 py-1.5 bg-accent text-accent-foreground text-xs font-semibold rounded-full">
-                <Sparkles className="w-3.5 h-3.5" />
+              <div className="px-4 py-1.5 bg-accent text-accent-foreground text-xs font-semibold rounded-full">
                 Most Popular
               </div>
             </div>
@@ -140,8 +138,8 @@ const PricingCards = ({ isYearly }: PricingCardsProps) => {
           <ul className="space-y-3">
             {plan.features.map((feature, i) => (
               <li key={i} className="flex items-start gap-3 text-sm">
-                <Check className={`w-4 h-4 mt-0.5 flex-shrink-0 ${
-                  feature.startsWith("Everything") ? "text-accent" : "text-primary"
+                <span className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${
+                  feature.startsWith("Everything") ? "bg-accent" : "bg-primary"
                 }`} />
                 <span className={`${
                   feature.startsWith("Everything") 

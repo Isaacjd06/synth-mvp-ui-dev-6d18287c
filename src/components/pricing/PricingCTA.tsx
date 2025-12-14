@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { Shield, ArrowRight, LayoutDashboard } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
@@ -38,9 +37,8 @@ const PricingCTA = () => {
                 boxShadow: "0 0 25px hsl(217 100% 60% / 0.25), 0 4px 16px -4px hsl(217 100% 50% / 0.3)",
               }}
             >
-              <span className="relative z-10 flex items-center gap-2">
+              <span className="relative z-10">
                 Start 3-Day Free Trial
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </span>
               <motion.div 
                 className="absolute inset-0 bg-gradient-to-r from-primary via-synth-blue-light to-primary bg-[length:200%_100%]"
@@ -71,10 +69,8 @@ const PricingCTA = () => {
               size="lg"
               className="group px-8 py-6 text-base font-accent rounded-xl hover:bg-secondary/80"
             >
-              <Link to="/app/dashboard" className="flex items-center gap-2">
-                <LayoutDashboard className="w-5 h-5" />
+              <Link to="/app/dashboard">
                 Open Dashboard
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
           </motion.div>
@@ -86,7 +82,7 @@ const PricingCTA = () => {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20"
           >
-            <Shield className="w-4 h-4 text-accent-foreground" />
+            <span className="w-1.5 h-1.5 rounded-full bg-accent" />
             <span className="text-sm text-foreground/70">
               14-Day No-Risk Guarantee — full refund if Synth doesn't create meaningful time savings.
             </span>
