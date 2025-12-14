@@ -6,7 +6,7 @@ interface InsightsListProps {
 
 const InsightsList = ({ insights }: InsightsListProps) => {
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
       {insights.map((insight) => (
         <InsightCard key={insight.id} insight={insight} />
       ))}
