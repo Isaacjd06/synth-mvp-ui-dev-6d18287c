@@ -1,13 +1,12 @@
 import Navbar from "@/components/landing/Navbar";
 import NewHeroSection from "@/components/landing/NewHeroSection";
 import BenefitsSection from "@/components/landing/BenefitsSection";
-import NewHowItWorksSection from "@/components/landing/NewHowItWorksSection";
+import DifferentiationSection from "@/components/landing/DifferentiationSection";
+import JourneySection from "@/components/landing/JourneySection";
+import FeatureTourSection from "@/components/landing/FeatureTourSection";
 import PricingSection from "@/components/landing/PricingSection";
-import AddOnsSection from "@/components/landing/AddOnsSection";
 import FAQSection from "@/components/landing/FAQSection";
-import GoogleSignInButton from "@/components/landing/GoogleSignInButton";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import FinalCTASection from "@/components/landing/FinalCTASection";
 
 const Index = () => {
   return (
@@ -24,20 +23,12 @@ const Index = () => {
       <Navbar />
       <NewHeroSection />
       <BenefitsSection />
-      <NewHowItWorksSection />
+      <DifferentiationSection />
+      <JourneySection />
+      <FeatureTourSection />
       <PricingSection />
-      <AddOnsSection />
       <FAQSection />
-      
-      {/* Bottom CTA */}
-      <div className="py-12 pb-16">
-        <div className="container px-6 flex justify-center gap-4">
-          <Button asChild className="px-6 py-3">
-            <Link to="/signup">Get Started</Link>
-          </Button>
-          <GoogleSignInButton variant="footer" />
-        </div>
-      </div>
+      <FinalCTASection />
     </main>
   );
 };
