@@ -7,21 +7,21 @@ interface QuickActionsBarProps {
 const quickActions = [
   { id: "create", label: "Create Automation" },
   { id: "workflows", label: "My Workflows" },
-  { id: "followup", label: "Optimize Follow-Ups" },
-  { id: "summary", label: "Build Daily Summary" },
+  { id: "followup", label: "Follow-Ups" },
+  { id: "summary", label: "Daily Summary" },
   { id: "reset", label: "Start Over" },
 ];
 
 const QuickActionsBar = ({ onAction }: QuickActionsBarProps) => {
   return (
-    <div className="flex flex-wrap gap-2 py-3">
+    <div className="flex flex-wrap gap-2 py-3 max-w-2xl mx-auto">
       {quickActions.map((action) => (
         <Button
           key={action.id}
-          variant="outline"
+          variant="ghost"
           size="sm"
           onClick={() => onAction(action.id)}
-          className="text-xs border-border/60 hover:border-primary/50 hover:bg-primary/5 transition-all duration-200"
+          className="text-xs text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors px-3 h-8 font-normal"
         >
           {action.label}
         </Button>
