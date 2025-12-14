@@ -1,6 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,71 +37,58 @@ export const SkillCard = ({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.2, delay: index * 0.04 }}
-      className="max-w-[600px]"
+      transition={{ duration: 0.15, delay: index * 0.03 }}
     >
       <Card
         className={cn(
-          "group relative overflow-hidden transition-all duration-200 h-full",
-          "hover:shadow-lg hover:shadow-primary/8 hover:-translate-y-0.5",
-          "border-border/50 bg-card/80 hover:border-primary/25"
+          "relative transition-all duration-150 h-full",
+          "border-border/40 bg-card/60 hover:border-border/60"
         )}
       >
-        {/* Subtle hover glow */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-          <div className="absolute inset-0 bg-primary/3" />
-        </div>
-
-        <CardContent className="p-5 space-y-3 relative">
-          {/* Header row - badges and menu */}
-          <div className="flex items-center justify-between gap-3">
+        <CardContent className="p-5 space-y-4">
+          {/* Header row - status and menu */}
+          <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-2">
               {skill.category && (
-                <Badge
-                  variant="secondary"
-                  className="text-[11px] bg-secondary/50 text-secondary-foreground/80 px-2 py-0.5 font-medium"
-                >
+                <span className="text-[11px] text-muted-foreground/70 uppercase tracking-wide font-medium">
                   {skill.category}
-                </Badge>
+                </span>
               )}
-              <Badge
-                variant="outline"
+              <span className="text-muted-foreground/40">·</span>
+              <span
                 className={cn(
-                  "text-[11px] px-2 py-0.5 font-medium",
-                  isConfigured
-                    ? "border-emerald-500/30 text-emerald-400 bg-emerald-500/8"
-                    : "border-amber-500/30 text-amber-400 bg-amber-500/8"
+                  "text-[11px] font-medium",
+                  isConfigured ? "text-emerald-400/80" : "text-amber-400/70"
                 )}
               >
                 {isConfigured ? "Configured" : "Draft"}
-              </Badge>
+              </span>
             </div>
 
-            {/* Overflow Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-7 px-2 shrink-0 text-muted-foreground hover:text-foreground text-xs"
+                  className="h-6 px-2 text-muted-foreground/60 hover:text-foreground text-xs"
                 >
-                  Options
+                  More
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-44 bg-card border-border/60">
-                <DropdownMenuItem onClick={() => onDuplicate(skill)}>
+              <DropdownMenuContent align="end" className="w-36 bg-card border-border/50">
+                <DropdownMenuItem onClick={() => onDuplicate(skill)} className="text-sm">
                   Duplicate
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onToggle(skill)}>
+                <DropdownMenuItem onClick={() => onToggle(skill)} className="text-sm">
                   {isConfigured ? "Disable" : "Enable"}
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-border/40" />
+                <DropdownMenuSeparator className="bg-border/30" />
                 <DropdownMenuItem
                   onClick={() => onDelete(skill)}
-                  className="text-destructive focus:text-destructive"
+                  className="text-destructive focus:text-destructive text-sm"
                 >
                   Delete
                 </DropdownMenuItem>
@@ -112,28 +98,27 @@ export const SkillCard = ({
 
           {/* Title & Description */}
           <div className="space-y-1.5">
-            <h3 className="font-semibold text-foreground transition-colors leading-snug text-[15px] group-hover:text-primary">
+            <h3 className="font-medium text-foreground leading-snug text-[15px]">
               {skill.name}
             </h3>
-            <p className="text-sm text-muted-foreground font-light line-clamp-2 leading-relaxed">
+            <p className="text-sm text-muted-foreground/70 line-clamp-2 leading-relaxed">
               {skill.description}
             </p>
           </div>
 
           {/* Preview if exists */}
           {skill.preview && (
-            <div className="px-3 py-2 rounded-md bg-muted/25 border border-border/40 group-hover:border-primary/15 group-hover:bg-muted/35 transition-colors">
-              <p className="text-[11px] text-muted-foreground font-mono truncate leading-relaxed">
-                {skill.preview}
-              </p>
-            </div>
+            <p className="text-[11px] text-muted-foreground/50 font-mono truncate leading-relaxed border-t border-border/30 pt-3">
+              {skill.preview}
+            </p>
           )}
 
           {/* Primary Action */}
           <Button
             onClick={() => onEdit(skill)}
-            className="w-full bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 hover:border-primary/40 transition-all"
-            variant="ghost"
+            variant="outline"
+            size="sm"
+            className="w-full border-border/40 text-muted-foreground hover:text-foreground hover:border-border/60 hover:bg-muted/20"
           >
             Edit Skill
           </Button>
