@@ -195,8 +195,8 @@ const Chat = () => {
   return (
     <AppShell>
       <div className="h-[calc(100vh-4rem)] flex flex-col relative">
-        {/* DEV-ONLY Toggle */}
-        <div className="px-4 pt-4">
+        {/* DEV-ONLY Toggle - z-index above overlay */}
+        <div className="px-4 pt-4 relative z-[60]">
           <div className="max-w-2xl mx-auto flex items-center justify-between rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 px-4 py-2.5">
             <span className="text-xs font-medium text-amber-400/80 uppercase tracking-wide">
               DEV: isSubscribedPreview
