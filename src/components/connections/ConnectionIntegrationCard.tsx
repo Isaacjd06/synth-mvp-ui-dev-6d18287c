@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Integration } from "@/pages/app/Connections";
@@ -10,85 +9,68 @@ interface ConnectionIntegrationCardProps {
   onConnect: () => void;
   onDisconnect: () => void;
   index: number;
+  compact?: boolean;
 }
-
-const categoryColors: Record<string, string> = {
-  Communication: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-  Productivity: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-  Finance: "bg-green-500/20 text-green-400 border-green-500/30",
-  Developer: "bg-orange-500/20 text-orange-400 border-orange-500/30",
-  Storage: "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
-  Design: "bg-pink-500/20 text-pink-400 border-pink-500/30",
-  "Social Media": "bg-rose-500/20 text-rose-400 border-rose-500/30",
-  CRM: "bg-amber-500/20 text-amber-400 border-amber-500/30",
-  AI: "bg-violet-500/20 text-violet-400 border-violet-500/30",
-  Marketing: "bg-teal-500/20 text-teal-400 border-teal-500/30",
-  "E-commerce": "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
-  Enterprise: "bg-slate-500/20 text-slate-400 border-slate-500/30",
-};
 
 const ConnectionIntegrationCard = ({ 
   integration, 
   onConnect, 
   onDisconnect, 
-  index
+  index,
+  compact = false
 }: ConnectionIntegrationCardProps) => {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: index * 0.02, duration: 0.3 }}
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.015, duration: 0.25 }}
     >
       <Card
         className={cn(
-          "relative overflow-hidden transition-all duration-300 group h-full",
-          "border-border/60 bg-card/50 backdrop-blur-sm",
-          "shadow-[0_4px_20px_-4px_rgba(0,0,0,0.3)]",
-          "hover:scale-[1.02] hover:-translate-y-1 hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.4)]",
-          integration.connected && "border-green-500/50 shadow-[0_0_25px_-5px_rgba(34,197,94,0.3)]"
+          "relative overflow-hidden transition-all duration-200 group h-full",
+          "border-border/40 bg-card/30",
+          "hover:border-border/60 hover:bg-card/50",
+          integration.connected && "border-border/50 bg-card/40"
         )}
       >
-        {/* Connected Badge */}
-        {integration.connected && (
-          <div className="absolute top-3 right-3 z-20">
-            <Badge className="bg-green-500/20 text-green-400 border-green-500/40 text-xs px-2 py-0.5">
-              Connected
-            </Badge>
-          </div>
-        )}
-
-        {/* Connected Glow Line */}
-        {integration.connected && (
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-green-500/30 via-green-400 to-green-500/30" />
-        )}
-
-        <CardContent className="p-5 flex flex-col h-full min-h-[180px]">
-          <div className="mb-3">
-            <h3 className="font-semibold text-base transition-colors text-foreground group-hover:text-primary mb-1">
-              {integration.name}
-            </h3>
-            <Badge 
-              variant="outline" 
-              className={cn(
-                "text-[10px] px-1.5 py-0 border",
-                categoryColors[integration.category] || "bg-muted/20 text-muted-foreground border-muted/30"
+        <CardContent className={cn(
+          "flex flex-col h-full",
+          compact ? "p-4 min-h-[120px]" : "p-5 min-h-[160px]"
+        )}>
+          {/* Header */}
+          <div className="mb-2">
+            <div className="flex items-start justify-between gap-2">
+              <h3 className={cn(
+                "font-medium text-foreground leading-tight",
+                compact ? "text-sm" : "text-base"
+              )}>
+                {integration.name}
+              </h3>
+              {integration.connected && (
+                <span className="text-xs text-muted-foreground/80 shrink-0">
+                  Connected
+                </span>
               )}
-            >
+            </div>
+            <span className="text-[10px] text-muted-foreground/60 uppercase tracking-wide">
               {integration.category}
-            </Badge>
+            </span>
           </div>
 
-          <p className="text-sm line-clamp-2 flex-grow leading-relaxed text-muted-foreground">
-            {integration.description}
-          </p>
+          {/* Description - hide in compact mode */}
+          {!compact && (
+            <p className="text-xs text-muted-foreground/70 line-clamp-2 flex-grow leading-relaxed">
+              {integration.description}
+            </p>
+          )}
 
           {/* Action Button */}
-          <div className="mt-4 pt-3 border-t border-border/30">
+          <div className={cn("mt-auto", compact ? "pt-2" : "pt-3")}>
             {integration.connected ? (
               <Button 
-                variant="outline" 
+                variant="ghost" 
                 size="sm"
-                className="w-full border-red-500/40 text-red-400 hover:bg-red-500/10 hover:text-red-300 hover:border-red-500/60 transition-all duration-300"
+                className="w-full text-xs text-muted-foreground hover:text-red-400 hover:bg-transparent h-8"
                 onClick={(e) => {
                   e.stopPropagation();
                   onDisconnect();
@@ -98,11 +80,9 @@ const ConnectionIntegrationCard = ({
               </Button>
             ) : (
               <Button 
+                variant="outline"
                 size="sm"
-                className={cn(
-                  "w-full bg-primary hover:bg-primary/90 transition-all duration-300",
-                  "hover:shadow-[0_0_20px_-5px_hsl(var(--primary))]"
-                )}
+                className="w-full text-xs border-border/50 bg-transparent hover:bg-muted/30 hover:border-border/70 h-8"
                 onClick={(e) => {
                   e.stopPropagation();
                   onConnect();
@@ -113,12 +93,6 @@ const ConnectionIntegrationCard = ({
             )}
           </div>
         </CardContent>
-
-        {/* Hover Glow Effect */}
-        <div className={cn(
-          "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none",
-          "bg-gradient-to-t from-primary/5 via-transparent to-transparent"
-        )} />
       </Card>
     </motion.div>
   );
