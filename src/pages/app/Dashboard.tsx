@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-import DashboardWarningBanner from "@/components/dashboard/DashboardWarningBanner";
 import DashboardSuggestionCard from "@/components/dashboard/DashboardSuggestionCard";
 import DashboardStatCard from "@/components/dashboard/DashboardStatCard";
 import DashboardActivityRow from "@/components/dashboard/DashboardActivityRow";
@@ -39,14 +38,8 @@ const Dashboard = () => {
     <AppShell>
       <TooltipProvider>
         <PageTransition className="max-w-screen-xl mx-auto px-4 py-8 space-y-10">
-          
-          {/* 1. Subscription Warning Banner */}
-          <PageItem>
-            <DashboardWarningBanner />
-          </PageItem>
 
-
-          {/* 3. Synth Suggestion Section */}
+          {/* Synth Suggestion Section */}
           <PageItem>
             <DashboardSuggestionCard />
           </PageItem>
