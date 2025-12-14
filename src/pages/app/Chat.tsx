@@ -40,20 +40,13 @@ const processingMessages: Record<string, string> = {
   finalizing: "Finalizing automation...",
 };
 
-// Example prompts for gated state
-const examplePrompts = [
-  "Create a workflow that captures leads and sends them to my CRM",
-  "Summarize yesterday's activity and send it to Slack",
-  "Automate invoice generation when a new order is placed",
-];
-
 const Chat = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { isSubscribed: contextSubscribed, requireSubscription } = useSubscription();
   
-  // DEV-ONLY: Temporary toggle for design preview (will be replaced by backend logic)
-  const [devIsSubscribed, setDevIsSubscribed] = useState(true);
+  // UI-ONLY: Temporary preview toggle (will be replaced by backend logic)
+  const [isSubscribedPreview, setIsSubscribedPreview] = useState(true);
   
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -201,81 +194,55 @@ const Chat = () => {
 
   return (
     <AppShell>
-      <div className="h-[calc(100vh-4rem)] flex flex-col">
+      <div className="h-[calc(100vh-4rem)] flex flex-col relative">
         {/* DEV-ONLY Toggle */}
         <div className="px-4 pt-4">
           <div className="max-w-2xl mx-auto flex items-center justify-between rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 px-4 py-2.5">
             <span className="text-xs font-medium text-amber-400/80 uppercase tracking-wide">
-              DEV: Subscribed State
+              DEV: isSubscribedPreview
             </span>
             <div className="flex items-center gap-3">
-              <span className={cn("text-xs", devIsSubscribed ? "text-muted-foreground/50" : "text-foreground/80")}>
+              <span className={cn("text-xs", isSubscribedPreview ? "text-muted-foreground/50" : "text-foreground/80")}>
                 False
               </span>
               <Switch 
-                checked={devIsSubscribed} 
-                onCheckedChange={setDevIsSubscribed}
+                checked={isSubscribedPreview} 
+                onCheckedChange={setIsSubscribedPreview}
                 className="data-[state=checked]:bg-primary"
               />
-              <span className={cn("text-xs", devIsSubscribed ? "text-foreground/80" : "text-muted-foreground/50")}>
+              <span className={cn("text-xs", isSubscribedPreview ? "text-foreground/80" : "text-muted-foreground/50")}>
                 True
               </span>
             </div>
           </div>
         </div>
 
-        {/* GATED STATE - When not subscribed */}
-        {!devIsSubscribed ? (
-          <div className="flex-1 flex items-center justify-center px-4 py-12">
-            <Card className="max-w-lg w-full border-border/40 bg-card/80 shadow-lg">
-              <CardContent className="p-8 text-center space-y-6">
-                {/* Title */}
+        {/* GATED OVERLAY - When not subscribed */}
+        {!isSubscribedPreview && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-[1px]">
+            <Card className="max-w-md w-full mx-4 border-border/50 bg-card shadow-xl">
+              <CardContent className="p-8 text-center space-y-5">
                 <div>
-                  <h2 className="text-xl font-semibold text-foreground tracking-tight mb-2">
-                    Upgrade to unlock Synth Chat
+                  <h2 className="text-lg font-semibold text-foreground tracking-tight mb-2">
+                    Unlock Synth Chat
                   </h2>
                   <p className="text-sm text-muted-foreground/80 leading-relaxed">
-                    Synth Chat builds and manages automations for you. Upgrade to start creating workflows through conversation.
+                    Chat is available on an active subscription. Upgrade to start creating automations with Synth.
                   </p>
                 </div>
 
-                {/* Example Prompts Preview */}
-                <div className="border-t border-b border-border/30 py-5 space-y-3">
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground/50 font-medium">
-                    Example prompts
-                  </p>
-                  {examplePrompts.map((prompt, index) => (
-                    <p 
-                      key={index}
-                      className="text-sm text-muted-foreground/60 leading-relaxed italic"
-                    >
-                      "{prompt}"
-                    </p>
-                  ))}
-                </div>
-
-                {/* Actions */}
-                <div className="space-y-3 pt-2">
-                  <Button 
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium h-11"
-                    onClick={() => navigate("/app/billing")}
-                  >
-                    Upgrade to Pro
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    className="text-muted-foreground hover:text-foreground text-sm"
-                    onClick={() => navigate("/pricing")}
-                  >
-                    View Plans
-                  </Button>
-                </div>
+                <Button 
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium h-11"
+                  onClick={() => navigate("/app/billing")}
+                >
+                  Upgrade to Continue
+                </Button>
               </CardContent>
             </Card>
           </div>
-        ) : (
-          /* SUBSCRIBED STATE - Full Chat Experience */
-          <>
+        )}
+
+        {/* SUBSCRIBED STATE - Full Chat Experience */}
             {/* Fix in Chat Context Banner */}
             <AnimatePresence>
               {fixContext && (
@@ -476,9 +443,8 @@ const Chat = () => {
                 </Button>
               </div>
             </div>
-          </>
-        )}
       </div>
+
 
       {/* Automation Created Modal */}
       <AutomationCreatedModal
