@@ -22,48 +22,60 @@ const ConnectionIntegrationCard = ({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 6 }}
+      initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.02, duration: 0.2 }}
+      transition={{ delay: index * 0.015, duration: 0.2 }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <Card
         className={cn(
           "relative overflow-hidden transition-all duration-200 h-full",
-          "bg-muted/20 border-border/30",
-          "hover:bg-muted/35 hover:border-border/50",
-          integration.connected && [
-            "bg-muted/30 border-border/40",
-            "ring-1 ring-green-500/10"
-          ]
+          integration.connected 
+            ? [
+                "bg-card/40 border-green-500/20",
+                "hover:border-green-500/30 hover:bg-card/50"
+              ]
+            : [
+                "bg-card/20 border-border/20",
+                "hover:bg-card/30 hover:border-border/30",
+                "hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/20"
+              ]
         )}
       >
+        {/* Subtle top accent for connected cards */}
+        {integration.connected && (
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-green-500/40 to-transparent" />
+        )}
+
         <CardContent className="p-5 flex flex-col h-full min-h-[150px]">
           {/* Header */}
-          <div className="space-y-1 mb-3">
+          <div className="space-y-1.5 mb-3">
             <div className="flex items-start justify-between gap-2">
-              <h3 className="font-semibold text-foreground text-sm leading-tight">
+              <h3 className={cn(
+                "font-medium text-sm leading-tight transition-colors",
+                integration.connected ? "text-foreground" : "text-foreground/90"
+              )}>
                 {integration.name}
               </h3>
               {integration.connected && (
-                <span className="text-[10px] text-green-500/80 font-medium shrink-0 uppercase tracking-wide">
+                <span className="text-[10px] text-green-500/60 font-normal shrink-0 tracking-wide">
                   Connected
                 </span>
               )}
             </div>
-            <span className="text-[10px] text-muted-foreground/50 uppercase tracking-widest">
+            <span className="text-[10px] text-muted-foreground/40 uppercase tracking-widest">
               {integration.category}
             </span>
           </div>
 
           {/* Description */}
-          <p className="text-xs text-muted-foreground/60 line-clamp-2 flex-grow leading-relaxed">
+          <p className="text-xs text-muted-foreground/50 line-clamp-2 flex-grow leading-relaxed">
             {integration.description}
           </p>
 
           {/* Action */}
-          <div className="mt-4 pt-3 border-t border-border/20">
+          <div className="mt-4 pt-3 border-t border-border/10">
             {integration.connected ? (
               <Button 
                 variant="ghost" 
@@ -71,8 +83,8 @@ const ConnectionIntegrationCard = ({
                 className={cn(
                   "w-full text-xs h-8 transition-all duration-200",
                   isHovered 
-                    ? "text-red-400/80 hover:text-red-400 hover:bg-red-500/10" 
-                    : "text-muted-foreground/40 hover:text-muted-foreground"
+                    ? "text-red-400/70 hover:text-red-400 hover:bg-red-500/5" 
+                    : "text-muted-foreground/30 hover:text-muted-foreground/50"
                 )}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -83,9 +95,9 @@ const ConnectionIntegrationCard = ({
               </Button>
             ) : (
               <Button 
-                variant="outline"
+                variant="ghost"
                 size="sm"
-                className="w-full text-xs h-8 border-border/40 bg-muted/30 text-foreground/80 hover:bg-muted/50 hover:border-border/60 hover:text-foreground"
+                className="w-full text-xs h-8 text-muted-foreground/50 hover:text-foreground/70 hover:bg-muted/20"
                 onClick={(e) => {
                   e.stopPropagation();
                   onConnect();

@@ -153,13 +153,13 @@ const Connections = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="space-y-5"
+              className="space-y-5 -mx-4 px-4 py-6 rounded-lg bg-gradient-to-b from-green-500/[0.02] to-transparent"
             >
               <div className="flex items-baseline justify-between">
-                <h2 className="text-sm font-medium text-foreground/80 uppercase tracking-wider">
+                <h2 className="text-xs font-medium text-green-500/70 uppercase tracking-widest">
                   Connected
                 </h2>
-                <span className="text-xs text-muted-foreground/50">
+                <span className="text-[10px] text-muted-foreground/40">
                   {connectedCount} active
                 </span>
               </div>
@@ -185,11 +185,11 @@ const Connections = () => {
               transition={{ delay: 0.25 }}
               className="space-y-5"
             >
-              <div className="flex items-baseline justify-between">
-                <h2 className="text-sm font-medium text-foreground/80 uppercase tracking-wider">
+              <div className="flex items-baseline justify-between border-t border-border/20 pt-6">
+                <h2 className="text-xs font-medium text-muted-foreground/60 uppercase tracking-widest">
                   Available
                 </h2>
-                <span className="text-xs text-muted-foreground/50">
+                <span className="text-[10px] text-muted-foreground/40">
                   {availableIntegrations.length} apps
                 </span>
               </div>
