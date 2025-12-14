@@ -1,7 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import AppShell from "@/components/app/AppShell";
 import { PageTransition } from "@/components/app/PageTransition";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import ConnectionIntegrationCard from "@/components/connections/ConnectionIntegrationCard";
 import ConnectIntegrationModal from "@/components/connections/ConnectIntegrationModal";
 import { cn } from "@/lib/utils";
@@ -62,12 +65,18 @@ const initialIntegrations: Integration[] = [
 type FilterType = "all" | "connected" | "available";
 
 const Connections = () => {
+  const navigate = useNavigate();
+  
+  // UI-ONLY: Temporary preview toggle (will be replaced by backend logic)
+  const [isSubscribedPreview, setIsSubscribedPreview] = useState(true);
+  
   const [integrations, setIntegrations] = useState<Integration[]>(initialIntegrations);
   const [connectModalOpen, setConnectModalOpen] = useState(false);
   const [selectedIntegration, setSelectedIntegration] = useState<Integration | null>(null);
   const [filter, setFilter] = useState<FilterType>("all");
 
   const handleConnect = (integration: Integration) => {
+    if (!isSubscribedPreview) return;
     setSelectedIntegration(integration);
     setConnectModalOpen(true);
   };
@@ -81,6 +90,7 @@ const Connections = () => {
   };
 
   const handleDisconnect = (integrationId: string) => {
+    if (!isSubscribedPreview) return;
     setIntegrations(prev => 
       prev.map(i => i.id === integrationId ? { ...i, connected: false } : i)
     );
@@ -103,6 +113,49 @@ const Connections = () => {
     <AppShell>
       <PageTransition>
         <div className="space-y-10">
+          {/* DEV-ONLY Toggle */}
+          <div className="relative z-[60]">
+            <div className="flex items-center justify-between rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 px-4 py-2.5">
+              <span className="text-xs font-medium text-amber-400/80 uppercase tracking-wide">
+                DEV: isSubscribedPreview
+              </span>
+              <div className="flex items-center gap-3">
+                <span className={cn("text-xs", isSubscribedPreview ? "text-muted-foreground/50" : "text-foreground/80")}>
+                  False
+                </span>
+                <Switch 
+                  checked={isSubscribedPreview} 
+                  onCheckedChange={setIsSubscribedPreview}
+                  className="data-[state=checked]:bg-primary"
+                />
+                <span className={cn("text-xs", isSubscribedPreview ? "text-foreground/80" : "text-muted-foreground/50")}>
+                  True
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Gated Message Banner */}
+          {!isSubscribedPreview && (
+            <motion.div
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-lg border border-primary/20 bg-primary/5 px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+            >
+              <p className="text-sm text-foreground/80">
+                Connections are available on an active plan
+              </p>
+              <Button 
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/pricing")}
+                className="border-primary/30 text-primary hover:bg-primary/10 shrink-0"
+              >
+                View Plans
+              </Button>
+            </motion.div>
+          )}
+
           {/* Page Header */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -129,12 +182,16 @@ const Connections = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.15 }}
-            className="flex items-center gap-6 text-sm border-b border-border/30 pb-3"
+            className={cn(
+              "flex items-center gap-6 text-sm border-b border-border/30 pb-3",
+              !isSubscribedPreview && "opacity-50 pointer-events-none"
+            )}
           >
             {(["all", "connected", "available"] as FilterType[]).map((filterType) => (
               <button
                 key={filterType}
                 onClick={() => setFilter(filterType)}
+                disabled={!isSubscribedPreview}
                 className={cn(
                   "transition-all duration-200 capitalize pb-1 -mb-3.5",
                   filter === filterType
@@ -153,7 +210,10 @@ const Connections = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="space-y-5 -mx-4 px-4 py-6 rounded-lg bg-gradient-to-b from-green-500/[0.02] to-transparent"
+              className={cn(
+                "space-y-5 -mx-4 px-4 py-6 rounded-lg bg-gradient-to-b from-green-500/[0.02] to-transparent",
+                !isSubscribedPreview && "opacity-60"
+              )}
             >
               <div className="flex items-baseline justify-between">
                 <h2 className="text-xs font-medium text-green-500/70 uppercase tracking-widest">
@@ -165,13 +225,14 @@ const Connections = () => {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {connectedIntegrations.map((integration, index) => (
-                  <ConnectionIntegrationCard
-                    key={integration.id}
-                    integration={integration}
-                    onConnect={() => handleConnect(integration)}
-                    onDisconnect={() => handleDisconnect(integration.id)}
-                    index={index}
-                  />
+                  <div key={integration.id} className={cn(!isSubscribedPreview && "pointer-events-none")}>
+                    <ConnectionIntegrationCard
+                      integration={integration}
+                      onConnect={() => handleConnect(integration)}
+                      onDisconnect={() => handleDisconnect(integration.id)}
+                      index={index}
+                    />
+                  </div>
                 ))}
               </div>
             </motion.section>
@@ -183,7 +244,7 @@ const Connections = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.25 }}
-              className="space-y-5"
+              className={cn("space-y-5", !isSubscribedPreview && "opacity-60")}
             >
               <div className="flex items-baseline justify-between border-t border-border/20 pt-6">
                 <h2 className="text-xs font-medium text-muted-foreground/60 uppercase tracking-widest">
@@ -195,13 +256,14 @@ const Connections = () => {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 {availableIntegrations.map((integration, index) => (
-                  <ConnectionIntegrationCard
-                    key={integration.id}
-                    integration={integration}
-                    onConnect={() => handleConnect(integration)}
-                    onDisconnect={() => handleDisconnect(integration.id)}
-                    index={index}
-                  />
+                  <div key={integration.id} className={cn(!isSubscribedPreview && "pointer-events-none")}>
+                    <ConnectionIntegrationCard
+                      integration={integration}
+                      onConnect={() => handleConnect(integration)}
+                      onDisconnect={() => handleDisconnect(integration.id)}
+                      index={index}
+                    />
+                  </div>
                 ))}
               </div>
             </motion.section>
