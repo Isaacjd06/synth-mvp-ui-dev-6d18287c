@@ -241,83 +241,128 @@ const NewHeroSection = () => {
 
           {/* Right Side - Animated System Preview */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative lg:pl-12"
+            initial={{ opacity: 0, x: 40, scale: 0.95 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            transition={{ duration: 1, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+            className="relative lg:pl-8 xl:pl-16"
           >
-            {/* Preview Container with perspective */}
+            {/* Preview Container with strong perspective */}
             <div 
               className="relative"
               style={{
-                perspective: "1200px",
+                perspective: "1000px",
+                perspectiveOrigin: "30% 50%",
               }}
             >
-              {/* Animated Screen */}
+              {/* Glow backdrop for depth */}
+              <motion.div 
+                className="absolute -inset-8 rounded-3xl blur-3xl opacity-40 pointer-events-none"
+                animate={{
+                  opacity: [0.3, 0.5, 0.3],
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                style={{
+                  background: "radial-gradient(ellipse at 60% 40%, hsl(217 100% 50% / 0.25) 0%, transparent 60%)",
+                }}
+              />
+
+              {/* Animated Screen - Larger and angled */}
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeView}
                   initial={{ 
                     opacity: 0, 
-                    rotateY: -2,
-                    rotateX: 1,
-                    x: -10,
+                    rotateY: -8,
+                    rotateX: 3,
+                    scale: 0.96,
+                    x: -20,
                   }}
                   animate={{ 
                     opacity: 1, 
-                    rotateY: -4,
-                    rotateX: 2,
+                    rotateY: -12,
+                    rotateX: 4,
+                    scale: 1,
                     x: 0,
                   }}
                   exit={{ 
                     opacity: 0, 
-                    rotateY: -6,
-                    rotateX: 3,
-                    x: 10,
+                    rotateY: -16,
+                    rotateX: 5,
+                    scale: 0.96,
+                    x: 20,
                   }}
                   transition={{ 
-                    duration: 0.6,
-                    ease: [0.4, 0, 0.2, 1],
+                    duration: 0.7,
+                    ease: [0.32, 0.72, 0, 1],
+                    opacity: { duration: 0.5 },
+                    scale: { duration: 0.6 },
                   }}
-                  className="relative rounded-2xl bg-[#0a0a0a] border border-white/10 overflow-hidden"
+                  className="relative rounded-2xl bg-[#0a0a0a] border border-white/[0.08] overflow-hidden w-full max-w-[540px]"
                   style={{
                     transformStyle: "preserve-3d",
-                    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 60px -15px hsl(217 100% 50% / 0.15)",
+                    boxShadow: `
+                      0 50px 100px -20px rgba(0, 0, 0, 0.8),
+                      0 30px 60px -15px rgba(0, 0, 0, 0.6),
+                      0 0 80px -20px hsl(217 100% 50% / 0.2),
+                      inset 0 1px 0 0 rgba(255, 255, 255, 0.05)
+                    `,
                   }}
                 >
+                  {/* Top edge highlight */}
+                  <div 
+                    className="absolute top-0 left-0 right-0 h-px pointer-events-none"
+                    style={{
+                      background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 20%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.1) 80%, transparent 100%)",
+                    }}
+                  />
+
                   {/* Screen Header Bar */}
-                  <div className="flex items-center gap-2 px-4 py-3 border-b border-white/5 bg-[#111]/50">
-                    <div className="flex gap-1.5">
-                      <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
-                      <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
-                      <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
+                  <div className="flex items-center gap-2 px-5 py-3.5 border-b border-white/[0.06] bg-[#111]/60">
+                    <div className="flex gap-2">
+                      <div className="w-3 h-3 rounded-full bg-white/[0.08]" />
+                      <div className="w-3 h-3 rounded-full bg-white/[0.08]" />
+                      <div className="w-3 h-3 rounded-full bg-white/[0.08]" />
                     </div>
-                    <span className="text-xs text-foreground/30 ml-2">{activeView}</span>
+                    <span className="text-xs text-foreground/25 ml-3 tracking-wide">{activeView}</span>
                   </div>
 
-                  {/* Preview Content - Fixed Height */}
-                  <div className="p-5 h-[380px] overflow-hidden">
+                  {/* Preview Content - Fixed Height, Larger */}
+                  <div className="p-6 h-[460px] overflow-hidden">
                     {activeView === "Dashboard" && <DashboardPreview />}
                     {activeView === "Chat" && <ChatPreview />}
                     {activeView === "Workflows" && <WorkflowsPreview />}
                   </div>
 
-                  {/* Subtle internal glow */}
-                  <div className="absolute top-0 right-0 w-48 h-48 bg-primary/8 rounded-full blur-[80px] pointer-events-none" />
+                  {/* Internal ambient glow */}
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
+                  <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary/5 rounded-full blur-[80px] pointer-events-none" />
                 </motion.div>
               </AnimatePresence>
 
-              {/* Soft shadow beneath */}
-              <div 
-                className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[90%] h-8 rounded-full blur-xl opacity-40"
+              {/* Strong shadow beneath - perspective-aware */}
+              <motion.div 
+                className="absolute -bottom-8 left-[10%] w-[80%] h-16 rounded-[100%] blur-2xl pointer-events-none"
                 style={{
-                  background: "radial-gradient(ellipse, hsl(217 100% 50% / 0.3) 0%, transparent 70%)",
+                  background: "radial-gradient(ellipse, rgba(0,0,0,0.7) 0%, transparent 70%)",
+                  transform: "rotateX(60deg) translateZ(-20px)",
+                }}
+              />
+              
+              {/* Blue accent shadow */}
+              <div 
+                className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-[60%] h-12 rounded-[100%] blur-xl opacity-50 pointer-events-none"
+                style={{
+                  background: "radial-gradient(ellipse, hsl(217 100% 50% / 0.4) 0%, transparent 70%)",
                 }}
               />
             </div>
 
             {/* Navigation Dots */}
-            <div className="flex items-center justify-center gap-3 mt-8">
+            <div className="flex items-center justify-center gap-4 mt-10">
               {views.map((view, index) => (
                 <button
                   key={view}
@@ -326,15 +371,15 @@ const NewHeroSection = () => {
                   aria-label={`View ${view}`}
                 >
                   <motion.div
-                    className={`w-2 h-2 rounded-full transition-colors duration-300 ${
+                    className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
                       activeIndex === index 
-                        ? "bg-primary" 
-                        : "bg-white/20 group-hover:bg-white/40"
+                        ? "bg-primary shadow-[0_0_12px_hsl(217_100%_50%/0.6)]" 
+                        : "bg-white/15 group-hover:bg-white/30"
                     }`}
                     animate={{
-                      scale: activeIndex === index ? 1.2 : 1,
+                      scale: activeIndex === index ? 1.3 : 1,
                     }}
-                    transition={{ duration: 0.3 }}
+                    transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
                   />
                 </button>
               ))}
