@@ -69,7 +69,7 @@ const features = [
   {
     id: "connections",
     title: "Connections, handled automatically",
-    description: "Synth automatically selects and connects the tools it needs to get work done. You don't browse integrations or manage setups — Synth handles that for you and only asks for access when required.",
+    description: "Synth automatically selects and connects the tools it needs to get work done. You don't browse integrations or manage setups — Synth handles that for you and only asks for access when required. If you ever want a different tool used, just tell Synth — it will adapt.",
     preview: {
       apps: ["Gmail", "Slack", "Notion", "HubSpot", "Stripe", "Google Sheets"],
       helperText: "Examples of tools Synth can work with",
