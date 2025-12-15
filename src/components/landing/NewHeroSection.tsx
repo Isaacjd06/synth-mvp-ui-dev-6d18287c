@@ -244,125 +244,162 @@ const NewHeroSection = () => {
             initial={{ opacity: 0, x: 40, scale: 0.95 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
             transition={{ duration: 1, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-            className="relative lg:pl-8 xl:pl-16"
+            className="relative lg:pl-4 xl:pl-8"
           >
             {/* Preview Container with strong perspective */}
             <div 
               className="relative"
               style={{
-                perspective: "1000px",
-                perspectiveOrigin: "30% 50%",
+                perspective: "1200px",
+                perspectiveOrigin: "20% 50%",
               }}
             >
-              {/* Glow backdrop for depth */}
+              {/* Backplate shadow layer - sits behind the screen */}
+              <div 
+                className="absolute -inset-4 rounded-3xl pointer-events-none"
+                style={{
+                  transform: "rotateY(-18deg) rotateX(6deg) rotateZ(-1deg) translateZ(-40px) scale(1.05)",
+                  background: "linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 100%)",
+                  filter: "blur(30px)",
+                }}
+              />
+
+              {/* Wide ambient glow behind preview */}
               <motion.div 
-                className="absolute -inset-8 rounded-3xl blur-3xl opacity-40 pointer-events-none"
+                className="absolute -inset-16 rounded-[40px] pointer-events-none"
                 animate={{
-                  opacity: [0.3, 0.5, 0.3],
+                  opacity: [0.4, 0.6, 0.4],
                 }}
                 transition={{
-                  duration: 4,
+                  duration: 5,
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
                 style={{
-                  background: "radial-gradient(ellipse at 60% 40%, hsl(217 100% 50% / 0.25) 0%, transparent 60%)",
+                  background: "radial-gradient(ellipse at 50% 40%, hsl(217 100% 50% / 0.2) 0%, hsl(217 100% 60% / 0.1) 30%, transparent 70%)",
+                  filter: "blur(40px)",
                 }}
               />
 
-              {/* Animated Screen - Larger and angled */}
+              {/* Secondary glow - adds depth */}
+              <div 
+                className="absolute -inset-12 rounded-3xl pointer-events-none opacity-30"
+                style={{
+                  background: "radial-gradient(ellipse at 70% 30%, hsl(217 100% 70% / 0.3) 0%, transparent 50%)",
+                  filter: "blur(60px)",
+                }}
+              />
+
+              {/* Animated Screen - Much larger and strongly angled */}
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeView}
                   initial={{ 
                     opacity: 0, 
-                    rotateY: -8,
-                    rotateX: 3,
-                    scale: 0.96,
-                    x: -20,
+                    rotateY: -14,
+                    rotateX: 5,
+                    rotateZ: -0.5,
+                    scale: 0.94,
+                    x: -30,
+                    y: 10,
                   }}
                   animate={{ 
                     opacity: 1, 
-                    rotateY: -12,
-                    rotateX: 4,
+                    rotateY: -18,
+                    rotateX: 6,
+                    rotateZ: -1,
                     scale: 1,
                     x: 0,
+                    y: 0,
                   }}
                   exit={{ 
                     opacity: 0, 
-                    rotateY: -16,
-                    rotateX: 5,
-                    scale: 0.96,
-                    x: 20,
+                    rotateY: -22,
+                    rotateX: 7,
+                    rotateZ: -1.5,
+                    scale: 0.94,
+                    x: 30,
+                    y: -10,
                   }}
                   transition={{ 
-                    duration: 0.7,
-                    ease: [0.32, 0.72, 0, 1],
+                    duration: 0.8,
+                    ease: [0.25, 0.1, 0.25, 1],
                     opacity: { duration: 0.5 },
-                    scale: { duration: 0.6 },
+                    scale: { duration: 0.7 },
                   }}
-                  className="relative rounded-2xl bg-[#0a0a0a] border border-white/[0.08] overflow-hidden w-full max-w-[540px]"
+                  className="relative rounded-2xl bg-[#0a0a0a] border border-white/[0.1] overflow-hidden w-full max-w-[680px]"
                   style={{
                     transformStyle: "preserve-3d",
                     boxShadow: `
-                      0 50px 100px -20px rgba(0, 0, 0, 0.8),
-                      0 30px 60px -15px rgba(0, 0, 0, 0.6),
-                      0 0 80px -20px hsl(217 100% 50% / 0.2),
-                      inset 0 1px 0 0 rgba(255, 255, 255, 0.05)
+                      0 80px 150px -30px rgba(0, 0, 0, 0.9),
+                      0 50px 80px -20px rgba(0, 0, 0, 0.7),
+                      0 25px 40px -10px rgba(0, 0, 0, 0.5),
+                      0 0 120px -30px hsl(217 100% 50% / 0.25),
+                      inset 0 1px 0 0 rgba(255, 255, 255, 0.08)
                     `,
                   }}
                 >
-                  {/* Top edge highlight */}
+                  {/* Top edge highlight - reinforces angle */}
                   <div 
                     className="absolute top-0 left-0 right-0 h-px pointer-events-none"
                     style={{
-                      background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 20%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.1) 80%, transparent 100%)",
+                      background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 15%, rgba(255,255,255,0.25) 40%, rgba(255,255,255,0.15) 70%, transparent 100%)",
+                    }}
+                  />
+
+                  {/* Left edge highlight - shows the angle */}
+                  <div 
+                    className="absolute top-0 left-0 bottom-0 w-px pointer-events-none"
+                    style={{
+                      background: "linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 50%, transparent 100%)",
                     }}
                   />
 
                   {/* Screen Header Bar */}
-                  <div className="flex items-center gap-2 px-5 py-3.5 border-b border-white/[0.06] bg-[#111]/60">
+                  <div className="flex items-center gap-2 px-6 py-4 border-b border-white/[0.06] bg-[#111]/60">
                     <div className="flex gap-2">
-                      <div className="w-3 h-3 rounded-full bg-white/[0.08]" />
-                      <div className="w-3 h-3 rounded-full bg-white/[0.08]" />
-                      <div className="w-3 h-3 rounded-full bg-white/[0.08]" />
+                      <div className="w-3 h-3 rounded-full bg-white/[0.1]" />
+                      <div className="w-3 h-3 rounded-full bg-white/[0.1]" />
+                      <div className="w-3 h-3 rounded-full bg-white/[0.1]" />
                     </div>
-                    <span className="text-xs text-foreground/25 ml-3 tracking-wide">{activeView}</span>
+                    <span className="text-xs text-foreground/30 ml-4 tracking-wide font-medium">{activeView}</span>
                   </div>
 
-                  {/* Preview Content - Fixed Height, Larger */}
-                  <div className="p-6 h-[460px] overflow-hidden">
+                  {/* Preview Content - Fixed Height, Much Larger */}
+                  <div className="p-7 h-[520px] overflow-hidden">
                     {activeView === "Dashboard" && <DashboardPreview />}
                     {activeView === "Chat" && <ChatPreview />}
                     {activeView === "Workflows" && <WorkflowsPreview />}
                   </div>
 
-                  {/* Internal ambient glow */}
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
-                  <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary/5 rounded-full blur-[80px] pointer-events-none" />
+                  {/* Internal ambient glows */}
+                  <div className="absolute top-0 right-0 w-80 h-80 bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
+                  <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
                 </motion.div>
               </AnimatePresence>
 
-              {/* Strong shadow beneath - perspective-aware */}
+              {/* Realistic drop shadow beneath - perspective-aware */}
               <motion.div 
-                className="absolute -bottom-8 left-[10%] w-[80%] h-16 rounded-[100%] blur-2xl pointer-events-none"
+                className="absolute -bottom-12 left-[5%] w-[90%] h-20 rounded-[100%] pointer-events-none"
                 style={{
-                  background: "radial-gradient(ellipse, rgba(0,0,0,0.7) 0%, transparent 70%)",
-                  transform: "rotateX(60deg) translateZ(-20px)",
+                  background: "radial-gradient(ellipse, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 40%, transparent 70%)",
+                  filter: "blur(25px)",
+                  transform: "rotateX(60deg) translateZ(-30px)",
                 }}
               />
               
-              {/* Blue accent shadow */}
+              {/* Blue accent shadow - gives color to the depth */}
               <div 
-                className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-[60%] h-12 rounded-[100%] blur-xl opacity-50 pointer-events-none"
+                className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-[70%] h-16 rounded-[100%] opacity-60 pointer-events-none"
                 style={{
-                  background: "radial-gradient(ellipse, hsl(217 100% 50% / 0.4) 0%, transparent 70%)",
+                  background: "radial-gradient(ellipse, hsl(217 100% 50% / 0.5) 0%, hsl(217 100% 60% / 0.2) 40%, transparent 70%)",
+                  filter: "blur(20px)",
                 }}
               />
             </div>
 
-            {/* Navigation Dots */}
-            <div className="flex items-center justify-center gap-4 mt-10">
+            {/* Navigation Dots - closer to preview */}
+            <div className="flex items-center justify-center gap-5 mt-8">
               {views.map((view, index) => (
                 <button
                   key={view}
@@ -371,15 +408,15 @@ const NewHeroSection = () => {
                   aria-label={`View ${view}`}
                 >
                   <motion.div
-                    className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                    className={`w-3 h-3 rounded-full transition-all duration-400 ${
                       activeIndex === index 
-                        ? "bg-primary shadow-[0_0_12px_hsl(217_100%_50%/0.6)]" 
-                        : "bg-white/15 group-hover:bg-white/30"
+                        ? "bg-primary shadow-[0_0_16px_hsl(217_100%_50%/0.7)]" 
+                        : "bg-white/20 group-hover:bg-white/40"
                     }`}
                     animate={{
-                      scale: activeIndex === index ? 1.3 : 1,
+                      scale: activeIndex === index ? 1.4 : 1,
                     }}
-                    transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
+                    transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
                   />
                 </button>
               ))}
