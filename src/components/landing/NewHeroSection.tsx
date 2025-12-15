@@ -2,20 +2,20 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 
-type TabType = "Dashboard" | "Chat" | "Workflows";
+type ViewType = "Dashboard" | "Chat" | "Workflows";
 
 const DashboardPreview = () => (
-  <div className="space-y-4">
+  <div className="space-y-4 h-full">
     {/* Stats Row */}
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-3 gap-3">
       {[
         { label: "Active Automations", value: "12" },
         { label: "Executions Today", value: "847" },
         { label: "Success Rate", value: "99.2%" },
       ].map((stat) => (
-        <div key={stat.label} className="bg-[#111] rounded-lg p-4 border border-white/5">
-          <p className="text-xs text-foreground/40 mb-1">{stat.label}</p>
-          <p className="text-xl font-display-bold text-foreground">{stat.value}</p>
+        <div key={stat.label} className="bg-[#111] rounded-lg p-3 border border-white/5">
+          <p className="text-[10px] text-foreground/40 mb-1">{stat.label}</p>
+          <p className="text-lg font-display-bold text-foreground">{stat.value}</p>
         </div>
       ))}
     </div>
@@ -57,9 +57,9 @@ const DashboardPreview = () => (
 );
 
 const ChatPreview = () => (
-  <div className="space-y-4">
+  <div className="flex flex-col h-full">
     {/* Chat Messages */}
-    <div className="space-y-3">
+    <div className="space-y-3 flex-1">
       {/* User Message */}
       <div className="flex justify-end">
         <div className="bg-primary/20 rounded-xl rounded-br-sm px-4 py-3 max-w-[85%]">
@@ -98,8 +98,8 @@ const ChatPreview = () => (
 );
 
 const WorkflowsPreview = () => (
-  <div className="space-y-2">
-    <div className="bg-[#111] rounded-lg p-4 border border-white/5">
+  <div className="h-full">
+    <div className="bg-[#111] rounded-lg p-4 border border-white/5 h-full">
       <p className="text-xs text-foreground/40 mb-3">Your Workflows</p>
       <div className="space-y-1">
         {[
@@ -130,10 +130,18 @@ const WorkflowsPreview = () => (
   </div>
 );
 
-const NewHeroSection = () => {
-  const [activeTab, setActiveTab] = useState<TabType>("Dashboard");
+const views: ViewType[] = ["Dashboard", "Chat", "Workflows"];
 
-  const tabs: TabType[] = ["Dashboard", "Chat", "Workflows"];
+const NewHeroSection = () => {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const goTo = (index: number) => {
+    if (index >= 0 && index < views.length) {
+      setActiveIndex(index);
+    }
+  };
+
+  const activeView = views[activeIndex];
 
   return (
     <section className="relative pt-24 pb-16 overflow-hidden">
@@ -148,8 +156,8 @@ const NewHeroSection = () => {
       </div>
 
       <div className="container relative z-10 px-6">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left Side - Content */}
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          {/* Left Side - Content (unchanged) */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
@@ -231,57 +239,105 @@ const NewHeroSection = () => {
             </motion.p>
           </motion.div>
 
-          {/* Right Side - Product Preview */}
+          {/* Right Side - Animated System Preview */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative lg:pl-8"
+            className="relative lg:pl-12"
           >
-            <div className="relative rounded-2xl bg-[#0a0a0a] border border-white/10 overflow-hidden">
-              {/* Tab Bar */}
-              <div className="flex border-b border-white/10 bg-[#111]/50">
-                {tabs.map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`px-6 py-3 text-sm font-medium transition-colors relative ${
-                      activeTab === tab 
-                        ? "text-foreground" 
-                        : "text-foreground/50 hover:text-foreground/70"
-                    }`}
-                  >
-                    {tab}
-                    {activeTab === tab && (
-                      <motion.div
-                        layoutId="activeTab"
-                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
-                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                      />
-                    )}
-                  </button>
-                ))}
-              </div>
+            {/* Preview Container with perspective */}
+            <div 
+              className="relative"
+              style={{
+                perspective: "1200px",
+              }}
+            >
+              {/* Animated Screen */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeView}
+                  initial={{ 
+                    opacity: 0, 
+                    rotateY: -2,
+                    rotateX: 1,
+                    x: -10,
+                  }}
+                  animate={{ 
+                    opacity: 1, 
+                    rotateY: -4,
+                    rotateX: 2,
+                    x: 0,
+                  }}
+                  exit={{ 
+                    opacity: 0, 
+                    rotateY: -6,
+                    rotateX: 3,
+                    x: 10,
+                  }}
+                  transition={{ 
+                    duration: 0.6,
+                    ease: [0.4, 0, 0.2, 1],
+                  }}
+                  className="relative rounded-2xl bg-[#0a0a0a] border border-white/10 overflow-hidden"
+                  style={{
+                    transformStyle: "preserve-3d",
+                    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 60px -15px hsl(217 100% 50% / 0.15)",
+                  }}
+                >
+                  {/* Screen Header Bar */}
+                  <div className="flex items-center gap-2 px-4 py-3 border-b border-white/5 bg-[#111]/50">
+                    <div className="flex gap-1.5">
+                      <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
+                    </div>
+                    <span className="text-xs text-foreground/30 ml-2">{activeView}</span>
+                  </div>
 
-              {/* Preview Content */}
-              <div className="p-6 min-h-[340px]">
-                <AnimatePresence mode="wait">
+                  {/* Preview Content - Fixed Height */}
+                  <div className="p-5 h-[380px] overflow-hidden">
+                    {activeView === "Dashboard" && <DashboardPreview />}
+                    {activeView === "Chat" && <ChatPreview />}
+                    {activeView === "Workflows" && <WorkflowsPreview />}
+                  </div>
+
+                  {/* Subtle internal glow */}
+                  <div className="absolute top-0 right-0 w-48 h-48 bg-primary/8 rounded-full blur-[80px] pointer-events-none" />
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Soft shadow beneath */}
+              <div 
+                className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[90%] h-8 rounded-full blur-xl opacity-40"
+                style={{
+                  background: "radial-gradient(ellipse, hsl(217 100% 50% / 0.3) 0%, transparent 70%)",
+                }}
+              />
+            </div>
+
+            {/* Navigation Dots */}
+            <div className="flex items-center justify-center gap-3 mt-8">
+              {views.map((view, index) => (
+                <button
+                  key={view}
+                  onClick={() => goTo(index)}
+                  className="group relative p-2"
+                  aria-label={`View ${view}`}
+                >
                   <motion.div
-                    key={activeTab}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    {activeTab === "Dashboard" && <DashboardPreview />}
-                    {activeTab === "Chat" && <ChatPreview />}
-                    {activeTab === "Workflows" && <WorkflowsPreview />}
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-
-              {/* Subtle glow */}
-              <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
+                    className={`w-2 h-2 rounded-full transition-colors duration-300 ${
+                      activeIndex === index 
+                        ? "bg-primary" 
+                        : "bg-white/20 group-hover:bg-white/40"
+                    }`}
+                    animate={{
+                      scale: activeIndex === index ? 1.2 : 1,
+                    }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </button>
+              ))}
             </div>
           </motion.div>
         </div>
