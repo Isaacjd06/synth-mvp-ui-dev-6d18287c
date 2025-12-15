@@ -68,10 +68,11 @@ const features = [
   },
   {
     id: "connections",
-    title: "Connections",
-    description: "Connect and manage your integrations. Gmail, Slack, Notion, HubSpot, Stripe, and 40+ more. All connections available on all plans — limits apply to usage, not which apps you can connect.",
+    title: "Connections, handled automatically",
+    description: "Synth automatically selects and connects the tools it needs to get work done. You don't browse integrations or manage setups — Synth handles that for you and only asks for access when required.",
     preview: {
-      apps: ["Gmail", "Slack", "Notion", "HubSpot", "Stripe", "+35 more"],
+      apps: ["Gmail", "Slack", "Notion", "HubSpot", "Stripe", "Google Sheets"],
+      helperText: "Examples of tools Synth can work with",
     },
   },
 ];
@@ -214,12 +215,15 @@ const FeatureTourSection = () => {
                 )}
 
                 {feature.id === "connections" && (
-                  <div className="flex flex-wrap gap-2">
-                    {feature.preview.apps.map((app) => (
-                      <span key={app} className="text-xs bg-[#0a0a0a] text-foreground/60 px-3 py-1.5 rounded-lg border border-white/5">
-                        {app}
-                      </span>
-                    ))}
+                  <div className="space-y-3">
+                    <p className="text-xs text-foreground/40">{feature.preview.helperText}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {feature.preview.apps.map((app) => (
+                        <span key={app} className="text-xs bg-[#0a0a0a] text-foreground/50 px-3 py-1.5 rounded border border-white/5">
+                          {app}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
