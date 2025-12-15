@@ -100,7 +100,7 @@ const HeroSection = () => {
           >
             <span className="block">Automate your</span>
             <motion.span
-              className="inline-block"
+              className="text-gradient-pulse inline-block"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.8 }}
