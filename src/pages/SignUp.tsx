@@ -69,13 +69,13 @@ const SignUp = () => {
     await new Promise((r) => setTimeout(r, 800));
     // In real implementation, this would trigger Supabase Google OAuth
     // and after callback, retrieve answers from localStorage and send to backend
-    window.location.href = "/app/dashboard";
+    window.location.href = "/app/chat";
   };
 
   const handleGoogleLogin = async () => {
     setIsLoading(true);
     await new Promise((r) => setTimeout(r, 800));
-    window.location.href = "/app/dashboard";
+    window.location.href = "/app/chat";
   };
 
   const slideVariants = {
