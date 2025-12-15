@@ -18,11 +18,13 @@ const mockActiveConnections: ActiveConnection[] = [
   { id: "slack", name: "Slack", usedFor: "Notifications and team updates" },
 ];
 
-const suggestedTools = [
+const exampleTools = [
   "Gmail",
   "Google Sheets",
   "Notion",
   "Stripe",
+  "Slack",
+  "HubSpot",
 ];
 
 const Connections = () => {
@@ -36,7 +38,7 @@ const Connections = () => {
   return (
     <AppShell>
       <PageTransition>
-        <div className="space-y-10 max-w-3xl">
+        <div className="space-y-8 max-w-2xl">
           {/* DEV-ONLY Toggle */}
           <div className="relative z-[60]">
             <div className="flex items-center justify-between rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 px-4 py-2.5">
@@ -64,9 +66,8 @@ const Connections = () => {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="space-y-8"
+              className="space-y-6"
             >
-              {/* Gated Banner */}
               <div className="rounded-lg border border-primary/20 bg-primary/5 px-6 py-5 space-y-3">
                 <h2 className="text-base font-medium text-foreground">
                   Connections are available on an active plan.
@@ -89,75 +90,84 @@ const Connections = () => {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="space-y-10"
+              className="space-y-8"
             >
               {/* Page Header */}
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 <h1 className="text-xl font-semibold text-foreground">Connections</h1>
-                <p className="text-sm text-muted-foreground/70">
-                  Synth securely connects to tools on your behalf when needed.
+                <p className="text-sm text-muted-foreground/60 leading-relaxed">
+                  Synth automatically chooses and connects tools when needed. You don't need to manage integrations manually.
                 </p>
               </div>
 
               {/* Section 1: Active Connections */}
-              <section className="space-y-4">
-                <h2 className="text-xs font-medium text-muted-foreground/60 uppercase tracking-widest">
-                  Active Connections
-                </h2>
+              <section className="space-y-3">
+                <div className="space-y-1">
+                  <h2 className="text-xs font-medium text-muted-foreground/50 uppercase tracking-widest">
+                    Active Connections
+                  </h2>
+                  <p className="text-[11px] text-muted-foreground/40">
+                    These tools are currently authorized for Synth to use.
+                  </p>
+                </div>
                 
                 {activeConnections.length > 0 ? (
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {activeConnections.map((connection) => (
                       <div
                         key={connection.id}
-                        className="flex items-start justify-between rounded-lg border border-border/40 bg-card/50 px-5 py-4"
+                        className="rounded-md border border-border/20 bg-muted/10 px-4 py-3"
                       >
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-3">
-                            <span className="text-sm font-medium text-foreground">
-                              {connection.name}
-                            </span>
-                            <span className="text-[10px] font-medium text-green-500/80 uppercase tracking-wide">
-                              Connected
-                            </span>
-                          </div>
-                          <p className="text-xs text-muted-foreground/60">
-                            {connection.usedFor}
-                          </p>
+                        <div className="flex items-baseline gap-3">
+                          <span className="text-sm text-foreground/80">
+                            {connection.name}
+                          </span>
+                          <span className="text-[10px] text-green-500/60 uppercase tracking-wide">
+                            Connected
+                          </span>
                         </div>
+                        <p className="text-xs text-muted-foreground/40 mt-0.5">
+                          {connection.usedFor}
+                        </p>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground/50 py-4">
+                  <p className="text-sm text-muted-foreground/40 py-3">
                     No active connections yet. Synth will connect tools as needed.
                   </p>
                 )}
               </section>
 
               {/* Section 2: How Connections Work */}
-              <section className="space-y-4">
-                <h2 className="text-xs font-medium text-muted-foreground/60 uppercase tracking-widest">
+              <section className="space-y-3">
+                <h2 className="text-xs font-medium text-muted-foreground/50 uppercase tracking-widest">
                   How Connections Work
                 </h2>
-                <div className="rounded-lg border border-border/30 bg-muted/20 px-5 py-4">
-                  <p className="text-sm text-muted-foreground/80 leading-relaxed">
-                    Synth chooses and connects tools automatically based on what you ask it to do.
-                    You'll only be asked for access when it's required.
+                <div className="rounded-md border border-border/20 bg-muted/10 px-4 py-3">
+                  <p className="text-sm text-muted-foreground/60 leading-relaxed">
+                    Synth decides which tools to use based on what you ask it to do.
+                    <br />
+                    You'll only be asked for access when it's required to complete a task.
                   </p>
                 </div>
               </section>
 
-              {/* Section 3: Suggested Tools */}
-              <section className="space-y-4">
-                <h2 className="text-xs font-medium text-muted-foreground/60 uppercase tracking-widest">
-                  Tools Synth may use
-                </h2>
+              {/* Section 3: Example Tools */}
+              <section className="space-y-3">
+                <div className="space-y-1">
+                  <h2 className="text-xs font-medium text-muted-foreground/50 uppercase tracking-widest">
+                    Examples of tools Synth can work with
+                  </h2>
+                  <p className="text-[11px] text-muted-foreground/40">
+                    These are examples, not tools you need to configure.
+                  </p>
+                </div>
                 <div className="flex flex-wrap gap-2">
-                  {suggestedTools.map((tool) => (
+                  {exampleTools.map((tool) => (
                     <span
                       key={tool}
-                      className="text-xs text-muted-foreground/60 border border-border/30 rounded-full px-3 py-1.5"
+                      className="text-xs text-muted-foreground/40 border border-border/20 rounded px-2.5 py-1"
                     >
                       {tool}
                     </span>
