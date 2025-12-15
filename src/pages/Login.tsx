@@ -41,7 +41,7 @@ const Login = () => {
     try {
       // Simulate auth - in production this would call Supabase
       await new Promise(r => setTimeout(r, 500));
-      navigate("/app/dashboard");
+      navigate("/app/chat");
     } catch (err) {
       setError("Unable to sign in. Please try again.");
     } finally {
