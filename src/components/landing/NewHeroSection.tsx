@@ -1,6 +1,255 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
+
+// Futuristic AI Background Component
+const FuturisticBackground = () => {
+  const [nodes, setNodes] = useState<Array<{ id: number; x: number; y: number; delay: number }>>([]);
+  
+  useEffect(() => {
+    // Generate random node positions
+    const generatedNodes = Array.from({ length: 12 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      delay: Math.random() * 2,
+    }));
+    setNodes(generatedNodes);
+  }, []);
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {/* Animated grid pattern */}
+      <svg className="absolute inset-0 w-full h-full opacity-[0.04]">
+        <defs>
+          <pattern id="hero-grid" width="60" height="60" patternUnits="userSpaceOnUse">
+            <path d="M 60 0 L 0 0 0 60" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-primary" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#hero-grid)" />
+      </svg>
+
+      {/* Flowing gradient waves */}
+      <motion.div
+        className="absolute -left-1/4 top-0 w-[150%] h-full"
+        animate={{
+          backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+        }}
+        transition={{
+          duration: 20,
+          repeat: Infinity,
+          ease: "linear",
+        }}
+        style={{
+          background: `
+            linear-gradient(90deg, 
+              transparent 0%, 
+              hsl(217 100% 50% / 0.03) 20%, 
+              hsl(217 100% 60% / 0.06) 40%, 
+              hsl(217 100% 50% / 0.03) 60%, 
+              transparent 80%
+            )
+          `,
+          backgroundSize: "200% 100%",
+        }}
+      />
+
+      {/* Animated connection lines */}
+      <svg className="absolute inset-0 w-full h-full">
+        {/* Horizontal flowing lines */}
+        {[0.15, 0.35, 0.55, 0.75].map((y, i) => (
+          <motion.line
+            key={`h-line-${i}`}
+            x1="0%"
+            y1={`${y * 100}%`}
+            x2="100%"
+            y2={`${y * 100}%`}
+            stroke="url(#line-gradient)"
+            strokeWidth="1"
+            strokeDasharray="8 16"
+            initial={{ strokeDashoffset: 0 }}
+            animate={{ strokeDashoffset: -48 }}
+            transition={{
+              duration: 4 + i,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+          />
+        ))}
+        
+        {/* Diagonal flowing lines */}
+        {[0, 1, 2].map((i) => (
+          <motion.line
+            key={`d-line-${i}`}
+            x1={`${20 + i * 25}%`}
+            y1="0%"
+            x2={`${i * 25}%`}
+            y2="100%"
+            stroke="url(#line-gradient)"
+            strokeWidth="0.5"
+            strokeDasharray="4 12"
+            initial={{ strokeDashoffset: 0 }}
+            animate={{ strokeDashoffset: -32 }}
+            transition={{
+              duration: 6 + i,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+          />
+        ))}
+
+        <defs>
+          <linearGradient id="line-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="hsl(217 100% 60% / 0)" />
+            <stop offset="50%" stopColor="hsl(217 100% 60% / 0.15)" />
+            <stop offset="100%" stopColor="hsl(217 100% 60% / 0)" />
+          </linearGradient>
+        </defs>
+      </svg>
+
+      {/* Animated nodes/orbs */}
+      {nodes.map((node) => (
+        <motion.div
+          key={node.id}
+          className="absolute w-2 h-2 rounded-full"
+          style={{
+            left: `${node.x}%`,
+            top: `${node.y}%`,
+            background: "radial-gradient(circle, hsl(217 100% 70% / 0.4) 0%, hsl(217 100% 50% / 0) 70%)",
+          }}
+          animate={{
+            scale: [1, 1.5, 1],
+            opacity: [0.3, 0.7, 0.3],
+          }}
+          transition={{
+            duration: 3 + node.delay,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: node.delay,
+          }}
+        />
+      ))}
+
+      {/* Large floating orbs */}
+      <motion.div
+        className="absolute w-64 h-64 rounded-full"
+        style={{
+          left: "10%",
+          top: "20%",
+          background: "radial-gradient(circle, hsl(217 100% 50% / 0.08) 0%, transparent 60%)",
+          filter: "blur(40px)",
+        }}
+        animate={{
+          x: [0, 30, 0],
+          y: [0, -20, 0],
+          scale: [1, 1.1, 1],
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+      
+      <motion.div
+        className="absolute w-48 h-48 rounded-full"
+        style={{
+          left: "50%",
+          top: "60%",
+          background: "radial-gradient(circle, hsl(217 100% 60% / 0.06) 0%, transparent 60%)",
+          filter: "blur(30px)",
+        }}
+        animate={{
+          x: [0, -20, 0],
+          y: [0, 30, 0],
+          scale: [1, 1.15, 1],
+        }}
+        transition={{
+          duration: 10,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 2,
+        }}
+      />
+
+      {/* Pulse rings */}
+      <motion.div
+        className="absolute w-32 h-32 rounded-full border border-primary/10"
+        style={{
+          left: "25%",
+          top: "40%",
+        }}
+        animate={{
+          scale: [1, 2, 2],
+          opacity: [0.3, 0, 0],
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: "easeOut",
+        }}
+      />
+      
+      <motion.div
+        className="absolute w-24 h-24 rounded-full border border-primary/10"
+        style={{
+          left: "60%",
+          top: "25%",
+        }}
+        animate={{
+          scale: [1, 2.5, 2.5],
+          opacity: [0.2, 0, 0],
+        }}
+        transition={{
+          duration: 5,
+          repeat: Infinity,
+          ease: "easeOut",
+          delay: 1.5,
+        }}
+      />
+
+      {/* Vertical data stream effect */}
+      <motion.div
+        className="absolute left-[15%] top-0 w-px h-full"
+        style={{
+          background: "linear-gradient(180deg, transparent 0%, hsl(217 100% 60% / 0.2) 30%, hsl(217 100% 60% / 0.2) 70%, transparent 100%)",
+        }}
+        animate={{
+          opacity: [0.3, 0.6, 0.3],
+        }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+      
+      <motion.div
+        className="absolute left-[45%] top-0 w-px h-full"
+        style={{
+          background: "linear-gradient(180deg, transparent 0%, hsl(217 100% 60% / 0.15) 40%, hsl(217 100% 60% / 0.15) 60%, transparent 100%)",
+        }}
+        animate={{
+          opacity: [0.2, 0.5, 0.2],
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 1,
+        }}
+      />
+
+      {/* Fade overlay to blend edges */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          background: "radial-gradient(ellipse at 30% 50%, transparent 0%, hsl(0 0% 4% / 0.5) 60%, hsl(0 0% 4% / 0.9) 100%)",
+        }}
+      />
+    </div>
+  );
+};
 
 type ViewType = "Dashboard" | "Chat" | "Workflows";
 
@@ -145,6 +394,11 @@ const NewHeroSection = () => {
 
   return (
     <section className="relative pt-24 pb-16 overflow-hidden">
+      {/* Futuristic AI Background - behind left content */}
+      <div className="absolute inset-0 lg:w-[60%]">
+        <FuturisticBackground />
+      </div>
+
       {/* Soft blue radial glow */}
       <div className="absolute top-1/4 left-1/3 w-[800px] h-[800px] rounded-full opacity-30">
         <div 
