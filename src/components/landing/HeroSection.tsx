@@ -17,7 +17,7 @@ const HeroSection = () => {
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         />
       </div>
-      
+
       {/* Neural network background nodes */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
@@ -48,7 +48,7 @@ const HeroSection = () => {
         >
           <Zap className="w-5 h-5 text-primary/60" />
         </motion.div>
-        
+
         {/* Flow path curves */}
         <svg className="absolute inset-0 w-full h-full opacity-[0.03]" preserveAspectRatio="none">
           <motion.path
@@ -69,7 +69,7 @@ const HeroSection = () => {
           />
         </svg>
       </div>
-      
+
       {/* Computation grid */}
       <div className="absolute inset-0 grid-computation opacity-40" />
 
@@ -88,9 +88,7 @@ const HeroSection = () => {
             >
               <Sparkles className="w-4 h-4 text-primary" />
             </motion.div>
-            <span className="text-sm font-medium text-foreground/85 tracking-wide">
-              AI-Native Automation Platform
-            </span>
+            <span className="text-sm font-medium text-foreground/85 tracking-wide">AI-Native Automation Platform</span>
           </motion.div>
 
           {/* Headline with deliberate reveal */}
@@ -101,8 +99,8 @@ const HeroSection = () => {
             className="text-5xl md:text-7xl lg:text-[5.5rem] font-display-bold tracking-tight mb-8 leading-[1.02]"
           >
             <span className="block">Automate your</span>
-            <motion.span 
-              className="text-gradient-pulse inline-block"
+            <motion.span
+              className="inline-block"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.8 }}
@@ -118,9 +116,9 @@ const HeroSection = () => {
             transition={{ duration: 0.8, delay: 0.6 }}
             className="text-lg md:text-xl text-foreground/70 max-w-2xl mx-auto mb-14 leading-relaxed"
           >
-            Describe what you need. Synth <span className="text-foreground/90 font-medium">interprets your intent</span>, 
-            {" "}<span className="text-gradient font-medium">builds the automation</span>, and runs it autonomously. 
-            No configuration required.
+            Describe what you need. Synth <span className="text-foreground/90 font-medium">interprets your intent</span>
+            , <span className="text-gradient font-medium">builds the automation</span>, and runs it autonomously. No
+            configuration required.
           </motion.p>
 
           {/* System action buttons */}
@@ -143,7 +141,7 @@ const HeroSection = () => {
                   Get Started
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </span>
-                <motion.div 
+                <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-primary via-synth-blue-light to-primary bg-[length:200%_100%]"
                   animate={{ backgroundPosition: ["0% 0%", "200% 0%"] }}
                   transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
