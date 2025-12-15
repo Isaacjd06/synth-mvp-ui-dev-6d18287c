@@ -23,7 +23,7 @@ const features = [
   {
     id: "workflows",
     title: "Workflows",
-    description: "View automations Synth created. Toggle active/inactive. Open details to see triggers, steps, and configurations. This is observation-first — Synth builds, you monitor.",
+    description: "View automations Synth created. Toggle active/inactive. Open details to see triggers, steps, and configurations. This is observation first. Synth builds, you monitor.",
     preview: {
       workflows: [
         { name: "Lead Capture", status: "Active" },
@@ -35,7 +35,7 @@ const features = [
   {
     id: "executions",
     title: "Executions",
-    description: "Timeline of every workflow run. See status, duration, and timestamp. Drill into execution details to understand what happened step-by-step. Errors show exactly what broke.",
+    description: "Timeline of every workflow run. See status, duration, and timestamp. Drill into execution details to understand what happened step by step. Errors show exactly what broke.",
     preview: {
       executions: [
         { time: "2m ago", status: "Success", duration: "1.2s" },
@@ -69,7 +69,7 @@ const features = [
   {
     id: "connections",
     title: "Connections, handled automatically",
-    description: "Synth automatically selects and connects the tools it needs to get work done. You don't browse integrations or manage setups — Synth handles that for you and only asks for access when required. If you ever want a different tool used, just tell Synth — it will adapt.",
+    description: "Synth automatically selects and connects the tools it needs to get work done. You don't browse integrations or manage setups. Synth handles that for you and only asks for access when required. If you ever want a different tool used, just tell Synth. It will adapt.",
     preview: {
       apps: ["Gmail", "Slack", "Notion", "HubSpot", "Stripe", "Google Sheets"],
       helperText: "Examples of tools Synth can work with",
