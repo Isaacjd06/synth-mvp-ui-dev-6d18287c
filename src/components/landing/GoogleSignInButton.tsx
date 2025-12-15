@@ -15,7 +15,7 @@ const GoogleSignInButton = ({ className = "", variant = "primary" }: GoogleSignI
     // Simulate OAuth redirect delay
     await new Promise(r => setTimeout(r, 800));
     // In real implementation, this would redirect to /api/auth/signin?provider=google
-    window.location.href = "/app/dashboard";
+    window.location.href = "/app/chat";
   };
 
   const baseStyles = "inline-flex items-center justify-center gap-2.5 font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed";
